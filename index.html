@@ -1748,9 +1748,6 @@
                 // Set flag to prevent recursive calls
                 isCalculating = true;
                 
-                // Save current config before calculating
-                saveCurrentConfig();
-                
                 console.log('=== CALCULATION DEBUG ===');
                 console.log('Current position selected:', currentPosition);
                 console.log('Position configs:');
@@ -1788,13 +1785,9 @@
                         configSource = 'Guard (reinitialized)';
                     }
 
-                    // Log first player's config for debugging
-                    if (index === 0) {
-                        console.log('First player:', player.Player, 'Position:', positionCategory);
-                        console.log('UI Position Selection:', currentPosition);
-                        console.log('Using config from:', configSource);
-                        console.log('Sample stat - PPG:', configToUse.ppg);
-                        console.log('Sample stat - BPM:', configToUse.bpm);
+                    // Log first few players' configs for debugging
+                    if (index < 3) {
+                        console.log(`Player ${index}: ${player.Player} | Position: ${positionCategory} | Config: ${configSource} | PPG weight: ${configToUse.ppg.weight} | +/- weight: ${configToUse.plusminus.weight}`);
                     }
 
                     const weights = {};
@@ -2471,6 +2464,9 @@
         renderConferenceMultipliers();
 
         console.log('Using hardcoded default configuration');
+
+        // Apply the default position (Guard) config to the UI sliders
+        loadPositionConfig(currentPosition);
 
         // Auto-load data from Google Sheets
         loadFromGoogleSheet();
