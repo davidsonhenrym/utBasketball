@@ -1,0 +1,2584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basketball Player Evaluation Model</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=Archivo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0e14;
+            --bg-secondary: #151922;
+            --bg-tertiary: #1e242e;
+            --accent-primary: #00ff88;
+            --accent-secondary: #00d4ff;
+            --accent-tertiary: #ff6b35;
+            --text-primary: #ffffff;
+            --text-secondary: #8b92a8;
+            --border: #2d3748;
+            --shadow: rgba(0, 255, 136, 0.1);
+        }
+
+        body {
+            font-family: 'Archivo', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+            border-bottom: 2px solid var(--accent-primary);
+            padding: 30px 0;
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 50px,
+                rgba(0, 255, 136, 0.03) 50px,
+                rgba(0, 255, 136, 0.03) 100px
+            );
+            pointer-events: none;
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 900;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-transform: uppercase;
+            position: relative;
+        }
+
+        .subtitle {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-top: 10px;
+            letter-spacing: 0.05em;
+        }
+
+        .controls-section {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .control-panel {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 20px var(--shadow);
+            position: sticky;
+            top: 20px;
+            height: fit-content;
+            max-height: calc(100vh - 40px);
+            overflow-y: auto;
+        }
+
+        .control-panel::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .control-panel::-webkit-scrollbar-track {
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+        }
+
+        .control-panel::-webkit-scrollbar-thumb {
+            background: var(--accent-primary);
+            border-radius: 4px;
+        }
+
+        .section-header {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--accent-primary);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .stat-config {
+            margin-bottom: 25px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .stat-config:last-child {
+            border-bottom: none;
+        }
+
+        .stat-name {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stat-value {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--accent-secondary);
+        }
+
+        .slider-group {
+            margin-bottom: 12px;
+        }
+
+        .slider-label {
+            font-size: 0.7rem;
+            font-family: 'IBM Plex Mono', monospace;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            background: var(--bg-tertiary);
+            outline: none;
+            border-radius: 3px;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: var(--accent-primary);
+            cursor: pointer;
+            border-radius: 50%;
+            box-shadow: 0 2px 8px rgba(0, 255, 136, 0.4);
+            transition: all 0.2s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 2px 12px rgba(0, 255, 136, 0.6);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: var(--accent-primary);
+            cursor: pointer;
+            border-radius: 50%;
+            border: none;
+            box-shadow: 0 2px 8px rgba(0, 255, 136, 0.4);
+            transition: all 0.2s;
+        }
+
+        input[type="number"] {
+            width: 70px;
+            padding: 6px 8px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.75rem;
+        }
+
+        .range-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .range-input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-label {
+            font-size: 0.65rem;
+            font-family: 'IBM Plex Mono', monospace;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: var(--bg-primary);
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: all 0.3s;
+            font-family: 'Archivo', sans-serif;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 255, 136, 0.3);
+        }
+
+        button.secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        button.secondary:hover {
+            background: var(--bg-secondary);
+            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+        }
+
+        .data-section {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 20px var(--shadow);
+        }
+
+        .upload-zone {
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 25px;
+            background: var(--bg-tertiary);
+        }
+
+        .upload-zone:hover {
+            border-color: var(--accent-primary);
+            background: rgba(0, 255, 136, 0.05);
+        }
+
+        .upload-zone.dragover {
+            border-color: var(--accent-primary);
+            background: rgba(0, 255, 136, 0.1);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: var(--accent-primary);
+            margin-bottom: 15px;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .file-info {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--accent-secondary);
+            margin-top: 15px;
+        }
+
+        .results-container {
+            margin-top: 30px;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        thead {
+            background: var(--bg-tertiary);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        th {
+            padding: 15px 12px;
+            text-align: left;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            letter-spacing: 0.05em;
+            color: var(--accent-primary);
+            border-bottom: 2px solid var(--border);
+            white-space: nowrap;
+        }
+
+        th.sortable {
+            cursor: pointer;
+            user-select: none;
+            transition: color 0.2s;
+        }
+
+        th.sortable:hover {
+            color: var(--accent-secondary);
+        }
+
+        th.sortable::after {
+            content: ' ⇅';
+            font-size: 0.8em;
+            opacity: 0.3;
+        }
+
+        th.sorted-asc::after {
+            content: ' ↑';
+            opacity: 1;
+            color: var(--accent-secondary);
+        }
+
+        th.sorted-desc::after {
+            content: ' ↓';
+            opacity: 1;
+            color: var(--accent-secondary);
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.8rem;
+        }
+
+        tr:hover {
+            background: rgba(0, 255, 136, 0.03);
+        }
+
+        .score-cell {
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .score-high {
+            color: var(--accent-primary);
+        }
+
+        .score-medium {
+            color: var(--accent-secondary);
+        }
+
+        .score-low {
+            color: var(--accent-tertiary);
+        }
+
+        .position-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .position-guard {
+            background: rgba(0, 212, 255, 0.2);
+            color: var(--accent-secondary);
+            border: 1px solid var(--accent-secondary);
+        }
+
+        .position-wing {
+            background: rgba(255, 107, 53, 0.2);
+            color: var(--accent-tertiary);
+            border: 1px solid var(--accent-tertiary);
+        }
+
+        .position-forward {
+            background: rgba(0, 255, 136, 0.2);
+            color: var(--accent-primary);
+            border: 1px solid var(--accent-primary);
+        }
+
+        .stats-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: var(--bg-tertiary);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .stat-card-label {
+            font-size: 0.7rem;
+            font-family: 'IBM Plex Mono', monospace;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .stat-card-value {
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--accent-primary);
+            margin-top: 8px;
+        }
+
+        .filter-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 10px 15px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.85rem;
+        }
+
+        .filter-input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        select {
+            padding: 10px 15px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animated {
+            animation: slideIn 0.5s ease-out;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-secondary);
+        }
+
+        .spinner {
+            border: 3px solid var(--bg-tertiary);
+            border-top: 3px solid var(--accent-primary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .valuation-section {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid var(--border);
+        }
+
+        .valuation-inputs {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .valuation-input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .valuation-input-group label {
+            font-size: 0.7rem;
+            font-family: 'IBM Plex Mono', monospace;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .valuation-input-group input {
+            width: 100%;
+            padding: 10px 12px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.85rem;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Archivo', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .tab:hover {
+            color: var(--text-primary);
+            background: rgba(0, 255, 136, 0.05);
+        }
+
+        .tab.active {
+            color: var(--accent-primary);
+            border-bottom-color: var(--accent-primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .team-card {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .team-card:hover {
+            border-color: var(--accent-primary);
+            box-shadow: 0 4px 20px var(--shadow);
+        }
+
+        .team-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .team-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .team-conference {
+            font-size: 0.8rem;
+            font-family: 'IBM Plex Mono', monospace;
+            color: var(--text-secondary);
+        }
+
+        .team-valuation {
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: var(--accent-primary);
+        }
+
+        .team-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border);
+        }
+
+        .team-stat {
+            text-align: center;
+        }
+
+        .team-stat-label {
+            font-size: 0.65rem;
+            font-family: 'IBM Plex Mono', monospace;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        .team-stat-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-top: 4px;
+        }
+
+        .valuation-cell {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--accent-secondary);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--bg-secondary);
+            border: 2px solid var(--accent-primary);
+            border-radius: 12px;
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 10px 40px rgba(0, 255, 136, 0.3);
+        }
+
+        .modal-header {
+            background: var(--bg-tertiary);
+            padding: 25px;
+            border-bottom: 2px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .modal-close:hover {
+            background: var(--accent-tertiary);
+            border-color: var(--accent-tertiary);
+            transform: rotate(90deg);
+        }
+
+        .modal-player-name {
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+        }
+
+        .modal-player-info {
+            display: flex;
+            gap: 20px;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .modal-score-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .modal-score-card {
+            background: var(--bg-tertiary);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .modal-score-label {
+            font-size: 0.7rem;
+            font-family: 'IBM Plex Mono', monospace;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 8px;
+        }
+
+        .modal-score-value {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--accent-primary);
+        }
+
+        .modal-section-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--accent-primary);
+            margin: 25px 0 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .stat-breakdown {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .stat-breakdown-item {
+            background: var(--bg-tertiary);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .stat-breakdown-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .stat-breakdown-name {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .stat-breakdown-value {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--accent-secondary);
+            font-weight: 700;
+        }
+
+        .stat-breakdown-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(0, 255, 136, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .stat-breakdown-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+            transition: width 0.5s ease;
+            border-radius: 4px;
+        }
+
+        .stat-breakdown-details {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.7rem;
+            font-family: 'IBM Plex Mono', monospace;
+            color: var(--text-secondary);
+        }
+
+        tr.clickable {
+            cursor: pointer;
+        }
+
+        tr.clickable:hover {
+            background: rgba(0, 255, 136, 0.08) !important;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Player Evaluation Model</h1>
+            <div class="subtitle">Advanced Basketball Analytics System</div>
+        </header>
+
+        <div class="controls-section">
+            <div class="control-panel">
+                <div class="section-header">Configuration</div>
+                
+                <div class="action-buttons" style="margin-bottom: 25px;">
+                    <button onclick="calculateScores()">Calculate Scores</button>
+                    <button class="secondary" onclick="resetWeights()">Reset</button>
+                </div>
+                
+                <div style="margin-bottom: 25px;">
+                    <label style="font-size: 0.7rem; font-family: 'IBM Plex Mono', monospace; color: var(--text-secondary); margin-bottom: 8px; display: block; text-transform: uppercase;">Configure Weights For Position</label>
+                    <select id="positionConfig" onchange="switchPositionConfig()" style="width: 100%; padding: 10px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 6px; color: var(--text-primary); font-family: 'IBM Plex Mono', monospace; font-size: 0.85rem;">
+                        <option value="Guard" selected>Guards</option>
+                        <option value="Wing">Wings</option>
+                        <option value="Forward/Center">Forwards/Centers</option>
+                    </select>
+                    <div style="font-size: 0.65rem; color: var(--text-secondary); margin-top: 8px; font-family: 'IBM Plex Mono', monospace;">
+                        Select position to configure weights and ranges
+                    </div>
+                </div>
+                
+                <div id="weightControls"></div>
+
+                <div class="valuation-section">
+                    <div class="section-header">Target Valuations</div>
+                    <div class="valuation-inputs">
+                        <div class="valuation-input-group">
+                            <label>Guard</label>
+                            <input type="number" id="valuation_guard" value="100000" step="1000" onchange="saveToLocalStorage()">
+                        </div>
+                        <div class="valuation-input-group">
+                            <label>Wing</label>
+                            <input type="number" id="valuation_wing" value="120000" step="1000" onchange="saveToLocalStorage()">
+                        </div>
+                        <div class="valuation-input-group">
+                            <label>Forward/Center</label>
+                            <input type="number" id="valuation_forward" value="140000" step="1000" onchange="saveToLocalStorage()">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="valuation-section" style="margin-top: 20px; padding-top: 20px;">
+                    <div class="section-header">Conference Multipliers</div>
+                    <div style="font-size: 0.65rem; color: var(--text-secondary); margin-bottom: 12px; font-family: 'IBM Plex Mono', monospace;">
+                        Valuation multiplier by conference (MAC = 1.0x baseline)
+                    </div>
+                    <div id="conferenceMultiplierControls" style="max-height: 300px; overflow-y: auto; padding-right: 5px;"></div>
+                    <div style="margin-top: 10px;">
+                        <button class="secondary" onclick="addConferenceMultiplier()" style="font-size: 0.75rem; padding: 8px 12px;">+ Add Conference</button>
+                    </div>
+                </div>
+
+                <div class="action-buttons" style="margin-top: 25px;">
+                    <button class="secondary" onclick="exportResults()">Export CSV</button>
+                </div>
+
+                <div style="margin-top: 25px; padding-top: 25px; border-top: 1px solid var(--border);">
+                    <div class="section-header">Model Storage</div>
+                    <div class="action-buttons" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <button onclick="saveToLocalStorage()" style="background: var(--accent-primary); color: var(--bg-primary);">💾 Save Model</button>
+                        <button class="secondary" onclick="loadFromLocalStorage()">📂 Load Model</button>
+                    </div>
+                    <div class="action-buttons" style="margin-top: 10px;">
+                        <button class="secondary" onclick="clearLocalStorage()" style="font-size: 0.8rem;">🗑️ Clear Saved Model</button>
+                    </div>
+                    <div style="font-size: 0.65rem; color: var(--text-secondary); margin-top: 12px; font-family: 'IBM Plex Mono', monospace; line-height: 1.4;">
+                        Your model parameters are automatically saved when you make changes. Use these buttons to manually save/load or clear.
+                    </div>
+                </div>
+            </div>
+
+            <div class="data-section">
+                <div class="upload-zone" id="uploadZone">
+                    <div class="upload-icon">📊</div>
+                    <h3>Upload Player Data</h3>
+                    <p style="color: var(--text-secondary); margin-top: 10px;">
+                        Click to browse or drag and drop your Excel file
+                    </p>
+                    <input type="file" id="fileInput" accept=".xlsx,.xls">
+                    <div class="file-info" id="fileInfo"></div>
+                </div>
+                
+                <div class="upload-zone" id="positionUploadZone" style="margin-top: 20px; padding: 20px;">
+                    <div style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent-primary); margin-bottom: 12px;">
+                        📍 Optional: Position Data Override
+                    </div>
+                    <p style="color: var(--text-secondary); margin-bottom: 12px; font-size: 0.85rem;">
+                        Upload JSON to override positions (optional - "Pos" column in Excel is used automatically)
+                    </p>
+                    <input type="file" id="positionFileInput" accept=".json" style="display: none;">
+                    <div class="file-info" id="positionFileInfo" style="font-size: 0.75rem;"></div>
+                    <div style="margin-top: 10px; font-size: 0.7rem; color: var(--text-secondary); font-family: 'IBM Plex Mono', monospace;">
+                        <span id="positionStatsInfo">Using "Pos" column from Excel. Falls back to height-based if missing.</span>
+                    </div>
+                </div>
+
+                <div id="resultsSection" style="display: none;">
+                    <div class="stats-summary" id="statsSummary"></div>
+                    
+                    <div class="tabs">
+                        <button class="tab active" onclick="switchTab('players')">Player Rankings</button>
+                        <button class="tab" onclick="switchTab('teams')">Team Valuations</button>
+                    </div>
+
+                    <div id="playersTab" class="tab-content active">
+                        <div class="filter-controls">
+                            <input type="text" class="filter-input" id="searchInput" placeholder="Search players...">
+                            <select id="conferenceFilter">
+                                <option value="">All Conferences</option>
+                            </select>
+                            <select id="positionFilter">
+                                <option value="">All Positions</option>
+                                <option value="Guard">Guards</option>
+                                <option value="Wing">Wings</option>
+                                <option value="Forward/Center">Forwards/Centers</option>
+                            </select>
+                            <select id="teamFilter">
+                                <option value="">All Teams</option>
+                            </select>
+                            <select id="minScore">
+                                <option value="0">Min Score: All</option>
+                                <option value="60">Min Score: 60+</option>
+                                <option value="70">Min Score: 70+</option>
+                                <option value="80">Min Score: 80+</option>
+                                <option value="90">Min Score: 90+</option>
+                            </select>
+                        </div>
+
+                        <div class="results-container">
+                            <div class="table-wrapper">
+                                <table id="resultsTable">
+                                    <thead>
+                                        <tr>
+                                            <th class="sortable" data-sort="rank">Rank</th>
+                                            <th class="sortable" data-sort="player">Player</th>
+                                            <th class="sortable" data-sort="team">Team</th>
+                                            <th class="sortable" data-sort="conference">Conference</th>
+                                            <th class="sortable" data-sort="position">Position</th>
+                                            <th class="sortable" data-sort="score">Score</th>
+                                            <th class="sortable" data-sort="valuation">Valuation</th>
+                                            <th class="sortable" data-sort="ppg">PPG</th>
+                                            <th class="sortable" data-sort="apg">APG</th>
+                                            <th class="sortable" data-sort="rpg">RPG</th>
+                                            <th class="sortable" data-sort="bpm">BPM</th>
+                                            <th class="sortable" data-sort="efg">eFG%</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="resultsBody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="teamsTab" class="tab-content">
+                        <div class="filter-controls">
+                            <input type="text" class="filter-input" id="teamSearchInput" placeholder="Search teams...">
+                            <select id="teamConferenceFilter">
+                                <option value="">All Conferences</option>
+                            </select>
+                            <select id="sortTeamsBy">
+                                <option value="valuation">Sort by: Total Valuation</option>
+                                <option value="avgScore">Sort by: Avg Score</option>
+                                <option value="players">Sort by: Player Count</option>
+                                <option value="name">Sort by: Team Name</option>
+                                <option value="conference">Sort by: Conference</option>
+                            </select>
+                        </div>
+                        <div id="teamsContainer"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Player Detail Modal -->
+    <div id="playerModal" class="modal">
+        <div class="modal-content animated">
+            <div class="modal-header">
+                <button class="modal-close" onclick="closePlayerModal()">×</button>
+                <div class="modal-player-name" id="modalPlayerName"></div>
+                <div class="modal-player-info" id="modalPlayerInfo"></div>
+            </div>
+            <div class="modal-body">
+                <div class="modal-score-summary" id="modalScoreSummary"></div>
+                
+                <div class="modal-section-title">Stat Breakdown</div>
+                <div class="stat-breakdown" id="modalStatBreakdown"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script>
+        // Configuration for all stats
+        const statsConfig = {
+            // Offensive Production
+            ppg: { name: 'PPG', category: 'Offensive', weight: 8, min: 7, max: 22, ideal: 'higher' },
+            fg_pct: { name: 'FG%', category: 'Offensive', weight: 8, min: 0.25, max: 0.75, ideal: 'higher' },
+            three_pct: { name: '3P%', category: 'Offensive', weight: 8, min: 0.2, max: 0.5, ideal: 'higher' },
+            ft_pct: { name: 'FT%', category: 'Offensive', weight: 8, min: 0.5, max: 0.95, ideal: 'higher' },
+            apg: { name: 'APG', category: 'Offensive', weight: 5, min: 0, max: 8, ideal: 'higher' },
+            topg: { name: 'TOPG', category: 'Offensive', weight: 5, min: 0, max: 5, ideal: 'lower' },
+            ato: { name: 'A/TO', category: 'Offensive', weight: 5, min: 0, max: 4, ideal: 'higher' },
+            orbg: { name: 'ORB/G', category: 'Offensive', weight: 5, min: 0, max: 5, ideal: 'higher' },
+            
+            // Defensive Production
+            drbg: { name: 'DRB/G', category: 'Defensive', weight: 5, min: 0, max: 9, ideal: 'higher' },
+            bpg: { name: 'BPG', category: 'Defensive', weight: 5, min: 0, max: 3, ideal: 'higher' },
+            spg: { name: 'SPG', category: 'Defensive', weight: 5, min: 0, max: 5, ideal: 'higher' },
+            
+            // Advanced Stats
+            efg: { name: 'eFG%', category: 'Advanced', weight: 8, min: 0.4, max: 0.8, ideal: 'higher' },
+            plusminus: { name: '+/-', category: 'Advanced', weight: 5, min: -100, max: 200, ideal: 'higher' },
+            or_pct: { name: 'OR%', category: 'Advanced', weight: 3, min: 0, max: 0.2, ideal: 'higher' },
+            dr_pct: { name: 'DR%', category: 'Advanced', weight: 3, min: 0, max: 0.2, ideal: 'higher' },
+            ws: { name: 'WS', category: 'Advanced', weight: 5, min: 0, max: 10, ideal: 'higher' },
+            ortg: { name: 'ORtg', category: 'Advanced', weight: 5, min: 90, max: 130, ideal: 'higher' },
+            drtg: { name: 'DRtg', category: 'Advanced', weight: 5, min: 85, max: 115, ideal: 'lower' },
+            ows: { name: 'OWS', category: 'Advanced', weight: 4, min: 0, max: 6, ideal: 'higher' },
+            dws: { name: 'DWS', category: 'Advanced', weight: 4, min: 0, max: 4, ideal: 'higher' },
+            ws_40: { name: 'WS/40', category: 'Advanced', weight: 5, min: 0, max: 0.3, ideal: 'higher' },
+            obpm: { name: 'OBPM', category: 'Advanced', weight: 5, min: -5, max: 10, ideal: 'higher' },
+            dbpm: { name: 'DBPM', category: 'Advanced', weight: 5, min: -5, max: 8, ideal: 'higher' },
+            bpm: { name: 'BPM', category: 'Advanced', weight: 5, min: -5, max: 12, ideal: 'higher' },
+            per: { name: 'PER', category: 'Advanced', weight: 5, min: 5, max: 35, ideal: 'higher' }
+        };
+
+        let playerData = [];
+        let scoredData = [];
+        let teamData = [];
+        let currentTab = 'players';
+        let currentPosition = 'Guard';
+        let isCalculating = false; // Flag to prevent recursive calculation
+        let positionMapping = {}; // Stores actual positions from scraped data
+
+        // Store configurations for each position
+        let positionConfigs = {
+            'Guard': {},
+            'Wing': {},
+            'Forward/Center': {}
+        };
+
+        // Conference valuation multipliers (MAC ~$950K = 1.0x baseline)
+        // Based on estimated 2025-26 NCAA team roster costs
+        let conferenceMultipliers = {
+            // Power conferences
+            'SEC': 10.21,
+            'Big 12': 9.05,
+            'Big Ten': 8.95,
+            'ACC': 8.63,
+            'Big East': 8.42,
+            // Mid to High Majors (~$2.3M avg)
+            'AAC': 2.42,
+            'MWC': 2.42,
+            'WCC': 2.42,
+            'A-10': 2.42,
+            'MVC': 2.42,
+            'Pac-12': 2.42,
+            'C-USA': 2.42,
+            'Sun Belt': 2.42,
+            'CAA': 2.42,
+            'Ivy': 2.42,
+            'Big Sky': 2.42,
+            'Big West': 2.42,
+            'SoCon': 2.42,
+            'Horizon': 2.42,
+            // MAC (baseline)
+            'MAC': 1.0,
+            // Low to Mid Majors (~$525K avg)
+            'Patriot': 0.55,
+            'MAAC': 0.55,
+            'OVC': 0.55,
+            'WAC': 0.55,
+            'Big South': 0.55,
+            'Summit': 0.55,
+            'NEC': 0.55,
+            'Southland': 0.55,
+            'SWAC': 0.55,
+            'MEAC': 0.55,
+            'AEC': 0.55,
+            'A-Sun': 0.55
+        };
+
+        // Initialize controls
+        function initializeControls() {
+            const container = document.getElementById('weightControls');
+            const categories = {};
+            
+            // Group stats by category
+            Object.entries(statsConfig).forEach(([key, stat]) => {
+                if (!categories[stat.category]) {
+                    categories[stat.category] = [];
+                }
+                categories[stat.category].push({ key, ...stat });
+            });
+
+            // Create controls for each category
+            Object.entries(categories).forEach(([category, stats]) => {
+                const categoryDiv = document.createElement('div');
+                categoryDiv.style.marginBottom = '30px';
+                
+                const categoryHeader = document.createElement('div');
+                categoryHeader.className = 'section-header';
+                categoryHeader.textContent = category;
+                categoryDiv.appendChild(categoryHeader);
+
+                stats.forEach(stat => {
+                    const statDiv = document.createElement('div');
+                    statDiv.className = 'stat-config';
+                    
+                    statDiv.innerHTML = `
+                        <div class="stat-name">
+                            <span>${stat.name}</span>
+                            <span class="stat-value" id="${stat.key}_weight_val">${stat.weight}%</span>
+                        </div>
+                        
+                        <div class="slider-group">
+                            <div class="slider-label">
+                                <span>Weight</span>
+                            </div>
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <input type="range" id="${stat.key}_weight" min="0" max="30" value="${stat.weight}" 
+                                       oninput="updateWeightDisplay('${stat.key}'); saveCurrentConfig();" style="flex: 1;">
+                                <input type="number" id="${stat.key}_weight_input" min="0" max="30" value="${stat.weight}" 
+                                       oninput="updateWeightFromInput('${stat.key}'); saveCurrentConfig();" 
+                                       style="width: 60px; padding: 5px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 4px; color: var(--text-primary); font-size: 0.85rem; text-align: center;">
+                            </div>
+                        </div>
+                        
+                        <div class="range-inputs">
+                            <div class="range-input-group">
+                                <label class="input-label">Min Value</label>
+                                <input type="number" id="${stat.key}_min" value="${stat.min}" step="0.1" onchange="saveCurrentConfig()">
+                            </div>
+                            <div class="range-input-group">
+                                <label class="input-label">Max Value</label>
+                                <input type="number" id="${stat.key}_max" value="${stat.max}" step="0.1" onchange="saveCurrentConfig()">
+                            </div>
+                        </div>
+                    `;
+                    
+                    categoryDiv.appendChild(statDiv);
+                });
+
+                container.appendChild(categoryDiv);
+            });
+            
+            // Position-specific settings: weight, min, max for each stat
+            const positionSettings = {
+                'Guard': {
+                    ppg:       { weight: 11, min: 7,    max: 19 },
+                    fg_pct:    { weight: 11, min: 0.25, max: 0.50 },
+                    three_pct: { weight: 12, min: 0.20, max: 0.40 },
+                    ft_pct:    { weight: 10, min: 0.50, max: 0.90 },
+                    apg:       { weight: 10, min: 0,    max: 6 },
+                    topg:      { weight: 10, min: 0,  max: 2 },
+                    ato:       { weight: 8,  min: 0,  max: 4 },
+                    orbg:      { weight: 3,  min: 0,    max: 2 },
+                    drbg:      { weight: 7,  min: 1,    max: 4 },
+                    bpg:       { weight: 1,  min: 0,    max: 0.5 },
+                    spg:       { weight: 5,  min: 0,  max: 2.5 },
+                    efg:       { weight: 9,  min: 0.40, max: 0.65 },
+                    plusminus: { weight: 0,  min: -50,  max: 150 },
+                    or_pct:    { weight: 1,  min: 0,    max: 0.05 },
+                    dr_pct:    { weight: 2,  min: 0, max: 0.05 },
+                    ws:        { weight: 0,  min: 0,    max: 8 },
+                    ortg:      { weight: 0,  min: 95,   max: 125 },
+                    drtg:      { weight: 0,  min: 90,   max: 115 },
+                    ows:       { weight: 0,  min: 0,    max: 5 },
+                    dws:       { weight: 0,  min: 0,    max: 3 },
+                    ws_40:     { weight: 0,  min: 0,    max: 0.25 },
+                    obpm:      { weight: 0,  min: -3,   max: 8 },
+                    dbpm:      { weight: 0,  min: -3,   max: 6 },
+                    bpm:       { weight: 0,  min: -3,   max: 10 },
+                    per:       { weight: 0,  min: 8,    max: 30 }
+                },
+                'Wing': {
+                    ppg:       { weight: 11, min: 7,    max: 19 },
+                    fg_pct:    { weight: 11, min: 0.25, max: 0.50 },
+                    three_pct: { weight: 12, min: 0.20, max: 0.40 },
+                    ft_pct:    { weight: 10, min: 0.50, max: 0.90 },
+                    apg:       { weight: 10, min: 0,    max: 6 },
+                    topg:      { weight: 10, min: 0,  max: 2 },
+                    ato:       { weight: 7,  min: 0,  max: 4 },
+                    orbg:      { weight: 4,  min: 0,    max: 2 },
+                    drbg:      { weight: 7,  min: 1,    max: 4 },
+                    bpg:       { weight: 1,  min: 0,    max: 0.5 },
+                    spg:       { weight: 5,  min: 0,  max: 2.5 },
+                    efg:       { weight: 9,  min: 0.40, max: 0.65 },
+                    plusminus: { weight: 0,  min: -50,  max: 150 },
+                    or_pct:    { weight: 1,  min: 0,    max: 0.05 },
+                    dr_pct:    { weight: 2,  min: 0, max: 0.05 },
+                    ws:        { weight: 0,  min: 0,    max: 8 },
+                    ortg:      { weight: 0,  min: 95,   max: 125 },
+                    drtg:      { weight: 0,  min: 90,   max: 115 },
+                    ows:       { weight: 0,  min: 0,    max: 5 },
+                    dws:       { weight: 0,  min: 0,    max: 3 },
+                    ws_40:     { weight: 0,  min: 0,    max: 0.25 },
+                    obpm:      { weight: 0,  min: -3,   max: 8 },
+                    dbpm:      { weight: 0,  min: -3,   max: 6 },
+                    bpm:       { weight: 0,  min: -3,   max: 10 },
+                    per:       { weight: 0,  min: 8,    max: 30 }
+                },
+                'Forward/Center': {
+                    ppg:       { weight: 11, min: 7,    max: 19 },
+                    fg_pct:    { weight: 11, min: 0.25, max: 0.60 },
+                    three_pct: { weight: 12, min: 0.20, max: 0.40 },
+                    ft_pct:    { weight: 8, min: 0.50, max: 0.80 },
+                    apg:       { weight: 6, min: 0,    max: 3 },
+                    topg:      { weight: 8, min: 0,  max: 2 },
+                    ato:       { weight: 5,  min: 0,  max: 4 },
+                    orbg:      { weight: 5,  min: 0,    max: 4 },
+                    drbg:      { weight: 10,  min: 1,    max: 5 },
+                    bpg:       { weight: 4,  min: 0,    max: 1.5 },
+                    spg:       { weight: 4,  min: 0,  max: 1 },
+                    efg:       { weight: 8,  min: 0.40, max: 0.7 },
+                    plusminus: { weight: 0,  min: -50,  max: 150 },
+                    or_pct:    { weight: 4,  min: 0,    max: 0.1 },
+                    dr_pct:    { weight: 4,  min: 0, max: 0.1 },
+                    ws:        { weight: 0,  min: 0,    max: 10 },
+                    ortg:      { weight: 0,  min: 95,   max: 125 },
+                    drtg:      { weight: 0,  min: 90,   max: 110 },
+                    ows:       { weight: 0,  min: 0,    max: 6 },
+                    dws:       { weight: 0,  min: 0,    max: 4 },
+                    ws_40:     { weight: 0,  min: 0,    max: 0.30 },
+                    obpm:      { weight: 0,  min: -3,   max: 10 },
+                    dbpm:      { weight: 0,  min: -3,   max: 8 },
+                    bpm:       { weight: 0,  min: -3,   max: 12 },
+                    per:       { weight: 0,  min: 5,    max: 35 }
+                }
+            };
+
+            // Initialize position configs from positionSettings
+            Object.keys(positionConfigs).forEach(pos => {
+                positionConfigs[pos] = {};
+                Object.entries(statsConfig).forEach(([key, stat]) => {
+                    const settings = positionSettings[pos] && positionSettings[pos][key];
+                    positionConfigs[pos][key] = {
+                        weight: settings ? settings.weight : stat.weight,
+                        min: settings ? settings.min : stat.min,
+                        max: settings ? settings.max : stat.max
+                    };
+                });
+            });
+        }
+
+        function updateWeightDisplay(key) {
+            const weight = document.getElementById(`${key}_weight`).value;
+            document.getElementById(`${key}_weight_val`).textContent = `${weight}%`;
+            // Also update the number input
+            document.getElementById(`${key}_weight_input`).value = weight;
+        }
+
+        function updateWeightFromInput(key) {
+            const weight = document.getElementById(`${key}_weight_input`).value;
+            document.getElementById(`${key}_weight`).value = weight;
+            document.getElementById(`${key}_weight_val`).textContent = `${weight}%`;
+        }
+
+        function switchPositionConfig() {
+            // Save current config
+            saveCurrentConfig();
+            
+            // Switch to new position
+            currentPosition = document.getElementById('positionConfig').value;
+            
+            // Load config for new position
+            loadPositionConfig(currentPosition);
+        }
+
+        function saveCurrentConfig() {
+            console.log('Saving config for position:', currentPosition);
+            // Defensive check: ensure position object exists
+            if (!positionConfigs[currentPosition]) {
+                positionConfigs[currentPosition] = {};
+            }
+            Object.keys(statsConfig).forEach(key => {
+                // Save weights, min, and max per position
+                positionConfigs[currentPosition][key] = {
+                    weight: parseFloat(document.getElementById(`${key}_weight`).value) || 0,
+                    min: parseFloat(document.getElementById(`${key}_min`).value) ?? statsConfig[key].min,
+                    max: parseFloat(document.getElementById(`${key}_max`).value) ?? statsConfig[key].max
+                };
+            });
+            console.log('Saved! Sample FG% config:', positionConfigs[currentPosition].fg_pct);
+            
+            // Save to localStorage
+            saveToLocalStorage();
+            
+            // Recalculate scores with updated configuration (only if not already calculating)
+            if (!isCalculating && playerData && playerData.length > 0) {
+                calculateScores();
+            }
+        }
+
+        function loadPositionConfig(position) {
+            // Defensive check: ensure position config exists
+            if (!positionConfigs[position]) {
+                positionConfigs[position] = {};
+            }
+            Object.keys(statsConfig).forEach(key => {
+                // Defensive check: ensure stat config exists
+                if (!positionConfigs[position][key]) {
+                    positionConfigs[position][key] = {
+                        weight: statsConfig[key].weight,
+                        min: statsConfig[key].min,
+                        max: statsConfig[key].max
+                    };
+                }
+                const config = positionConfigs[position][key];
+                document.getElementById(`${key}_weight`).value = config.weight;
+                document.getElementById(`${key}_weight_input`).value = config.weight;
+                // Both min and max are position-specific
+                document.getElementById(`${key}_min`).value = config.min;
+                document.getElementById(`${key}_max`).value = config.max;
+                updateWeightDisplay(key);
+            });
+        }
+
+        function resetWeights() {
+            Object.entries(statsConfig).forEach(([key, stat]) => {
+                document.getElementById(`${key}_weight`).value = stat.weight;
+                document.getElementById(`${key}_weight_input`).value = stat.weight;
+                document.getElementById(`${key}_min`).value = stat.min;
+                document.getElementById(`${key}_max`).value = stat.max;
+                updateWeightDisplay(key);
+            });
+            
+            // Save reset values to current position config
+            saveCurrentConfig();
+        }
+
+        // LocalStorage persistence functions
+        function saveToLocalStorage() {
+            try {
+                const modelState = {
+                    positionConfigs: positionConfigs,
+                    valuations: {
+                        guard: document.getElementById('valuation_guard').value,
+                        wing: document.getElementById('valuation_wing').value,
+                        forward: document.getElementById('valuation_forward').value
+                    },
+                    conferenceMultipliers: conferenceMultipliers,
+                    currentPosition: currentPosition,
+                    timestamp: new Date().toISOString()
+                };
+                localStorage.setItem('basketballEvalModel', JSON.stringify(modelState));
+                console.log('Model saved to localStorage');
+                
+                // Show save confirmation
+                showSaveNotification('Model saved successfully!');
+            } catch (error) {
+                console.error('Error saving to localStorage:', error);
+                showSaveNotification('Error saving model', true);
+            }
+        }
+
+        function loadFromLocalStorage() {
+            try {
+                const saved = localStorage.getItem('basketballEvalModel');
+                if (saved) {
+                    const modelState = JSON.parse(saved);
+
+                    // Restore position configs - min is global, max and weight are position-specific
+                    if (modelState.positionConfigs && typeof modelState.positionConfigs === 'object') {
+                        Object.keys(positionConfigs).forEach(pos => {
+                            // Ensure the position object exists
+                            if (!positionConfigs[pos]) {
+                                positionConfigs[pos] = {};
+                            }
+                            if (modelState.positionConfigs[pos] && typeof modelState.positionConfigs[pos] === 'object') {
+                                Object.keys(statsConfig).forEach(key => {
+                                    // Ensure each stat config exists before updating
+                                    if (!positionConfigs[pos][key]) {
+                                        positionConfigs[pos][key] = {
+                                            weight: statsConfig[key].weight,
+                                            min: statsConfig[key].min,
+                                            max: statsConfig[key].max
+                                        };
+                                    }
+                                    if (modelState.positionConfigs[pos][key] && typeof modelState.positionConfigs[pos][key] === 'object') {
+                                        // Restore weight, min, and max per position
+                                        positionConfigs[pos][key] = {
+                                            weight: modelState.positionConfigs[pos][key].weight ?? statsConfig[key].weight,
+                                            min: modelState.positionConfigs[pos][key].min ?? statsConfig[key].min,
+                                            max: modelState.positionConfigs[pos][key].max ?? statsConfig[key].max
+                                        };
+                                    }
+                                });
+                            }
+                        });
+                    }
+                    
+                    // Restore valuations
+                    if (modelState.valuations) {
+                        document.getElementById('valuation_guard').value = modelState.valuations.guard;
+                        document.getElementById('valuation_wing').value = modelState.valuations.wing;
+                        document.getElementById('valuation_forward').value = modelState.valuations.forward;
+                    }
+                    
+                    // Restore conference multipliers
+                    if (modelState.conferenceMultipliers && typeof modelState.conferenceMultipliers === 'object') {
+                        conferenceMultipliers = { ...conferenceMultipliers, ...modelState.conferenceMultipliers };
+                        renderConferenceMultipliers();
+                    }
+
+                    // Restore current position (validate it's a valid position)
+                    if (modelState.currentPosition && positionConfigs[modelState.currentPosition]) {
+                        currentPosition = modelState.currentPosition;
+                        document.getElementById('positionConfig').value = currentPosition;
+                    } else {
+                        // Default to Guard if saved position is invalid (e.g., 'all' from old version)
+                        currentPosition = 'Guard';
+                        document.getElementById('positionConfig').value = 'Guard';
+                    }
+                    
+                    // Load the config into UI
+                    loadPositionConfig(currentPosition);
+                    
+                    console.log('Model loaded from localStorage (saved:', modelState.timestamp, ')');
+                    showSaveNotification('Model loaded successfully!');
+                    return true;
+                }
+            } catch (error) {
+                console.error('Error loading from localStorage:', error);
+            }
+            return false;
+        }
+
+        function clearLocalStorage() {
+            if (confirm('Are you sure you want to clear all saved model parameters? This cannot be undone.')) {
+                localStorage.removeItem('basketballEvalModel');
+                showSaveNotification('Model cleared from storage');
+                console.log('Model cleared from localStorage');
+            }
+        }
+
+        function showSaveNotification(message, isError = false) {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${isError ? 'var(--accent-tertiary)' : 'var(--accent-primary)'};
+                color: var(--bg-primary);
+                padding: 15px 25px;
+                border-radius: 8px;
+                font-family: 'IBM Plex Mono', monospace;
+                font-size: 0.9rem;
+                font-weight: 600;
+                z-index: 10000;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+                animation: slideIn 0.3s ease;
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // File upload handling
+        const uploadZone = document.getElementById('uploadZone');
+        const fileInput = document.getElementById('fileInput');
+
+        uploadZone.addEventListener('click', () => fileInput.click());
+
+        uploadZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadZone.classList.add('dragover');
+        });
+
+        uploadZone.addEventListener('dragleave', () => {
+            uploadZone.classList.remove('dragover');
+        });
+
+        uploadZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadZone.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            if (file) handleFile(file);
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) handleFile(file);
+        });
+        
+        // Position file upload handler
+        const positionUploadZone = document.getElementById('positionUploadZone');
+        const positionFileInput = document.getElementById('positionFileInput');
+        
+        // Click to upload
+        positionUploadZone.addEventListener('click', () => positionFileInput.click());
+        
+        // Drag and drop for position upload
+        positionUploadZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            positionUploadZone.classList.add('dragover');
+        });
+        
+        positionUploadZone.addEventListener('dragleave', () => {
+            positionUploadZone.classList.remove('dragover');
+        });
+        
+        positionUploadZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            positionUploadZone.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            if (file) handlePositionFile(file);
+        });
+        
+        positionFileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) handlePositionFile(file);
+        });
+        
+        function handlePositionFile(file) {
+            console.log('Loading position file:', file.name);
+            const reader = new FileReader();
+            
+            reader.onload = (e) => {
+                try {
+                    const jsonData = JSON.parse(e.target.result);
+                    positionMapping = jsonData;
+                    
+                    const count = Object.keys(positionMapping).length;
+                    document.getElementById('positionFileInfo').textContent = 
+                        `✓ Loaded ${count} position mappings from ${file.name}`;
+                    document.getElementById('positionStatsInfo').textContent = 
+                        `${count} players with scraped positions. Others use height-based classification.`;
+                    
+                    console.log('Position mapping loaded:', count, 'players');
+                    
+                    // Recalculate if we already have player data
+                    if (playerData && playerData.length > 0) {
+                        console.log('Recalculating with new position data...');
+                        calculateScores();
+                    }
+                } catch (error) {
+                    console.error('Error loading position file:', error);
+                    alert('Error reading position file: ' + error.message + '\nMake sure it\'s a valid JSON file.');
+                }
+            };
+            
+            reader.onerror = (error) => {
+                console.error('FileReader error:', error);
+                alert('Error reading position file');
+            };
+            
+            reader.readAsText(file);
+        }
+
+        function handleFile(file) {
+            console.log('Handling file:', file.name);
+            const reader = new FileReader();
+            
+            reader.onload = (e) => {
+                try {
+                    console.log('File loaded, parsing...');
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const jsonData = XLSX.utils.sheet_to_json(firstSheet);
+                    
+                    console.log('Parsed data:', jsonData.length, 'players');
+                    console.log('First row column names:', jsonData.length > 0 ? Object.keys(jsonData[0]) : 'No data');
+                    console.log('First 3 players Conference values:', jsonData.slice(0, 3).map(p => ({
+                        Player: p.Player,
+                        Conference: p.Conference,
+                        conference: p.conference,
+                        CONFERENCE: p.CONFERENCE,
+                        Conf: p.Conf
+                    })));
+                    
+                    playerData = jsonData;
+                    document.getElementById('fileInfo').textContent = 
+                        `✓ Loaded ${jsonData.length} players from ${file.name}`;
+                    
+                    console.log('Calling calculateScores...');
+                    calculateScores();
+                } catch (error) {
+                    console.error('Error in handleFile:', error);
+                    alert('Error reading file: ' + error.message);
+                }
+            };
+            
+            reader.onerror = (error) => {
+                console.error('FileReader error:', error);
+                alert('Error reading file');
+            };
+            
+            reader.readAsArrayBuffer(file);
+        }
+
+        function normalizePlayerName(name) {
+            if (!name) return '';
+            // Remove Jr., Sr., III, etc.
+            name = name.replace(/\s+(Jr\.?|Sr\.?|III|IV|II)$/i, '');
+            // Convert to lowercase and trim
+            return name.toLowerCase().trim();
+        }
+        
+        function getPositionCategory(height, pos, playerName) {
+            // First, try to get position from the "Pos" column in Excel data
+            if (pos && typeof pos === 'string') {
+                const posUpper = pos.toUpperCase().trim();
+                // Guard positions: G, PG, SG, Point Guard, Shooting Guard
+                if (posUpper === 'G' || posUpper === 'PG' || posUpper === 'SG' ||
+                    posUpper === 'GUARD' || posUpper === 'POINT GUARD' || posUpper === 'SHOOTING GUARD') {
+                    return 'Guard';
+                }
+                // Wing positions: SF, GF, G/F, F/G, Small Forward, Wing
+                if (posUpper === 'SF' || posUpper === 'GF' || posUpper === 'G/F' || posUpper === 'F/G' ||
+                    posUpper === 'WING' || posUpper === 'SMALL FORWARD' || posUpper === 'SG/SF' || posUpper === 'SF/SG') {
+                    return 'Wing';
+                }
+                // Forward/Center positions: F, PF, C, FC, F/C, C/F, Power Forward, Center, Forward
+                if (posUpper === 'F' || posUpper === 'PF' || posUpper === 'C' || posUpper === 'FC' ||
+                    posUpper === 'F/C' || posUpper === 'C/F' || posUpper === 'PF/C' || posUpper === 'C/PF' ||
+                    posUpper === 'FORWARD' || posUpper === 'CENTER' || posUpper === 'POWER FORWARD' ||
+                    posUpper === 'SF/PF' || posUpper === 'PF/SF') {
+                    return 'Forward/Center';
+                }
+            }
+
+            // Second, try to get position from scraped data (JSON upload)
+            if (playerName && Object.keys(positionMapping).length > 0) {
+                const normalizedName = normalizePlayerName(playerName);
+                if (positionMapping[normalizedName]) {
+                    return positionMapping[normalizedName];
+                }
+            }
+
+            // Fall back to height-based classification
+            // Parse height (format: 6'5")
+            if (!height || height === '0') return 'Guard'; // Default to Guard if height unknown
+
+            const parts = height.replace('"', '').split("'");
+            const feet = parseInt(parts[0]);
+            const inches = parseInt(parts[1] || 0);
+            const totalInches = feet * 12 + inches;
+
+            // 5'11" - 6'3" = Guard
+            if (totalInches <= 75) return 'Guard';
+            // 6'4" - 6'7" = Wing
+            if (totalInches <= 79) return 'Wing';
+            // 6'8"+ = Forward/Center
+            return 'Forward/Center';
+        }
+
+        function normalizeValue(value, min, max, ideal) {
+            if (value === null || value === undefined || isNaN(value)) return 0;
+
+            const range = max - min;
+            if (range === 0) return 0;
+
+            if (ideal === 'lower') {
+                // For stats where lower is better (TOPG, DRtg)
+                if (value <= min) {
+                    // Beyond the best — bonus up to 120
+                    const excess = min - value;
+                    return Math.min(120, 100 + (excess / range) * 100);
+                }
+                if (value >= max) return 0;
+                return 100 - ((value - min) / range) * 100;
+            } else {
+                // For stats where higher is better
+                if (value >= max) {
+                    // Beyond the max — bonus up to 120
+                    const excess = value - max;
+                    return Math.min(120, 100 + (excess / range) * 100);
+                }
+                if (value <= min) return 0;
+                return ((value - min) / range) * 100;
+            }
+        }
+
+        function renderConferenceMultipliers() {
+            const container = document.getElementById('conferenceMultiplierControls');
+            container.innerHTML = '';
+            const sorted = Object.entries(conferenceMultipliers).sort((a, b) => a[0].localeCompare(b[0]));
+            sorted.forEach(([conf, mult]) => {
+                const div = document.createElement('div');
+                div.style.cssText = 'display: flex; align-items: center; gap: 8px; margin-bottom: 6px;';
+                div.innerHTML = `
+                    <span style="flex: 1; font-size: 0.75rem; font-family: 'IBM Plex Mono', monospace; color: var(--text-primary);">${conf}</span>
+                    <input type="number" value="${mult}" step="0.05" min="0" max="3"
+                           style="width: 65px; padding: 5px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 4px; color: var(--text-primary); font-family: 'IBM Plex Mono', monospace; font-size: 0.75rem; text-align: center;"
+                           onchange="updateConferenceMultiplier('${conf.replace(/'/g, "\\'")}', this.value)">
+                    <span style="font-size: 0.65rem; color: var(--text-secondary);">x</span>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function updateConferenceMultiplier(conf, value) {
+            conferenceMultipliers[conf] = parseFloat(value) || 1.0;
+            saveToLocalStorage();
+            if (!isCalculating && playerData && playerData.length > 0) {
+                calculateScores();
+            }
+        }
+
+        function addConferenceMultiplier() {
+            const name = prompt('Enter conference name:');
+            if (name && name.trim()) {
+                const trimmed = name.trim();
+                if (!conferenceMultipliers[trimmed]) {
+                    conferenceMultipliers[trimmed] = 1.0;
+                    renderConferenceMultipliers();
+                    saveToLocalStorage();
+                } else {
+                    alert('Conference already exists.');
+                }
+            }
+        }
+
+        function getConferenceMultiplier(conference) {
+            if (!conference || conference === 'N/A') return 1.0;
+            // Direct match
+            if (conferenceMultipliers[conference] !== undefined) return conferenceMultipliers[conference];
+            // Case-insensitive match
+            const lower = conference.toLowerCase();
+            for (const [key, val] of Object.entries(conferenceMultipliers)) {
+                if (key.toLowerCase() === lower) return val;
+            }
+            // No match found, default to 1.0
+            return 1.0;
+        }
+
+        function calculateScores() {
+            if (playerData.length === 0) {
+                alert('Please upload player data first');
+                return;
+            }
+            
+            try {
+                // Set flag to prevent recursive calls
+                isCalculating = true;
+                
+                // Save current config before calculating
+                saveCurrentConfig();
+                
+                console.log('=== CALCULATION DEBUG ===');
+                console.log('Current position selected:', currentPosition);
+                console.log('Position configs:');
+                console.log('  Guard.ppg:', positionConfigs.Guard.ppg);
+                console.log('  Wing.ppg:', positionConfigs.Wing.ppg);
+                console.log('  Forward/Center.ppg:', positionConfigs['Forward/Center'].ppg);
+
+                // Get target valuations
+                const targetValuations = {
+                    'Guard': parseFloat(document.getElementById('valuation_guard').value) || 100000,
+                    'Wing': parseFloat(document.getElementById('valuation_wing').value) || 120000,
+                    'Forward/Center': parseFloat(document.getElementById('valuation_forward').value) || 140000
+                };
+
+                // Score each player using position-specific configs
+                scoredData = playerData.map((player, index) => {
+                    const positionCategory = getPositionCategory(player.Height, player.Pos, player.Player);
+
+                    // Use each player's own position config so they are scored
+                    // against the correct ranges and weights for their position
+                    let configToUse;
+                    let configSource;
+
+                    configToUse = positionConfigs[positionCategory];
+                    configSource = positionCategory;
+
+                    // Defensive check: ensure configToUse exists
+                    if (!configToUse || typeof configToUse !== 'object') {
+                        console.error('Config is undefined or invalid, reinitializing Guard config...');
+                        positionConfigs['Guard'] = {};
+                        Object.entries(statsConfig).forEach(([k, stat]) => {
+                            positionConfigs['Guard'][k] = { weight: stat.weight, min: stat.min, max: stat.max };
+                        });
+                        configToUse = positionConfigs['Guard'];
+                        configSource = 'Guard (reinitialized)';
+                    }
+
+                    // Log first player's config for debugging
+                    if (index === 0) {
+                        console.log('First player:', player.Player, 'Position:', positionCategory);
+                        console.log('UI Position Selection:', currentPosition);
+                        console.log('Using config from:', configSource);
+                        console.log('Sample stat - PPG:', configToUse.ppg);
+                        console.log('Sample stat - BPM:', configToUse.bpm);
+                    }
+
+                    const weights = {};
+                    const ranges = {};
+
+                    Object.keys(statsConfig).forEach(key => {
+                        // Defensive check: ensure stat config exists
+                        if (!configToUse[key]) {
+                            configToUse[key] = {
+                                weight: statsConfig[key].weight,
+                                min: statsConfig[key].min,
+                                max: statsConfig[key].max
+                            };
+                        }
+                        weights[key] = configToUse[key].weight;
+                        ranges[key] = {
+                            min: configToUse[key].min,
+                            max: configToUse[key].max,
+                            ideal: statsConfig[key].ideal
+                        };
+                    });
+
+                    // Calculate total weight for normalization
+                    const totalWeight = Object.values(weights).reduce((sum, w) => sum + w, 0);
+
+                    let totalScore = 0;
+                    const scores = {};
+
+                    // Map Excel columns to our config keys
+                    const statMapping = {
+                        ppg: player.PPG,
+                        fg_pct: player['FG%'],
+                        three_pct: player['3P%'],
+                        ft_pct: player['FT%'],
+                        apg: player.APG,
+                        topg: player.TOPG,
+                        ato: player['A/TO'],
+                        orbg: player['ORB/G'],
+                        drbg: player['DRB/G'],
+                        bpg: player.BPG,
+                        spg: player.SPG,
+                        efg: player['eFG%'],
+                        plusminus: player['+/-'],
+                        or_pct: player['OR%'],
+                        dr_pct: player['DR%'],
+                        ws: player.WS,
+                        ortg: player.ORtg,
+                        drtg: player.DRtg,
+                        ows: player.OWS,
+                        dws: player.DWS,
+                        ws_40: player['WS/40'],
+                        obpm: player.OBPM,
+                        dbpm: player.DBPM,
+                        bpm: player.BPM,
+                        per: player.PER
+                    };
+
+                    Object.entries(statMapping).forEach(([key, value]) => {
+                        const normalized = normalizeValue(value, ranges[key].min, ranges[key].max, ranges[key].ideal);
+                        const weighted = (normalized * weights[key]) / totalWeight;
+                        scores[key] = normalized;
+                        totalScore += weighted;
+                    });
+
+                    // Apply penalty for low minutes: players under 10 MPG get score scaled by MPG/10
+                    const mpg = parseFloat(player.MPG) || 0;
+                    if (mpg < 10 && mpg > 0) {
+                        totalScore *= (mpg / 10);
+                    } else if (mpg <= 0) {
+                        totalScore *= 0;
+                    }
+
+                    if (index === 0) {
+                        console.log('First player total score:', totalScore);
+                        console.log('First player PPG raw:', player.PPG, 'normalized:', scores.ppg);
+                        console.log('First player BPM raw:', player.BPM, 'normalized:', scores.bpm);
+                        console.log('First player MPG:', mpg);
+                    }
+
+                    const targetVal = targetValuations[positionCategory] || 100000;
+                    const playerConference = player.Conference || player.conference || player.CONFERENCE || player.Conf || 'N/A';
+                    const confMultiplier = getConferenceMultiplier(playerConference);
+                    const valuation = (totalScore / 100) * targetVal * confMultiplier;
+
+                    return {
+                        ...player,
+                        Conference: playerConference,
+                        position_category: positionCategory,
+                        total_score: totalScore,
+                        valuation: valuation,
+                        conference_multiplier: confMultiplier,
+                        component_scores: scores
+                    };
+                });
+
+                console.log('Calculation complete. Sample scores:', scoredData.slice(0, 3).map(p => ({name: p.Player, score: p.total_score})));
+                console.log('=== END DEBUG ===');
+
+                // Sort by score
+                scoredData.sort((a, b) => b.total_score - a.total_score);
+
+                // Calculate team aggregations
+                calculateTeamData();
+
+                displayResults();
+            } catch (error) {
+                console.error('Error calculating scores:', error);
+                alert('Error calculating scores: ' + error.message);
+            } finally {
+                // Clear flag when calculation is complete
+                isCalculating = false;
+            }
+        }
+
+        function displayResults() {
+            console.log('=== displayResults called ===');
+            document.getElementById('resultsSection').style.display = 'block';
+            
+            // Update summary stats
+            const avgScore = scoredData.reduce((sum, p) => sum + p.total_score, 0) / scoredData.length;
+            const maxScore = Math.max(...scoredData.map(p => p.total_score));
+            const totalValuation = scoredData.reduce((sum, p) => sum + p.valuation, 0);
+            
+            document.getElementById('statsSummary').innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-card-label">Total Players</div>
+                    <div class="stat-card-value">${scoredData.length}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-label">Average Score</div>
+                    <div class="stat-card-value">${avgScore.toFixed(1)}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-label">Highest Score</div>
+                    <div class="stat-card-value">${maxScore.toFixed(1)}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-label">Total Valuation</div>
+                    <div class="stat-card-value" style="font-size: 1.2rem;">$${(totalValuation / 1000000).toFixed(2)}M</div>
+                </div>
+            `;
+
+            // Populate conference filters
+            try {
+                console.log('Starting conference filter population...');
+                const allConferenceValues = scoredData.map(p => {
+                    const conf = p.Conference || p.conference || p.CONFERENCE || p.Conf || '';
+                    return typeof conf === 'string' ? conf.trim() : String(conf).trim();
+                });
+                
+                console.log('All raw conference values (first 10):', allConferenceValues.slice(0, 10));
+                console.log('Unique conferences before filter:', [...new Set(allConferenceValues)]);
+                
+                const conferences = [...new Set(allConferenceValues)]
+                    .filter(c => c && c !== '' && c !== 'N/A')
+                    .sort();
+                
+                console.log('Final conferences list:', conferences);
+                
+                const conferenceFilter = document.getElementById('conferenceFilter');
+                const teamConferenceFilter = document.getElementById('teamConferenceFilter');
+                
+                console.log('Sample player Conference values:', scoredData.slice(0, 5).map(p => p.Conference));
+                
+                conferenceFilter.innerHTML = '<option value="">All Conferences</option>';
+                teamConferenceFilter.innerHTML = '<option value="">All Conferences</option>';
+                
+                if (conferences.length === 0) {
+                    console.warn('No conferences found in data. Check column name in Excel file. Looking for columns: Conference, conference, CONFERENCE, or Conf');
+                }
+                
+                conferences.forEach(conf => {
+                    conferenceFilter.innerHTML += `<option value="${conf}">${conf}</option>`;
+                    teamConferenceFilter.innerHTML += `<option value="${conf}">${conf}</option>`;
+                });
+                
+                console.log('Conference filters populated successfully');
+            } catch(error) {
+                console.error('Error populating conference filters:', error);
+            }
+
+            // Populate team filter
+            try {
+                console.log('Starting team filter population...');
+                const teams = [...new Set(scoredData.map(p => p.Team))]
+                    .filter(t => t && t !== '')
+                    .sort();
+                
+                console.log('Teams found:', teams.length);
+                
+                const teamFilter = document.getElementById('teamFilter');
+                teamFilter.innerHTML = '<option value="">All Teams</option>';
+                
+                teams.forEach(team => {
+                    teamFilter.innerHTML += `<option value="${team}">${team}</option>`;
+                });
+                
+                console.log('Team filter populated successfully');
+            } catch(error) {
+                console.error('Error populating team filter:', error);
+            }
+
+            renderTable(scoredData);
+            
+            // Render teams immediately
+            console.log('Team data:', teamData);
+            renderTeams(teamData);
+            
+            // Add event listeners for filters
+            document.getElementById('searchInput').addEventListener('input', applyFilters);
+            document.getElementById('conferenceFilter').addEventListener('change', applyFilters);
+            document.getElementById('positionFilter').addEventListener('change', applyFilters);
+            document.getElementById('teamFilter').addEventListener('change', applyFilters);
+            document.getElementById('minScore').addEventListener('change', applyFilters);
+            
+            document.getElementById('teamSearchInput').addEventListener('input', applyTeamFilters);
+            document.getElementById('teamConferenceFilter').addEventListener('change', applyTeamFilters);
+            document.getElementById('sortTeamsBy').addEventListener('change', applyTeamFilters);
+        }
+
+        function calculateTeamData() {
+            const teams = {};
+            
+            scoredData.forEach(player => {
+                const teamName = player.Team;
+                if (!teams[teamName]) {
+                    teams[teamName] = {
+                        name: teamName,
+                        conference: player.Conference,
+                        players: [],
+                        totalValuation: 0,
+                        avgScore: 0,
+                        guards: 0,
+                        wings: 0,
+                        forwards: 0
+                    };
+                }
+                
+                teams[teamName].players.push(player);
+                teams[teamName].totalValuation += player.valuation;
+                
+                if (player.position_category === 'Guard') teams[teamName].guards++;
+                else if (player.position_category === 'Wing') teams[teamName].wings++;
+                else if (player.position_category === 'Forward/Center') teams[teamName].forwards++;
+            });
+            
+            teamData = Object.values(teams).map(team => {
+                team.avgScore = team.players.reduce((sum, p) => sum + p.total_score, 0) / team.players.length;
+                return team;
+            });
+            
+            teamData.sort((a, b) => b.totalValuation - a.totalValuation);
+        }
+
+        function switchTab(tab) {
+            currentTab = tab;
+            
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+            
+            if (tab === 'players') {
+                document.querySelector('.tab:nth-child(1)').classList.add('active');
+                document.getElementById('playersTab').classList.add('active');
+            } else {
+                document.querySelector('.tab:nth-child(2)').classList.add('active');
+                document.getElementById('teamsTab').classList.add('active');
+                // Re-render teams when switching to this tab
+                if (teamData && teamData.length > 0) {
+                    console.log('Switching to teams tab, re-rendering');
+                    renderTeams(teamData);
+                }
+            }
+        }
+
+        function renderTeams(teams) {
+            const container = document.getElementById('teamsContainer');
+            console.log('Rendering teams, container:', container);
+            console.log('Teams to render:', teams);
+            
+            if (!container) {
+                console.error('teamsContainer not found!');
+                return;
+            }
+            
+            container.innerHTML = '';
+            
+            if (!teams || teams.length === 0) {
+                container.innerHTML = '<div style="padding: 40px; text-align: center; color: var(--text-secondary);">No team data available. Please calculate scores first.</div>';
+                return;
+            }
+            
+            teams.forEach((team, index) => {
+                const card = document.createElement('div');
+                card.className = 'team-card animated';
+                card.style.animationDelay = `${index * 0.05}s`;
+                
+                card.innerHTML = `
+                    <div class="team-card-header">
+                        <div>
+                            <div class="team-name">${team.name}</div>
+                            <div class="team-conference">${team.conference}</div>
+                        </div>
+                        <div class="team-valuation">$${(team.totalValuation / 1000000).toFixed(2)}M</div>
+                    </div>
+                    <div class="team-stats">
+                        <div class="team-stat">
+                            <div class="team-stat-label">Players</div>
+                            <div class="team-stat-value">${team.players.length}</div>
+                        </div>
+                        <div class="team-stat">
+                            <div class="team-stat-label">Avg Score</div>
+                            <div class="team-stat-value">${team.avgScore.toFixed(1)}</div>
+                        </div>
+                        <div class="team-stat">
+                            <div class="team-stat-label">Guards</div>
+                            <div class="team-stat-value">${team.guards}</div>
+                        </div>
+                        <div class="team-stat">
+                            <div class="team-stat-label">Wings</div>
+                            <div class="team-stat-value">${team.wings}</div>
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(card);
+            });
+            
+            console.log('Teams rendered:', teams.length, 'cards');
+        }
+
+        function applyTeamFilters() {
+            const searchTerm = document.getElementById('teamSearchInput').value.toLowerCase();
+            const conference = document.getElementById('teamConferenceFilter').value;
+            const sortBy = document.getElementById('sortTeamsBy').value;
+            
+            let filtered = teamData.filter(team => {
+                const matchesSearch = team.name.toLowerCase().includes(searchTerm);
+                const matchesConference = !conference || (team.conference && team.conference === conference);
+                return matchesSearch && matchesConference;
+            });
+            
+            // Sort teams
+            filtered.sort((a, b) => {
+                switch(sortBy) {
+                    case 'valuation':
+                        return b.totalValuation - a.totalValuation;
+                    case 'avgScore':
+                        return b.avgScore - a.avgScore;
+                    case 'players':
+                        return b.players.length - a.players.length;
+                    case 'name':
+                        return a.name.localeCompare(b.name);
+                    case 'conference':
+                        const confA = a.conference || 'ZZZ'; // Put empty conferences at end
+                        const confB = b.conference || 'ZZZ';
+                        return confA.localeCompare(confB);
+                    default:
+                        return 0;
+                }
+            });
+            
+            renderTeams(filtered);
+        }
+
+        function renderTable(data) {
+            const tbody = document.getElementById('resultsBody');
+            tbody.innerHTML = '';
+
+            data.forEach((player, index) => {
+                const scoreClass = player.total_score >= 80 ? 'score-high' : 
+                                  player.total_score >= 60 ? 'score-medium' : 'score-low';
+                
+                const posClass = player.position_category === 'Guard' ? 'position-guard' :
+                                player.position_category === 'Wing' ? 'position-wing' : 'position-forward';
+
+                const row = document.createElement('tr');
+                row.className = 'animated clickable';
+                row.onclick = () => showPlayerDetails(player);
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td style="font-weight: 600; color: var(--text-primary);">${player.Player} <span style="font-weight: 400; font-size: 0.7rem; color: var(--text-secondary);">${player.Class || player.Yr || ''}</span></td>
+                    <td>${player.Team}</td>
+                    <td style="font-size: 0.75rem;">${player.Conference || 'N/A'}</td>
+                    <td><span class="position-badge ${posClass}">${player.position_category}</span></td>
+                    <td class="score-cell ${scoreClass}">${player.total_score.toFixed(1)}</td>
+                    <td class="valuation-cell">$${player.valuation >= 1000000 ? (player.valuation / 1000000).toFixed(2) + 'M' : (player.valuation / 1000).toFixed(1) + 'K'}</td>
+                    <td>${(player.PPG || 0).toFixed(1)}</td>
+                    <td>${(player.APG || 0).toFixed(1)}</td>
+                    <td>${(player.RPG || 0).toFixed(1)}</td>
+                    <td>${(player.BPM || 0).toFixed(1)}</td>
+                    <td>${((player['eFG%'] || 0) * 100).toFixed(1)}%</td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            // Add sorting functionality
+            document.querySelectorAll('th.sortable').forEach(th => {
+                th.addEventListener('click', () => sortTable(th.dataset.sort));
+            });
+        }
+
+        let currentSort = { column: null, direction: 'desc' };
+
+        function sortTable(column) {
+            const direction = currentSort.column === column && currentSort.direction === 'asc' ? 'desc' : 'asc';
+            currentSort = { column, direction };
+
+            const sorted = [...scoredData].sort((a, b) => {
+                let aVal, bVal;
+
+                switch(column) {
+                    case 'rank':
+                        return 0; // Don't sort rank
+                    case 'player':
+                        aVal = a.Player; bVal = b.Player;
+                        break;
+                    case 'team':
+                        aVal = a.Team; bVal = b.Team;
+                        break;
+                    case 'conference':
+                        aVal = a.Conference || ''; bVal = b.Conference || '';
+                        break;
+                    case 'position':
+                        aVal = a.position_category; bVal = b.position_category;
+                        break;
+                    case 'score':
+                        aVal = a.total_score; bVal = b.total_score;
+                        break;
+                    case 'valuation':
+                        aVal = a.valuation; bVal = b.valuation;
+                        break;
+                    case 'ppg':
+                        aVal = a.PPG; bVal = b.PPG;
+                        break;
+                    case 'apg':
+                        aVal = a.APG; bVal = b.APG;
+                        break;
+                    case 'rpg':
+                        aVal = a.RPG; bVal = b.RPG;
+                        break;
+                    case 'bpm':
+                        aVal = a.BPM; bVal = b.BPM;
+                        break;
+                    case 'efg':
+                        aVal = a['eFG%']; bVal = b['eFG%'];
+                        break;
+                }
+
+                if (typeof aVal === 'string') {
+                    return direction === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+                } else {
+                    return direction === 'asc' ? aVal - bVal : bVal - aVal;
+                }
+            });
+
+            // Update sort indicators
+            document.querySelectorAll('th.sortable').forEach(th => {
+                th.classList.remove('sorted-asc', 'sorted-desc');
+                if (th.dataset.sort === column) {
+                    th.classList.add(direction === 'asc' ? 'sorted-asc' : 'sorted-desc');
+                }
+            });
+
+            renderTable(sorted);
+        }
+
+        function applyFilters() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const conference = document.getElementById('conferenceFilter').value;
+            const positionFilter = document.getElementById('positionFilter').value;
+            const teamFilter = document.getElementById('teamFilter').value;
+            const minScore = parseFloat(document.getElementById('minScore').value);
+
+            const filtered = scoredData.filter(player => {
+                const matchesSearch = player.Player.toLowerCase().includes(searchTerm) || 
+                                     player.Team.toLowerCase().includes(searchTerm);
+                const matchesConference = !conference || player.Conference === conference;
+                const matchesPosition = !positionFilter || player.position_category === positionFilter;
+                const matchesTeam = !teamFilter || player.Team === teamFilter;
+                const matchesScore = player.total_score >= minScore;
+
+                return matchesSearch && matchesConference && matchesPosition && matchesTeam && matchesScore;
+            });
+
+            renderTable(filtered);
+        }
+
+        function exportResults() {
+            if (scoredData.length === 0) {
+                alert('No results to export');
+                return;
+            }
+
+            const exportData = scoredData.map((player, index) => ({
+                Rank: index + 1,
+                Player: player.Player,
+                Team: player.Team,
+                Conference: player.Conference || 'N/A',
+                Position: player.position_category,
+                Height: player.Height,
+                Score: player.total_score.toFixed(2),
+                Valuation: player.valuation.toFixed(2),
+                'Conf Multiplier': (player.conference_multiplier || 1.0).toFixed(2),
+                PPG: (player.PPG || 0).toFixed(1),
+                'FG%': ((player['FG%'] || 0) * 100).toFixed(1),
+                '3P%': ((player['3P%'] || 0) * 100).toFixed(1),
+                'FT%': ((player['FT%'] || 0) * 100).toFixed(1),
+                APG: (player.APG || 0).toFixed(1),
+                TOPG: (player.TOPG || 0).toFixed(1),
+                'A/TO': (player['A/TO'] || 0).toFixed(2),
+                'ORB/G': (player['ORB/G'] || 0).toFixed(1),
+                'DRB/G': (player['DRB/G'] || 0).toFixed(1),
+                BPG: (player.BPG || 0).toFixed(1),
+                SPG: (player.SPG || 0).toFixed(1),
+                'eFG%': ((player['eFG%'] || 0) * 100).toFixed(1),
+                '+/-': (player['+/-'] || 0).toFixed(1),
+                'OR%': ((player['OR%'] || 0)).toFixed(1),
+                'DR%': ((player['DR%'] || 0)).toFixed(1),
+                WS: (player.WS || 0).toFixed(2),
+                ORtg: (player.ORtg || 0).toFixed(1),
+                DRtg: (player.DRtg || 0).toFixed(1),
+                OWS: (player.OWS || 0).toFixed(2),
+                DWS: (player.DWS || 0).toFixed(2),
+                'WS/40': (player['WS/40'] || 0).toFixed(3),
+                OBPM: (player.OBPM || 0).toFixed(1),
+                DBPM: (player.DBPM || 0).toFixed(1),
+                BPM: (player.BPM || 0).toFixed(1),
+                PER: (player.PER || 0).toFixed(1)
+            }));
+
+            const ws = XLSX.utils.json_to_sheet(exportData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Player Evaluations');
+            
+            // Add team summary sheet
+            const teamExportData = teamData.map(team => ({
+                Team: team.name,
+                Conference: team.conference,
+                'Total Valuation': team.totalValuation.toFixed(2),
+                'Avg Score': team.avgScore.toFixed(2),
+                'Total Players': team.players.length,
+                Guards: team.guards,
+                Wings: team.wings,
+                'Forwards/Centers': team.forwards
+            }));
+            
+            const wsTeams = XLSX.utils.json_to_sheet(teamExportData);
+            XLSX.utils.book_append_sheet(wb, wsTeams, 'Team Valuations');
+            
+            XLSX.writeFile(wb, `player_evaluations_${new Date().toISOString().split('T')[0]}.xlsx`);
+        }
+
+        function showPlayerDetails(player) {
+            // Get the config used for this player's position
+            const configKey = positionConfigs[player.position_category] ? player.position_category : 'Guard';
+            const config = positionConfigs[configKey];
+            
+            // Set modal header info
+            document.getElementById('modalPlayerName').textContent = player.Player;
+            document.getElementById('modalPlayerInfo').innerHTML = `
+                <span>${player.Team} • ${player.Conference || 'N/A'}</span>
+                <span>${player.position_category} • ${player.Height} • ${player.Class || player.Yr || 'N/A'}</span>
+            `;
+            
+            // Set score summary
+            const scoreClass = player.total_score >= 80 ? 'score-high' : 
+                              player.total_score >= 60 ? 'score-medium' : 'score-low';
+            
+            document.getElementById('modalScoreSummary').innerHTML = `
+                <div class="modal-score-card">
+                    <div class="modal-score-label">Overall Score</div>
+                    <div class="modal-score-value ${scoreClass}">${player.total_score.toFixed(1)}</div>
+                </div>
+                <div class="modal-score-card">
+                    <div class="modal-score-label">Valuation</div>
+                    <div class="modal-score-value" style="font-size: 2rem;">$${player.valuation >= 1000000 ? (player.valuation / 1000000).toFixed(2) + 'M' : (player.valuation / 1000).toFixed(1) + 'K'}</div>
+                </div>
+                <div class="modal-score-card">
+                    <div class="modal-score-label">Position Rank</div>
+                    <div class="modal-score-value" style="font-size: 2rem;">${getPositionRank(player)}</div>
+                </div>
+            `;
+            
+            // Build stat breakdown
+            const statMapping = {
+                ppg: { label: 'Points Per Game', value: player.PPG, format: (v) => v.toFixed(1) },
+                fg_pct: { label: 'Field Goal %', value: player['FG%'], format: (v) => (v * 100).toFixed(1) + '%' },
+                three_pct: { label: '3-Point %', value: player['3P%'], format: (v) => (v * 100).toFixed(1) + '%' },
+                ft_pct: { label: 'Free Throw %', value: player['FT%'], format: (v) => (v * 100).toFixed(1) + '%' },
+                apg: { label: 'Assists Per Game', value: player.APG, format: (v) => v.toFixed(1) },
+                topg: { label: 'Turnovers Per Game', value: player.TOPG, format: (v) => v.toFixed(1) },
+                ato: { label: 'Assist/Turnover Ratio', value: player['A/TO'], format: (v) => v.toFixed(2) },
+                orbg: { label: 'Off Rebounds Per Game', value: player['ORB/G'], format: (v) => v.toFixed(1) },
+                drbg: { label: 'Def Rebounds Per Game', value: player['DRB/G'], format: (v) => v.toFixed(1) },
+                bpg: { label: 'Blocks Per Game', value: player.BPG, format: (v) => v.toFixed(1) },
+                spg: { label: 'Steals Per Game', value: player.SPG, format: (v) => v.toFixed(1) },
+                efg: { label: 'Effective FG%', value: player['eFG%'], format: (v) => (v * 100).toFixed(1) + '%' },
+                plusminus: { label: 'Plus/Minus', value: player['+/-'], format: (v) => v.toFixed(1) },
+                or_pct: { label: 'Offensive Rebound %', value: player['OR%'], format: (v) => v.toFixed(1) + '%' },
+                dr_pct: { label: 'Defensive Rebound %', value: player['DR%'], format: (v) => v.toFixed(1) + '%' },
+                ws: { label: 'Win Shares', value: player.WS, format: (v) => v.toFixed(2) },
+                ortg: { label: 'Offensive Rating', value: player.ORtg, format: (v) => v.toFixed(1) },
+                drtg: { label: 'Defensive Rating', value: player.DRtg, format: (v) => v.toFixed(1) },
+                ows: { label: 'Offensive Win Shares', value: player.OWS, format: (v) => v.toFixed(2) },
+                dws: { label: 'Defensive Win Shares', value: player.DWS, format: (v) => v.toFixed(2) },
+                ws_40: { label: 'Win Shares/40', value: player['WS/40'], format: (v) => v.toFixed(3) },
+                obpm: { label: 'Offensive BPM', value: player.OBPM, format: (v) => v.toFixed(1) },
+                dbpm: { label: 'Defensive BPM', value: player.DBPM, format: (v) => v.toFixed(1) },
+                bpm: { label: 'Box Plus/Minus', value: player.BPM, format: (v) => v.toFixed(1) },
+                per: { label: 'Player Efficiency Rating', value: player.PER, format: (v) => v.toFixed(1) }
+            };
+            
+            let breakdownHTML = '';
+            Object.entries(statMapping).forEach(([key, stat]) => {
+                const weight = config[key].weight;
+                const normalizedScore = player.component_scores[key] || 0;
+                const rawValue = stat.value || 0;
+                
+                if (weight > 0) { // Only show stats with weight
+                    breakdownHTML += `
+                        <div class="stat-breakdown-item">
+                            <div class="stat-breakdown-header">
+                                <span class="stat-breakdown-name">${stat.label}</span>
+                                <span class="stat-breakdown-value">${stat.format(rawValue)}</span>
+                            </div>
+                            <div class="stat-breakdown-bar">
+                                <div class="stat-breakdown-fill" style="width: ${normalizedScore}%"></div>
+                            </div>
+                            <div class="stat-breakdown-details">
+                                <span>Weight: ${weight}%</span>
+                                <span>Score: ${normalizedScore.toFixed(1)}/100</span>
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+            
+            document.getElementById('modalStatBreakdown').innerHTML = breakdownHTML;
+            
+            // Show modal
+            document.getElementById('playerModal').classList.add('active');
+        }
+
+        function getPositionRank(player) {
+            const samePosition = scoredData.filter(p => p.position_category === player.position_category);
+            const rank = samePosition.findIndex(p => p.Player === player.Player) + 1;
+            return `#${rank} of ${samePosition.length}`;
+        }
+
+        function closePlayerModal() {
+            document.getElementById('playerModal').classList.remove('active');
+        }
+
+        // Close modal on background click
+        document.addEventListener('click', (e) => {
+            const modal = document.getElementById('playerModal');
+            if (e.target === modal) {
+                closePlayerModal();
+            }
+        });
+
+        // Close modal on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closePlayerModal();
+            }
+        });
+
+        // Initialize on page load
+        initializeControls();
+        renderConferenceMultipliers();
+        
+        // Auto-load saved model if it exists
+        const modelLoaded = loadFromLocalStorage();
+        if (modelLoaded) {
+            console.log('Previous model loaded automatically');
+        } else {
+            console.log('No saved model found, using default configuration');
+        }
+    </script>
+</body>
+</html>
