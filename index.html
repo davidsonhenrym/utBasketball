@@ -1117,11 +1117,96 @@
         let isCalculating = false; // Flag to prevent recursive calculation
         let positionMapping = {}; // Stores actual positions from scraped data
 
-        // Store configurations for each position
+        // Store configurations for each position (mutable, used by UI)
         let positionConfigs = {
             'Guard': {},
             'Wing': {},
             'Forward/Center': {}
+        };
+
+        // Hardcoded position settings — the single source of truth for scoring
+        const POSITION_DEFAULTS = {
+            'Guard': {
+                ppg:       { weight: 11, min: 7,    max: 19 },
+                fg_pct:    { weight: 11, min: 0.25, max: 0.50 },
+                three_pct: { weight: 12, min: 0.20, max: 0.40 },
+                ft_pct:    { weight: 10, min: 0.50, max: 0.90 },
+                apg:       { weight: 10, min: 0,    max: 6 },
+                topg:      { weight: 10, min: 0,    max: 2 },
+                ato:       { weight: 8,  min: 0,    max: 4 },
+                orbg:      { weight: 3,  min: 0,    max: 2 },
+                drbg:      { weight: 7,  min: 1,    max: 4 },
+                bpg:       { weight: 1,  min: 0,    max: 0.5 },
+                spg:       { weight: 5,  min: 0,    max: 2.5 },
+                efg:       { weight: 9,  min: 0.40, max: 0.65 },
+                plusminus: { weight: 0,  min: -50,  max: 150 },
+                or_pct:    { weight: 1,  min: 0,    max: 0.05 },
+                dr_pct:    { weight: 2,  min: 0,    max: 0.05 },
+                ws:        { weight: 0,  min: 0,    max: 8 },
+                ortg:      { weight: 0,  min: 95,   max: 125 },
+                drtg:      { weight: 0,  min: 90,   max: 115 },
+                ows:       { weight: 0,  min: 0,    max: 5 },
+                dws:       { weight: 0,  min: 0,    max: 3 },
+                ws_40:     { weight: 0,  min: 0,    max: 0.25 },
+                obpm:      { weight: 0,  min: -3,   max: 8 },
+                dbpm:      { weight: 0,  min: -3,   max: 6 },
+                bpm:       { weight: 0,  min: -3,   max: 10 },
+                per:       { weight: 0,  min: 8,    max: 30 }
+            },
+            'Wing': {
+                ppg:       { weight: 11, min: 7,    max: 19 },
+                fg_pct:    { weight: 11, min: 0.25, max: 0.50 },
+                three_pct: { weight: 12, min: 0.20, max: 0.40 },
+                ft_pct:    { weight: 10, min: 0.50, max: 0.90 },
+                apg:       { weight: 10, min: 0,    max: 6 },
+                topg:      { weight: 10, min: 0,    max: 2 },
+                ato:       { weight: 7,  min: 0,    max: 4 },
+                orbg:      { weight: 4,  min: 0,    max: 2 },
+                drbg:      { weight: 7,  min: 1,    max: 4 },
+                bpg:       { weight: 1,  min: 0,    max: 0.5 },
+                spg:       { weight: 5,  min: 0,    max: 2.5 },
+                efg:       { weight: 9,  min: 0.40, max: 0.65 },
+                plusminus: { weight: 0,  min: -50,  max: 150 },
+                or_pct:    { weight: 1,  min: 0,    max: 0.05 },
+                dr_pct:    { weight: 2,  min: 0,    max: 0.05 },
+                ws:        { weight: 0,  min: 0,    max: 8 },
+                ortg:      { weight: 0,  min: 95,   max: 125 },
+                drtg:      { weight: 0,  min: 90,   max: 115 },
+                ows:       { weight: 0,  min: 0,    max: 5 },
+                dws:       { weight: 0,  min: 0,    max: 3 },
+                ws_40:     { weight: 0,  min: 0,    max: 0.25 },
+                obpm:      { weight: 0,  min: -3,   max: 8 },
+                dbpm:      { weight: 0,  min: -3,   max: 6 },
+                bpm:       { weight: 0,  min: -3,   max: 10 },
+                per:       { weight: 0,  min: 8,    max: 30 }
+            },
+            'Forward/Center': {
+                ppg:       { weight: 11, min: 7,    max: 19 },
+                fg_pct:    { weight: 11, min: 0.25, max: 0.60 },
+                three_pct: { weight: 12, min: 0.20, max: 0.40 },
+                ft_pct:    { weight: 8,  min: 0.50, max: 0.80 },
+                apg:       { weight: 6,  min: 0,    max: 3 },
+                topg:      { weight: 8,  min: 0,    max: 2 },
+                ato:       { weight: 5,  min: 0,    max: 4 },
+                orbg:      { weight: 5,  min: 0,    max: 4 },
+                drbg:      { weight: 10, min: 1,    max: 5 },
+                bpg:       { weight: 4,  min: 0,    max: 1.5 },
+                spg:       { weight: 4,  min: 0,    max: 1 },
+                efg:       { weight: 8,  min: 0.40, max: 0.7 },
+                plusminus: { weight: 0,  min: -50,  max: 150 },
+                or_pct:    { weight: 4,  min: 0,    max: 0.1 },
+                dr_pct:    { weight: 4,  min: 0,    max: 0.1 },
+                ws:        { weight: 0,  min: 0,    max: 10 },
+                ortg:      { weight: 0,  min: 95,   max: 125 },
+                drtg:      { weight: 0,  min: 90,   max: 110 },
+                ows:       { weight: 0,  min: 0,    max: 6 },
+                dws:       { weight: 0,  min: 0,    max: 4 },
+                ws_40:     { weight: 0,  min: 0,    max: 0.30 },
+                obpm:      { weight: 0,  min: -3,   max: 10 },
+                dbpm:      { weight: 0,  min: -3,   max: 8 },
+                bpm:       { weight: 0,  min: -3,   max: 12 },
+                per:       { weight: 0,  min: 5,    max: 35 }
+            }
         };
 
         // Conference valuation multipliers (MAC ~$950K = 1.0x baseline)
@@ -1766,46 +1851,23 @@
                 scoredData = playerData.map((player, index) => {
                     const positionCategory = getPositionCategory(player.Height, player.Pos, player.Player);
 
-                    // Use each player's own position config so they are scored
-                    // against the correct ranges and weights for their position
-                    let configToUse;
-                    let configSource;
+                    // Always score using the hardcoded POSITION_DEFAULTS
+                    // This guarantees the correct config regardless of UI state
+                    const defaults = POSITION_DEFAULTS[positionCategory] || POSITION_DEFAULTS['Guard'];
 
-                    configToUse = positionConfigs[positionCategory];
-                    configSource = positionCategory;
-
-                    // Defensive check: ensure configToUse exists
-                    if (!configToUse || typeof configToUse !== 'object') {
-                        console.error('Config is undefined or invalid, reinitializing Guard config...');
-                        positionConfigs['Guard'] = {};
-                        Object.entries(statsConfig).forEach(([k, stat]) => {
-                            positionConfigs['Guard'][k] = { weight: stat.weight, min: stat.min, max: stat.max };
-                        });
-                        configToUse = positionConfigs['Guard'];
-                        configSource = 'Guard (reinitialized)';
-                    }
-
-                    // Log first few players' configs for debugging
                     if (index < 3) {
-                        console.log(`Player ${index}: ${player.Player} | Position: ${positionCategory} | Config: ${configSource} | PPG weight: ${configToUse.ppg.weight} | +/- weight: ${configToUse.plusminus.weight}`);
+                        console.log(`Player ${index}: ${player.Player} | Position: ${positionCategory} | PPG weight: ${defaults.ppg.weight} | +/- weight: ${defaults.plusminus.weight}`);
                     }
 
                     const weights = {};
                     const ranges = {};
 
                     Object.keys(statsConfig).forEach(key => {
-                        // Defensive check: ensure stat config exists
-                        if (!configToUse[key]) {
-                            configToUse[key] = {
-                                weight: statsConfig[key].weight,
-                                min: statsConfig[key].min,
-                                max: statsConfig[key].max
-                            };
-                        }
-                        weights[key] = configToUse[key].weight;
+                        const cfg = defaults[key] || { weight: 0, min: statsConfig[key].min, max: statsConfig[key].max };
+                        weights[key] = cfg.weight;
                         ranges[key] = {
-                            min: configToUse[key].min,
-                            max: configToUse[key].max,
+                            min: cfg.min,
+                            max: cfg.max,
                             ideal: statsConfig[key].ideal
                         };
                     });
@@ -2342,8 +2404,7 @@
 
         function showPlayerDetails(player) {
             // Get the config used for this player's position
-            const configKey = positionConfigs[player.position_category] ? player.position_category : 'Guard';
-            const config = positionConfigs[configKey];
+            const config = POSITION_DEFAULTS[player.position_category] || POSITION_DEFAULTS['Guard'];
             
             // Set modal header info
             document.getElementById('modalPlayerName').textContent = player.Player;
