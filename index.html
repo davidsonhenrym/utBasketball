@@ -935,15 +935,15 @@
                     <div class="valuation-inputs">
                         <div class="valuation-input-group">
                             <label>Guard</label>
-                            <input type="number" id="valuation_guard" value="100000" step="1000" onchange="saveToLocalStorage()">
+                            <input type="number" id="valuation_guard" value="100000" step="1000" onchange="calculateScores()">
                         </div>
                         <div class="valuation-input-group">
                             <label>Wing</label>
-                            <input type="number" id="valuation_wing" value="120000" step="1000" onchange="saveToLocalStorage()">
+                            <input type="number" id="valuation_wing" value="120000" step="1000" onchange="calculateScores()">
                         </div>
                         <div class="valuation-input-group">
                             <label>Forward/Center</label>
-                            <input type="number" id="valuation_forward" value="140000" step="1000" onchange="saveToLocalStorage()">
+                            <input type="number" id="valuation_forward" value="140000" step="1000" onchange="calculateScores()">
                         </div>
                     </div>
                 </div>
@@ -963,43 +963,18 @@
                     <button class="secondary" onclick="exportResults()">Export CSV</button>
                 </div>
 
-                <div style="margin-top: 25px; padding-top: 25px; border-top: 1px solid var(--border);">
-                    <div class="section-header">Model Storage</div>
-                    <div class="action-buttons" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                        <button onclick="saveToLocalStorage()" style="background: var(--accent-primary); color: var(--bg-primary);">💾 Save Model</button>
-                        <button class="secondary" onclick="loadFromLocalStorage()">📂 Load Model</button>
-                    </div>
-                    <div class="action-buttons" style="margin-top: 10px;">
-                        <button class="secondary" onclick="clearLocalStorage()" style="font-size: 0.8rem;">🗑️ Clear Saved Model</button>
-                    </div>
-                    <div style="font-size: 0.65rem; color: var(--text-secondary); margin-top: 12px; font-family: 'IBM Plex Mono', monospace; line-height: 1.4;">
-                        Your model parameters are automatically saved when you make changes. Use these buttons to manually save/load or clear.
-                    </div>
-                </div>
             </div>
 
             <div class="data-section">
-                <div class="upload-zone" id="uploadZone">
+                <div class="upload-zone" id="sheetStatus" style="cursor: default;">
                     <div class="upload-icon">📊</div>
-                    <h3>Upload Player Data</h3>
+                    <h3>Google Sheets Data</h3>
                     <p style="color: var(--text-secondary); margin-top: 10px;">
-                        Click to browse or drag and drop your Excel file
+                        Connected to live Google Sheet
                     </p>
-                    <input type="file" id="fileInput" accept=".xlsx,.xls">
                     <div class="file-info" id="fileInfo"></div>
-                </div>
-                
-                <div class="upload-zone" id="positionUploadZone" style="margin-top: 20px; padding: 20px;">
-                    <div style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent-primary); margin-bottom: 12px;">
-                        📍 Optional: Position Data Override
-                    </div>
-                    <p style="color: var(--text-secondary); margin-bottom: 12px; font-size: 0.85rem;">
-                        Upload JSON to override positions (optional - "Pos" column in Excel is used automatically)
-                    </p>
-                    <input type="file" id="positionFileInput" accept=".json" style="display: none;">
-                    <div class="file-info" id="positionFileInfo" style="font-size: 0.75rem;"></div>
-                    <div style="margin-top: 10px; font-size: 0.7rem; color: var(--text-secondary); font-family: 'IBM Plex Mono', monospace;">
-                        <span id="positionStatsInfo">Using "Pos" column from Excel. Falls back to height-based if missing.</span>
+                    <div style="margin-top: 15px;">
+                        <button onclick="loadFromGoogleSheet()" style="padding: 10px 20px;">Reload Data</button>
                     </div>
                 </div>
 
@@ -1392,10 +1367,7 @@
                 };
             });
             console.log('Saved! Sample FG% config:', positionConfigs[currentPosition].fg_pct);
-            
-            // Save to localStorage
-            saveToLocalStorage();
-            
+
             // Recalculate scores with updated configuration (only if not already calculating)
             if (!isCalculating && playerData && playerData.length > 0) {
                 calculateScores();
@@ -1573,138 +1545,63 @@
             }, 3000);
         }
 
-        // File upload handling
-        const uploadZone = document.getElementById('uploadZone');
-        const fileInput = document.getElementById('fileInput');
+        // Google Sheets integration
+        const GOOGLE_SHEET_ID = '1K0FTgRTvBcFcRK0Hu88ddXiwa5aJdbbwo8lS4nPT1HY';
+        const GOOGLE_API_KEY = 'AIzaSyAdgZ2zOqYxHs6aloFj0LnrRvZnKVR4Mzg';
 
-        uploadZone.addEventListener('click', () => fileInput.click());
+        async function loadFromGoogleSheet() {
+            const fileInfo = document.getElementById('fileInfo');
+            fileInfo.textContent = 'Loading data from Google Sheets...';
 
-        uploadZone.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadZone.classList.add('dragover');
-        });
+            try {
+                const url = `https://sheets.googleapis.com/v4/spreadsheets/${GOOGLE_SHEET_ID}/values/Data?key=${GOOGLE_API_KEY}`;
+                const response = await fetch(url);
 
-        uploadZone.addEventListener('dragleave', () => {
-            uploadZone.classList.remove('dragover');
-        });
+                if (!response.ok) {
+                    throw new Error(`API error: ${response.status} ${response.statusText}`);
+                }
 
-        uploadZone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadZone.classList.remove('dragover');
-            const file = e.dataTransfer.files[0];
-            if (file) handleFile(file);
-        });
+                const data = await response.json();
+                const rows = data.values;
 
-        fileInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) handleFile(file);
-        });
-        
-        // Position file upload handler
-        const positionUploadZone = document.getElementById('positionUploadZone');
-        const positionFileInput = document.getElementById('positionFileInput');
-        
-        // Click to upload
-        positionUploadZone.addEventListener('click', () => positionFileInput.click());
-        
-        // Drag and drop for position upload
-        positionUploadZone.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            positionUploadZone.classList.add('dragover');
-        });
-        
-        positionUploadZone.addEventListener('dragleave', () => {
-            positionUploadZone.classList.remove('dragover');
-        });
-        
-        positionUploadZone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            positionUploadZone.classList.remove('dragover');
-            const file = e.dataTransfer.files[0];
-            if (file) handlePositionFile(file);
-        });
-        
-        positionFileInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) handlePositionFile(file);
-        });
-        
-        function handlePositionFile(file) {
-            console.log('Loading position file:', file.name);
-            const reader = new FileReader();
-            
-            reader.onload = (e) => {
-                try {
-                    const jsonData = JSON.parse(e.target.result);
-                    positionMapping = jsonData;
-                    
-                    const count = Object.keys(positionMapping).length;
-                    document.getElementById('positionFileInfo').textContent = 
-                        `✓ Loaded ${count} position mappings from ${file.name}`;
-                    document.getElementById('positionStatsInfo').textContent = 
-                        `${count} players with scraped positions. Others use height-based classification.`;
-                    
-                    console.log('Position mapping loaded:', count, 'players');
-                    
-                    // Recalculate if we already have player data
-                    if (playerData && playerData.length > 0) {
-                        console.log('Recalculating with new position data...');
-                        calculateScores();
+                if (!rows || rows.length < 2) {
+                    throw new Error('No data found in sheet');
+                }
+
+                // First row is headers
+                const headers = rows[0];
+                console.log('Google Sheet headers:', headers);
+
+                // Convert rows to objects matching header names
+                const jsonData = [];
+                for (let i = 1; i < rows.length; i++) {
+                    const row = rows[i];
+                    const player = {};
+                    headers.forEach((header, colIndex) => {
+                        let value = row[colIndex] !== undefined ? row[colIndex] : '';
+                        // Try to convert numeric strings to numbers
+                        if (value !== '' && !isNaN(value)) {
+                            value = parseFloat(value);
+                        }
+                        player[header.trim()] = value;
+                    });
+                    // Skip empty rows (no player name)
+                    if (player.Player) {
+                        jsonData.push(player);
                     }
-                } catch (error) {
-                    console.error('Error loading position file:', error);
-                    alert('Error reading position file: ' + error.message + '\nMake sure it\'s a valid JSON file.');
                 }
-            };
-            
-            reader.onerror = (error) => {
-                console.error('FileReader error:', error);
-                alert('Error reading position file');
-            };
-            
-            reader.readAsText(file);
-        }
 
-        function handleFile(file) {
-            console.log('Handling file:', file.name);
-            const reader = new FileReader();
-            
-            reader.onload = (e) => {
-                try {
-                    console.log('File loaded, parsing...');
-                    const data = new Uint8Array(e.target.result);
-                    const workbook = XLSX.read(data, { type: 'array' });
-                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-                    const jsonData = XLSX.utils.sheet_to_json(firstSheet);
-                    
-                    console.log('Parsed data:', jsonData.length, 'players');
-                    console.log('First row column names:', jsonData.length > 0 ? Object.keys(jsonData[0]) : 'No data');
-                    console.log('First 3 players Conference values:', jsonData.slice(0, 3).map(p => ({
-                        Player: p.Player,
-                        Conference: p.Conference,
-                        conference: p.conference,
-                        CONFERENCE: p.CONFERENCE,
-                        Conf: p.Conf
-                    })));
-                    
-                    playerData = jsonData;
-                    document.getElementById('fileInfo').textContent = 
-                        `✓ Loaded ${jsonData.length} players from ${file.name}`;
-                    
-                    console.log('Calling calculateScores...');
-                    calculateScores();
-                } catch (error) {
-                    console.error('Error in handleFile:', error);
-                    alert('Error reading file: ' + error.message);
-                }
-            };
-            
-            reader.onerror = (error) => {
-                console.error('FileReader error:', error);
-                alert('Error reading file');
-            };
-            
-            reader.readAsArrayBuffer(file);
+                console.log('Parsed data:', jsonData.length, 'players');
+                console.log('First row column names:', jsonData.length > 0 ? Object.keys(jsonData[0]) : 'No data');
+
+                playerData = jsonData;
+                fileInfo.textContent = `✓ Loaded ${jsonData.length} players from Google Sheets`;
+
+                calculateScores();
+            } catch (error) {
+                console.error('Error loading Google Sheet:', error);
+                fileInfo.textContent = `✗ Error: ${error.message}`;
+            }
         }
 
         function normalizePlayerName(name) {
@@ -1810,7 +1707,6 @@
 
         function updateConferenceMultiplier(conf, value) {
             conferenceMultipliers[conf] = parseFloat(value) || 1.0;
-            saveToLocalStorage();
             if (!isCalculating && playerData && playerData.length > 0) {
                 calculateScores();
             }
@@ -1823,7 +1719,6 @@
                 if (!conferenceMultipliers[trimmed]) {
                     conferenceMultipliers[trimmed] = 1.0;
                     renderConferenceMultipliers();
-                    saveToLocalStorage();
                 } else {
                     alert('Conference already exists.');
                 }
@@ -2568,12 +2463,17 @@
             }
         });
 
+        // Clear any old localStorage so hardcoded defaults always apply
+        localStorage.removeItem('basketballEvalModel');
+
         // Initialize on page load
         initializeControls();
         renderConferenceMultipliers();
-        
-        // Always use hardcoded defaults on page load
-        console.log('Using default configuration');
+
+        console.log('Using hardcoded default configuration');
+
+        // Auto-load data from Google Sheets
+        loadFromGoogleSheet();
     </script>
 </body>
 </html>
