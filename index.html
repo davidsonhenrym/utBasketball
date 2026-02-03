@@ -1834,9 +1834,9 @@
 
                 // Get target valuations
                 const targetValuations = {
-                    'Guard': parseFloat(document.getElementById('valuation_guard').value) || 100000,
-                    'Wing': parseFloat(document.getElementById('valuation_wing').value) || 120000,
-                    'Forward/Center': parseFloat(document.getElementById('valuation_forward').value) || 140000
+                    'Guard': parseFloat(document.getElementById('valuation_guard').value) || 200000,
+                    'Wing': parseFloat(document.getElementById('valuation_wing').value) || 200000,
+                    'Forward/Center': parseFloat(document.getElementById('valuation_forward').value) || 200000
                 };
 
                 // Score each player using position-specific configs
@@ -1921,7 +1921,7 @@
                         console.log('First player MPG:', mpg);
                     }
 
-                    const targetVal = targetValuations[positionCategory] || 100000;
+                    const targetVal = targetValuations[positionCategory] || 200000;
                     const playerConference = player.Conference || player.conference || player.CONFERENCE || player.Conf || 'N/A';
                     const confMultiplier = getConferenceMultiplier(playerConference);
                     const valuation = (totalScore / 100) * targetVal * confMultiplier;
