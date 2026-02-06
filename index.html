@@ -938,15 +938,15 @@
                     <div class="valuation-inputs">
                         <div class="valuation-input-group">
                             <label>Guard</label>
-                            <input type="number" id="valuation_guard" value="200000" step="1000" onchange="calculateScores()">
+                            <input type="number" id="valuation_guard" value="100000" step="1000" onchange="calculateScores()">
                         </div>
                         <div class="valuation-input-group">
                             <label>Wing</label>
-                            <input type="number" id="valuation_wing" value="200000" step="1000" onchange="calculateScores()">
+                            <input type="number" id="valuation_wing" value="120000" step="1000" onchange="calculateScores()">
                         </div>
                         <div class="valuation-input-group">
                             <label>Forward/Center</label>
-                            <input type="number" id="valuation_forward" value="200000" step="1000" onchange="calculateScores()">
+                            <input type="number" id="valuation_forward" value="140000" step="1000" onchange="calculateScores()">
                         </div>
                     </div>
                 </div>
@@ -1131,21 +1131,21 @@
         const POSITION_DEFAULTS = {
             'Guard': {
                 ppg:       { weight: 10, min: 5,    max: 17 },
-                fg_pct:    { weight: 0, min: 0.25, max: 0.50 },
+                fg_pct:    { weight: 10, min: 0.25, max: 0.50 },
                 three_pct: { weight: 10, min: 0.20, max: 0.40 },
                 ft_pct:    { weight: 10, min: 0.50, max: 0.90 },
-                apg:       { weight: 8,  min: 0,    max: 6 },
-                topg:      { weight: 8,  min: 0,    max: 3 },
-                ato:       { weight: 0,  min: 0,    max: 4 },
-                orbg:      { weight: 4,  min: 0,    max: 2 },
-                drbg:      { weight: 4,  min: 0,    max: 4 },
+                apg:       { weight: 6,  min: 0,    max: 6 },
+                topg:      { weight: 6,  min: 0,    max: 3 },
+                ato:       { weight: 3,  min: 0,    max: 4 },
+                orbg:      { weight: 3,  min: 0,    max: 2 },
+                drbg:      { weight: 3,  min: 0,    max: 4 },
                 bpg:       { weight: 0,  min: 0,    max: 0.5 },
                 spg:       { weight: 2,  min: 0,    max: 2.5 },
-                efg:       { weight: 12,  min: 0.40, max: 0.65 },
+                efg:       { weight: 8,  min: 0.40, max: 0.65 },
                 plusminus: { weight: 0,  min: -50,  max: 150 },
                 or_pct:    { weight: 2,  min: 0,    max: 0.05 },
                 dr_pct:    { weight: 2,  min: 0,    max: 0.05 },
-                ws:        { weight: 8,  min: 0,    max: 4 },
+                ws:        { weight: 5,  min: 0,    max: 4 },
                 ortg:      { weight: 5,  min: 95,   max: 125 },
                 drtg:      { weight: 5,  min: 95,   max: 125 },
                 ows:       { weight: 0,  min: 0,    max: 5 },
@@ -1184,22 +1184,22 @@
                 per:       { weight: 0,  min: 8,    max: 30 }
             },
             'Forward/Center': {
-                ppg:       { weight: 10,  min: 5,    max: 17 },
-                fg_pct:    { weight: 0,  min: 0.25, max: 0.60 },
+                ppg:       { weight: 7,  min: 5,    max: 17 },
+                fg_pct:    { weight: 7,  min: 0.25, max: 0.60 },
                 three_pct: { weight: 10, min: 0.20, max: 0.40 },
-                ft_pct:    { weight: 10,  min: 0.50, max: 0.80 },
-                apg:       { weight: 4,  min: 0,    max: 3 },
-                topg:      { weight: 4,  min: 0,    max: 3 },
-                ato:       { weight: 0,  min: 0,    max: 4 },
+                ft_pct:    { weight: 8,  min: 0.50, max: 0.80 },
+                apg:       { weight: 3,  min: 0,    max: 3 },
+                topg:      { weight: 5,  min: 0,    max: 3 },
+                ato:       { weight: 3,  min: 0,    max: 4 },
                 orbg:      { weight: 6,  min: 0,    max: 4 },
                 drbg:      { weight: 6,  min: 1,    max: 5 },
                 bpg:       { weight: 2,  min: 0,    max: 1.5 },
-                spg:       { weight: 0,  min: 0,    max: 1 },
-                efg:       { weight: 12,  min: 0.40, max: 0.7 },
+                spg:       { weight: 1,  min: 0,    max: 1 },
+                efg:       { weight: 5,  min: 0.40, max: 0.7 },
                 plusminus: { weight: 0,  min: -50,  max: 150 },
                 or_pct:    { weight: 5,  min: 0,    max: 0.1 },
                 dr_pct:    { weight: 5,  min: 0,    max: 0.1 },
-                ws:        { weight: 6,  min: 0,    max: 4 },
+                ws:        { weight: 5,  min: 0,    max: 4 },
                 ortg:      { weight: 5,  min: 95,   max: 125 },
                 drtg:      { weight: 5,  min: 95,   max: 125 },
                 ows:       { weight: 0,  min: 0,    max: 6 },
@@ -1222,20 +1222,20 @@
             'ACC': 8.63,
             'Big East': 8.42,
             // Mid to High Majors (~$2.3M avg)
-            'American': 2.42,
-            'Mountain West': 2.42,
+            'AAC': 2.42,
+            'MWC': 2.42,
             'WCC': 2.42,
-            'Atlantic 10': 2.42,
-            'Missouri Valley': 2.42,
+            'A-10': 2.42,
+            'MVC': 2.42,
             'Pac-12': 2.42,
-            'CUSA': 2.42,
-            'Sun Belt': .9,
-            'CAA': 1.1,
-            'Ivy League': 1.2,
-            'Big Sky': 0.9,
-            'Big West': 0.9,
-            'Southern': 0.9,
-            'Horizon League': 0.9,
+            'C-USA': 2.42,
+            'Sun Belt': 2.42,
+            'CAA': 2.42,
+            'Ivy': 2.42,
+            'Big Sky': 2.42,
+            'Big West': 2.42,
+            'SoCon': 2.42,
+            'Horizon': 2.42,
             // MAC (baseline)
             'MAC': 1.0,
             // Low to Mid Majors (~$525K avg)
@@ -1244,20 +1244,20 @@
             'OVC': 0.55,
             'WAC': 0.55,
             'Big South': 0.55,
-            'Summit League': 0.55,
+            'Summit': 0.55,
             'NEC': 0.55,
             'Southland': 0.55,
             'SWAC': 0.55,
             'MEAC': 0.55,
-            'America East': 0.55,
-            'ASun': 0.55
+            'AEC': 0.55,
+            'A-Sun': 0.55
         };
 
         // Initialize controls
         function initializeControls() {
             const container = document.getElementById('weightControls');
             const categories = {};
-            
+
             // Group stats by category
             Object.entries(statsConfig).forEach(([key, stat]) => {
                 if (!categories[stat.category]) {
@@ -1270,7 +1270,7 @@
             Object.entries(categories).forEach(([category, stats]) => {
                 const categoryDiv = document.createElement('div');
                 categoryDiv.style.marginBottom = '30px';
-                
+
                 const categoryHeader = document.createElement('div');
                 categoryHeader.className = 'section-header';
                 categoryHeader.textContent = category;
@@ -1279,26 +1279,26 @@
                 stats.forEach(stat => {
                     const statDiv = document.createElement('div');
                     statDiv.className = 'stat-config';
-                    
+
                     statDiv.innerHTML = `
                         <div class="stat-name">
                             <span>${stat.name}</span>
                             <span class="stat-value" id="${stat.key}_weight_val">${stat.weight}%</span>
                         </div>
-                        
+
                         <div class="slider-group">
                             <div class="slider-label">
                                 <span>Weight</span>
                             </div>
                             <div style="display: flex; gap: 10px; align-items: center;">
-                                <input type="range" id="${stat.key}_weight" min="0" max="30" value="${stat.weight}" 
+                                <input type="range" id="${stat.key}_weight" min="0" max="30" value="${stat.weight}"
                                        oninput="updateWeightDisplay('${stat.key}'); saveCurrentConfig();" style="flex: 1;">
-                                <input type="number" id="${stat.key}_weight_input" min="0" max="30" value="${stat.weight}" 
-                                       oninput="updateWeightFromInput('${stat.key}'); saveCurrentConfig();" 
+                                <input type="number" id="${stat.key}_weight_input" min="0" max="30" value="${stat.weight}"
+                                       oninput="updateWeightFromInput('${stat.key}'); saveCurrentConfig();"
                                        style="width: 60px; padding: 5px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 4px; color: var(--text-primary); font-size: 0.85rem; text-align: center;">
                             </div>
                         </div>
-                        
+
                         <div class="range-inputs">
                             <div class="range-input-group">
                                 <label class="input-label">Min Value</label>
@@ -1310,103 +1310,19 @@
                             </div>
                         </div>
                     `;
-                    
+
                     categoryDiv.appendChild(statDiv);
                 });
 
                 container.appendChild(categoryDiv);
             });
-            
-            // Position-specific settings: weight, min, max for each stat
-            const positionSettings = {
-                'Guard': {
-                    ppg:       { weight: 11, min: 7,    max: 19 },
-                    fg_pct:    { weight: 11, min: 0.25, max: 0.50 },
-                    three_pct: { weight: 12, min: 0.20, max: 0.40 },
-                    ft_pct:    { weight: 10, min: 0.50, max: 0.90 },
-                    apg:       { weight: 10, min: 0,    max: 6 },
-                    topg:      { weight: 10, min: 0,  max: 2 },
-                    ato:       { weight: 8,  min: 0,  max: 4 },
-                    orbg:      { weight: 3,  min: 0,    max: 2 },
-                    drbg:      { weight: 7,  min: 1,    max: 4 },
-                    bpg:       { weight: 1,  min: 0,    max: 0.5 },
-                    spg:       { weight: 5,  min: 0,  max: 2.5 },
-                    efg:       { weight: 9,  min: 0.40, max: 0.65 },
-                    plusminus: { weight: 0,  min: -50,  max: 150 },
-                    or_pct:    { weight: 1,  min: 0,    max: 0.05 },
-                    dr_pct:    { weight: 2,  min: 0, max: 0.05 },
-                    ws:        { weight: 0,  min: 0,    max: 8 },
-                    ortg:      { weight: 0,  min: 95,   max: 125 },
-                    drtg:      { weight: 0,  min: 90,   max: 115 },
-                    ows:       { weight: 0,  min: 0,    max: 5 },
-                    dws:       { weight: 0,  min: 0,    max: 3 },
-                    ws_40:     { weight: 0,  min: 0,    max: 0.25 },
-                    obpm:      { weight: 0,  min: -3,   max: 8 },
-                    dbpm:      { weight: 0,  min: -3,   max: 6 },
-                    bpm:       { weight: 0,  min: -3,   max: 10 },
-                    per:       { weight: 0,  min: 8,    max: 30 }
-                },
-                'Wing': {
-                    ppg:       { weight: 11, min: 7,    max: 19 },
-                    fg_pct:    { weight: 11, min: 0.25, max: 0.50 },
-                    three_pct: { weight: 12, min: 0.20, max: 0.40 },
-                    ft_pct:    { weight: 10, min: 0.50, max: 0.90 },
-                    apg:       { weight: 10, min: 0,    max: 6 },
-                    topg:      { weight: 10, min: 0,  max: 2 },
-                    ato:       { weight: 7,  min: 0,  max: 4 },
-                    orbg:      { weight: 4,  min: 0,    max: 2 },
-                    drbg:      { weight: 7,  min: 1,    max: 4 },
-                    bpg:       { weight: 1,  min: 0,    max: 0.5 },
-                    spg:       { weight: 5,  min: 0,  max: 2.5 },
-                    efg:       { weight: 9,  min: 0.40, max: 0.65 },
-                    plusminus: { weight: 0,  min: -50,  max: 150 },
-                    or_pct:    { weight: 1,  min: 0,    max: 0.05 },
-                    dr_pct:    { weight: 2,  min: 0, max: 0.05 },
-                    ws:        { weight: 0,  min: 0,    max: 8 },
-                    ortg:      { weight: 0,  min: 95,   max: 125 },
-                    drtg:      { weight: 0,  min: 90,   max: 115 },
-                    ows:       { weight: 0,  min: 0,    max: 5 },
-                    dws:       { weight: 0,  min: 0,    max: 3 },
-                    ws_40:     { weight: 0,  min: 0,    max: 0.25 },
-                    obpm:      { weight: 0,  min: -3,   max: 8 },
-                    dbpm:      { weight: 0,  min: -3,   max: 6 },
-                    bpm:       { weight: 0,  min: -3,   max: 10 },
-                    per:       { weight: 0,  min: 8,    max: 30 }
-                },
-                'Forward/Center': {
-                    ppg:       { weight: 11, min: 7,    max: 19 },
-                    fg_pct:    { weight: 11, min: 0.25, max: 0.60 },
-                    three_pct: { weight: 12, min: 0.20, max: 0.40 },
-                    ft_pct:    { weight: 8, min: 0.50, max: 0.80 },
-                    apg:       { weight: 6, min: 0,    max: 3 },
-                    topg:      { weight: 8, min: 0,  max: 2 },
-                    ato:       { weight: 5,  min: 0,  max: 4 },
-                    orbg:      { weight: 5,  min: 0,    max: 4 },
-                    drbg:      { weight: 10,  min: 1,    max: 5 },
-                    bpg:       { weight: 4,  min: 0,    max: 1.5 },
-                    spg:       { weight: 4,  min: 0,  max: 1 },
-                    efg:       { weight: 8,  min: 0.40, max: 0.7 },
-                    plusminus: { weight: 0,  min: -50,  max: 150 },
-                    or_pct:    { weight: 4,  min: 0,    max: 0.1 },
-                    dr_pct:    { weight: 4,  min: 0, max: 0.1 },
-                    ws:        { weight: 0,  min: 0,    max: 10 },
-                    ortg:      { weight: 0,  min: 95,   max: 125 },
-                    drtg:      { weight: 0,  min: 90,   max: 110 },
-                    ows:       { weight: 0,  min: 0,    max: 6 },
-                    dws:       { weight: 0,  min: 0,    max: 4 },
-                    ws_40:     { weight: 0,  min: 0,    max: 0.30 },
-                    obpm:      { weight: 0,  min: -3,   max: 10 },
-                    dbpm:      { weight: 0,  min: -3,   max: 8 },
-                    bpm:       { weight: 0,  min: -3,   max: 12 },
-                    per:       { weight: 0,  min: 5,    max: 35 }
-                }
-            };
 
-            // Initialize position configs from positionSettings
+            // Initialize position configs from POSITION_DEFAULTS (the single source of truth)
             Object.keys(positionConfigs).forEach(pos => {
                 positionConfigs[pos] = {};
+                const defaults = POSITION_DEFAULTS[pos] || POSITION_DEFAULTS['Guard'];
                 Object.entries(statsConfig).forEach(([key, stat]) => {
-                    const settings = positionSettings[pos] && positionSettings[pos][key];
+                    const settings = defaults[key];
                     positionConfigs[pos][key] = {
                         weight: settings ? settings.weight : stat.weight,
                         min: settings ? settings.min : stat.min,
@@ -1463,27 +1379,32 @@
         }
 
         function loadPositionConfig(position) {
-            const defaults = POSITION_DEFAULTS[position] || POSITION_DEFAULTS['Guard'];
+            // Load from positionConfigs (which stores user customizations during session)
+            // Falls back to POSITION_DEFAULTS if not yet initialized
+            const config = positionConfigs[position] || POSITION_DEFAULTS[position] || POSITION_DEFAULTS['Guard'];
             Object.keys(statsConfig).forEach(key => {
-                const config = defaults[key] || { weight: 0, min: statsConfig[key].min, max: statsConfig[key].max };
-                document.getElementById(`${key}_weight`).value = config.weight;
-                document.getElementById(`${key}_weight_input`).value = config.weight;
-                document.getElementById(`${key}_weight_val`).textContent = `${config.weight}%`;
-                document.getElementById(`${key}_min`).value = config.min;
-                document.getElementById(`${key}_max`).value = config.max;
+                const cfg = config[key] || { weight: 0, min: statsConfig[key].min, max: statsConfig[key].max };
+                document.getElementById(`${key}_weight`).value = cfg.weight;
+                document.getElementById(`${key}_weight_input`).value = cfg.weight;
+                document.getElementById(`${key}_weight_val`).textContent = `${cfg.weight}%`;
+                document.getElementById(`${key}_min`).value = cfg.min;
+                document.getElementById(`${key}_max`).value = cfg.max;
                 updateWeightDisplay(key);
             });
         }
 
         function resetWeights() {
+            // Reset to POSITION_DEFAULTS for the current position
+            const defaults = POSITION_DEFAULTS[currentPosition] || POSITION_DEFAULTS['Guard'];
             Object.entries(statsConfig).forEach(([key, stat]) => {
-                document.getElementById(`${key}_weight`).value = stat.weight;
-                document.getElementById(`${key}_weight_input`).value = stat.weight;
-                document.getElementById(`${key}_min`).value = stat.min;
-                document.getElementById(`${key}_max`).value = stat.max;
+                const cfg = defaults[key] || { weight: stat.weight, min: stat.min, max: stat.max };
+                document.getElementById(`${key}_weight`).value = cfg.weight;
+                document.getElementById(`${key}_weight_input`).value = cfg.weight;
+                document.getElementById(`${key}_min`).value = cfg.min;
+                document.getElementById(`${key}_max`).value = cfg.max;
                 updateWeightDisplay(key);
             });
-            
+
             // Save reset values to current position config
             saveCurrentConfig();
         }
@@ -1827,35 +1748,35 @@
                 
                 console.log('=== CALCULATION DEBUG ===');
                 console.log('Current position selected:', currentPosition);
-                console.log('Position configs:');
-                console.log('  Guard.ppg:', positionConfigs.Guard.ppg);
-                console.log('  Wing.ppg:', positionConfigs.Wing.ppg);
-                console.log('  Forward/Center.ppg:', positionConfigs['Forward/Center'].ppg);
+                console.log('Using positionConfigs (user-customizable weights):');
+                console.log('  Guard.ppg:', positionConfigs.Guard?.ppg);
+                console.log('  Wing.ppg:', positionConfigs.Wing?.ppg);
+                console.log('  Forward/Center.ppg:', positionConfigs['Forward/Center']?.ppg);
 
                 // Get target valuations
                 const targetValuations = {
-                    'Guard': parseFloat(document.getElementById('valuation_guard').value) || 200000,
-                    'Wing': parseFloat(document.getElementById('valuation_wing').value) || 200000,
-                    'Forward/Center': parseFloat(document.getElementById('valuation_forward').value) || 200000
+                    'Guard': parseFloat(document.getElementById('valuation_guard').value) || 100000,
+                    'Wing': parseFloat(document.getElementById('valuation_wing').value) || 120000,
+                    'Forward/Center': parseFloat(document.getElementById('valuation_forward').value) || 140000
                 };
 
                 // Score each player using position-specific configs
                 scoredData = playerData.map((player, index) => {
                     const positionCategory = getPositionCategory(player.Height, player.Pos, player.Player);
 
-                    // Always score using the hardcoded POSITION_DEFAULTS
-                    // This guarantees the correct config regardless of UI state
-                    const defaults = POSITION_DEFAULTS[positionCategory] || POSITION_DEFAULTS['Guard'];
+                    // Use positionConfigs which contains user-customized weights
+                    // Falls back to POSITION_DEFAULTS if positionConfigs is not properly initialized
+                    const config = positionConfigs[positionCategory] || positionConfigs['Guard'] || POSITION_DEFAULTS[positionCategory];
 
                     if (index < 3) {
-                        console.log(`Player ${index}: ${player.Player} | Position: ${positionCategory} | PPG weight: ${defaults.ppg.weight} | +/- weight: ${defaults.plusminus.weight}`);
+                        console.log(`Player ${index}: ${player.Player} | Position: ${positionCategory} | PPG weight: ${config.ppg?.weight} | +/- weight: ${config.plusminus?.weight}`);
                     }
 
                     const weights = {};
                     const ranges = {};
 
                     Object.keys(statsConfig).forEach(key => {
-                        const cfg = defaults[key] || { weight: 0, min: statsConfig[key].min, max: statsConfig[key].max };
+                        const cfg = config[key] || { weight: 0, min: statsConfig[key].min, max: statsConfig[key].max };
                         weights[key] = cfg.weight;
                         ranges[key] = {
                             min: cfg.min,
@@ -1921,7 +1842,7 @@
                         console.log('First player MPG:', mpg);
                     }
 
-                    const targetVal = targetValuations[positionCategory] || 200000;
+                    const targetVal = targetValuations[positionCategory] || 100000;
                     const playerConference = player.Conference || player.conference || player.CONFERENCE || player.Conf || 'N/A';
                     const confMultiplier = getConferenceMultiplier(playerConference);
                     const valuation = (totalScore / 100) * targetVal * confMultiplier;
