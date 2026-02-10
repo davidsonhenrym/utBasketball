@@ -1409,140 +1409,6 @@
             saveCurrentConfig();
         }
 
-        // LocalStorage persistence functions
-        function saveToLocalStorage() {
-            try {
-                const modelState = {
-                    positionConfigs: positionConfigs,
-                    valuations: {
-                        guard: document.getElementById('valuation_guard').value,
-                        wing: document.getElementById('valuation_wing').value,
-                        forward: document.getElementById('valuation_forward').value
-                    },
-                    conferenceMultipliers: conferenceMultipliers,
-                    currentPosition: currentPosition,
-                    timestamp: new Date().toISOString()
-                };
-                localStorage.setItem('basketballEvalModel', JSON.stringify(modelState));
-                console.log('Model saved to localStorage');
-                
-                // Show save confirmation
-                showSaveNotification('Model saved successfully!');
-            } catch (error) {
-                console.error('Error saving to localStorage:', error);
-                showSaveNotification('Error saving model', true);
-            }
-        }
-
-        function loadFromLocalStorage() {
-            try {
-                const saved = localStorage.getItem('basketballEvalModel');
-                if (saved) {
-                    const modelState = JSON.parse(saved);
-
-                    // Restore position configs - min is global, max and weight are position-specific
-                    if (modelState.positionConfigs && typeof modelState.positionConfigs === 'object') {
-                        Object.keys(positionConfigs).forEach(pos => {
-                            // Ensure the position object exists
-                            if (!positionConfigs[pos]) {
-                                positionConfigs[pos] = {};
-                            }
-                            if (modelState.positionConfigs[pos] && typeof modelState.positionConfigs[pos] === 'object') {
-                                Object.keys(statsConfig).forEach(key => {
-                                    // Ensure each stat config exists before updating
-                                    if (!positionConfigs[pos][key]) {
-                                        positionConfigs[pos][key] = {
-                                            weight: statsConfig[key].weight,
-                                            min: statsConfig[key].min,
-                                            max: statsConfig[key].max
-                                        };
-                                    }
-                                    if (modelState.positionConfigs[pos][key] && typeof modelState.positionConfigs[pos][key] === 'object') {
-                                        // Restore weight, min, and max per position
-                                        positionConfigs[pos][key] = {
-                                            weight: modelState.positionConfigs[pos][key].weight ?? statsConfig[key].weight,
-                                            min: modelState.positionConfigs[pos][key].min ?? statsConfig[key].min,
-                                            max: modelState.positionConfigs[pos][key].max ?? statsConfig[key].max
-                                        };
-                                    }
-                                });
-                            }
-                        });
-                    }
-                    
-                    // Restore valuations
-                    if (modelState.valuations) {
-                        document.getElementById('valuation_guard').value = modelState.valuations.guard;
-                        document.getElementById('valuation_wing').value = modelState.valuations.wing;
-                        document.getElementById('valuation_forward').value = modelState.valuations.forward;
-                    }
-                    
-                    // Restore conference multipliers
-                    if (modelState.conferenceMultipliers && typeof modelState.conferenceMultipliers === 'object') {
-                        conferenceMultipliers = { ...conferenceMultipliers, ...modelState.conferenceMultipliers };
-                        renderConferenceMultipliers();
-                    }
-
-                    // Restore current position (validate it's a valid position)
-                    if (modelState.currentPosition && positionConfigs[modelState.currentPosition]) {
-                        currentPosition = modelState.currentPosition;
-                        document.getElementById('positionConfig').value = currentPosition;
-                    } else {
-                        // Default to Guard if saved position is invalid (e.g., 'all' from old version)
-                        currentPosition = 'Guard';
-                        document.getElementById('positionConfig').value = 'Guard';
-                    }
-                    
-                    // Load the config into UI
-                    loadPositionConfig(currentPosition);
-                    
-                    console.log('Model loaded from localStorage (saved:', modelState.timestamp, ')');
-                    showSaveNotification('Model loaded successfully!');
-                    return true;
-                }
-            } catch (error) {
-                console.error('Error loading from localStorage:', error);
-            }
-            return false;
-        }
-
-        function clearLocalStorage() {
-            if (confirm('Are you sure you want to clear all saved model parameters? This cannot be undone.')) {
-                localStorage.removeItem('basketballEvalModel');
-                showSaveNotification('Model cleared from storage');
-                console.log('Model cleared from localStorage');
-            }
-        }
-
-        function showSaveNotification(message, isError = false) {
-            // Create notification element
-            const notification = document.createElement('div');
-            notification.textContent = message;
-            notification.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background: ${isError ? 'var(--accent-tertiary)' : 'var(--accent-primary)'};
-                color: var(--bg-primary);
-                padding: 15px 25px;
-                border-radius: 8px;
-                font-family: 'IBM Plex Mono', monospace;
-                font-size: 0.9rem;
-                font-weight: 600;
-                z-index: 10000;
-                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-                animation: slideIn 0.3s ease;
-            `;
-            
-            document.body.appendChild(notification);
-            
-            // Remove after 3 seconds
-            setTimeout(() => {
-                notification.style.animation = 'slideOut 0.3s ease';
-                setTimeout(() => notification.remove(), 300);
-            }, 3000);
-        }
-
         // Google Sheets integration
         const GOOGLE_SHEET_ID = '1K0FTgRTvBcFcRK0Hu88ddXiwa5aJdbbwo8lS4nPT1HY';
         const GOOGLE_API_KEY = 'AIzaSyAdgZ2zOqYxHs6aloFj0LnrRvZnKVR4Mzg';
@@ -2316,8 +2182,8 @@
         }
 
         function showPlayerDetails(player) {
-            // Get the config used for this player's position
-            const config = POSITION_DEFAULTS[player.position_category] || POSITION_DEFAULTS['Guard'];
+            // Get the config used for this player's position (use live positionConfigs so user edits are reflected)
+            const config = positionConfigs[player.position_category] || positionConfigs['Guard'];
             
             // Set modal header info
             document.getElementById('modalPlayerName').textContent = player.Player;
@@ -2430,16 +2296,10 @@
             }
         });
 
-        // Clear any old localStorage so hardcoded defaults always apply
-        localStorage.removeItem('basketballEvalModel');
-
-        // Initialize on page load
+        // Initialize on page load — weights/min/max are editable during the session
+        // but always reset to POSITION_DEFAULTS on refresh/reopen
         initializeControls();
         renderConferenceMultipliers();
-
-        console.log('Using hardcoded default configuration');
-
-        // Apply the default position (Guard) config to the UI sliders
         loadPositionConfig(currentPosition);
 
         // Auto-load data from Google Sheets
