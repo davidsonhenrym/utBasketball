@@ -1035,6 +1035,135 @@
             line-height: 1;
         }
 
+        .sw-conf-select {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.75rem;
+            padding: 5px 8px;
+            width: 100%;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        .sw-section {
+            margin-top: 28px;
+        }
+
+        .sw-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 14px;
+        }
+
+        @media (max-width: 700px) {
+            .sw-grid { grid-template-columns: 1fr; }
+        }
+
+        .sw-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px 18px;
+        }
+
+        .sw-card-title {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 12px;
+        }
+
+        .sw-card-title.strength { color: var(--accent-primary); }
+        .sw-card-title.weakness { color: #ff5050; }
+
+        .sw-stat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 7px 0;
+            border-bottom: 1px solid var(--border);
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-primary);
+        }
+
+        .sw-stat-row:last-child { border-bottom: none; }
+
+        .sw-stat-meta {
+            font-size: 0.65rem;
+            color: var(--text-secondary);
+            text-align: right;
+        }
+
+        .sw-rec-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px 18px;
+            margin-top: 16px;
+        }
+
+        .sw-rec-title {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--accent-secondary);
+            margin-bottom: 12px;
+        }
+
+        .sw-rec-row {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            align-items: center;
+            gap: 12px;
+            padding: 9px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .sw-rec-row:last-child { border-bottom: none; }
+
+        .sw-rec-name {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .sw-rec-meta {
+            font-size: 0.65rem;
+            color: var(--text-secondary);
+            font-family: 'IBM Plex Mono', monospace;
+            margin-top: 2px;
+        }
+
+        .sw-rec-score {
+            font-size: 0.85rem;
+            font-weight: 700;
+            font-family: 'IBM Plex Mono', monospace;
+            color: var(--accent-primary);
+            text-align: right;
+        }
+
+        .sw-rec-val {
+            font-size: 0.65rem;
+            color: var(--text-secondary);
+            font-family: 'IBM Plex Mono', monospace;
+            text-align: right;
+        }
+
+        .sw-empty {
+            color: var(--text-secondary);
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.75rem;
+            padding: 8px 0;
+            text-align: center;
+        }
+
         .dc-tier-section {
             background: var(--bg-secondary);
             border: 1px solid var(--border);
@@ -1374,16 +1503,23 @@
 
                                 <div class="roster-card" style="margin-top:18px;text-align:center;">
                                     <div class="section-header" style="text-align:left;">Win Projection</div>
-                                    <div style="padding:12px 0 8px;">
+                                    <div style="margin-top:12px;">
+                                        <label style="font-size:0.65rem;font-family:'IBM Plex Mono',monospace;color:var(--text-secondary);display:block;margin-bottom:5px;text-align:left;">CONFERENCE</label>
+                                        <select id="rosterConfSelect" class="sw-conf-select" onchange="updateRosterSummary()">
+                                            <option value="MAC" data-mult="1.0">MAC (default)</option>
+                                        </select>
+                                    </div>
+                                    <div style="padding:8px 0 8px;">
                                         <div id="rosterWinsDisplay" class="roster-wins-number">&#8212;</div>
                                         <div style="font-size:0.65rem;font-family:'IBM Plex Mono',monospace;color:var(--text-secondary);margin-top:4px;">PROJECTED RECORD</div>
                                     </div>
                                     <div id="rosterWinPct" style="font-size:0.78rem;font-family:'IBM Plex Mono',monospace;color:var(--text-secondary);margin-bottom:4px;">Add starters to project wins</div>
                                     <div id="rosterTQS" style="font-size:0.72rem;font-family:'IBM Plex Mono',monospace;color:var(--accent-secondary);"></div>
+                                    <div id="rosterConfBaseline" style="font-size:0.68rem;font-family:'IBM Plex Mono',monospace;color:var(--text-secondary);margin-top:4px;"></div>
                                     <div style="font-size:0.62rem;font-family:'IBM Plex Mono',monospace;color:var(--text-secondary);border-top:1px solid var(--border);padding-top:12px;margin-top:12px;line-height:2;text-align:left;">
                                         <div>32-game season model</div>
                                         <div>Starters 65% &middot; Reserves 30% &middot; Depth 5%</div>
-                                        <div>Score 55 &asymp; .500 team baseline</div>
+                                        <div id="rosterBaselineDesc">MAC baseline &asymp; score 55</div>
                                     </div>
                                 </div>
 
@@ -1432,6 +1568,31 @@
 
                             </div>
                         </div>
+
+                        <!-- Strengths & Weaknesses Analysis -->
+                        <div class="sw-section">
+                            <div class="section-header" style="font-size:0.8rem;letter-spacing:0.12em;">Strengths &amp; Weaknesses Analysis</div>
+                            <div id="swEmptyMsg" class="sw-card" style="margin-top:14px;">
+                                <div class="sw-empty">Add players to the depth chart to see roster analysis and transfer portal recommendations.</div>
+                            </div>
+                            <div id="swAnalysisBody" style="display:none;">
+                                <div class="sw-grid">
+                                    <div class="sw-card">
+                                        <div class="sw-card-title strength">&#9650; Strengths</div>
+                                        <div id="swStrengthsList"></div>
+                                    </div>
+                                    <div class="sw-card">
+                                        <div class="sw-card-title weakness">&#9660; Weaknesses</div>
+                                        <div id="swWeaknessesList"></div>
+                                    </div>
+                                </div>
+                                <div class="sw-rec-card">
+                                    <div class="sw-rec-title">&#128203; Recommended Transfer Portal Targets (within budget)</div>
+                                    <div id="swRecommendationsList"></div>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
 
                 </div>
@@ -2789,6 +2950,7 @@
                 buildRosterRows('depth',   'dc-depth');
                 rosterBuilt = true;
             }
+            populateRosterConferences();
             populateRosterDatalist();
             updateRosterSummary();
         }
@@ -2846,6 +3008,16 @@
             updateRosterSummary();
         }
 
+        function populateRosterConferences() {
+            const sel = document.getElementById('rosterConfSelect');
+            if (!sel || sel.dataset.populated === '1') return;
+            const sorted = Object.entries(conferenceMultipliers).sort((a, b) => b[1] - a[1]);
+            sel.innerHTML = sorted.map(([conf, mult]) =>
+                `<option value="${conf}" data-mult="${mult}"${conf === 'MAC' ? ' selected' : ''}>${conf} (${mult.toFixed(2)}x)</option>`
+            ).join('');
+            sel.dataset.populated = '1';
+        }
+
         function computeRosterWins() {
             const tiers = { starter: [], reserve: [], depth: [] };
             rosterSlots.forEach(slot => {
@@ -2858,11 +3030,17 @@
             const tqs = avg(tiers.starter) * 0.65
                       + avg(tiers.reserve) * 0.30
                       + avg(tiers.depth)   * 0.05;
-            // Logistic curve: score 55 ≈ .500 team (16 wins in 32-game season)
-            const winPct = 1 / (1 + Math.exp(-(tqs - 55) / 13));
+            // Conference-relative baseline: MAC(1.0x)->55, SEC(10.21x)->70, low-majors(0.55x)->~51
+            const sel = document.getElementById('rosterConfSelect');
+            const confMult = sel ? (parseFloat(sel.options[sel.selectedIndex]?.dataset?.mult) || 1.0) : 1.0;
+            const confName = sel ? (sel.value || 'MAC') : 'MAC';
+            const baseline = 55 + 15 * Math.log(Math.max(confMult, 0.1)) / Math.log(10.21);
+            const winPct = 1 / (1 + Math.exp(-(tqs - baseline) / 13));
             const wins   = Math.round(32 * winPct);
             return {
                 tqs:            tqs.toFixed(1),
+                baseline:       baseline.toFixed(1),
+                confName,
                 winPctDisplay:  (winPct * 100).toFixed(1),
                 wins,
                 losses: 32 - wins,
@@ -2885,9 +3063,166 @@
             setEl('rosterOverBudget',      el => { el.style.display = over ? 'block' : 'none'; });
 
             const proj = computeRosterWins();
-            setEl('rosterWinsDisplay', el => { el.textContent = proj ? `${proj.wins}-${proj.losses}` : '—'; });
-            setEl('rosterWinPct',      el => { el.textContent = proj ? `Win%: ${proj.winPctDisplay}%` : 'Add starters to project wins'; });
-            setEl('rosterTQS',         el => { el.textContent = proj ? `Team Quality Score: ${proj.tqs}` : ''; });
+            setEl('rosterWinsDisplay',   el => { el.textContent = proj ? `${proj.wins}-${proj.losses}` : '—'; });
+            setEl('rosterWinPct',        el => { el.textContent = proj ? `Win%: ${proj.winPctDisplay}%` : 'Add starters to project wins'; });
+            setEl('rosterTQS',           el => { el.textContent = proj ? `Team Quality Score: ${proj.tqs}` : ''; });
+            setEl('rosterConfBaseline',  el => { el.textContent = proj ? `${proj.confName} baseline: score ${proj.baseline}` : ''; });
+            setEl('rosterBaselineDesc',  el => { el.textContent = proj ? `${proj.confName} baseline \u2248 score ${proj.baseline}` : 'MAC baseline \u2248 score 55'; });
+
+            analyzeRosterStrengths();
+        }
+
+        function analyzeRosterStrengths() {
+            const emptyMsg  = document.getElementById('swEmptyMsg');
+            const bodyEl    = document.getElementById('swAnalysisBody');
+            const strEl     = document.getElementById('swStrengthsList');
+            const weakEl    = document.getElementById('swWeaknessesList');
+            const recEl     = document.getElementById('swRecommendationsList');
+
+            // Gather names currently on the roster
+            const rosterNames = rosterSlots
+                .map(s => getRosterSlotValues(s.id).name)
+                .filter(n => n && n.trim());
+
+            if (rosterNames.length === 0 || scoredData.length === 0) {
+                if (emptyMsg) emptyMsg.style.display = '';
+                if (bodyEl)   bodyEl.style.display   = 'none';
+                return;
+            }
+
+            // Match roster names to scoredData
+            const normalise = s => (s || '').toLowerCase().replace(/[^a-z ]/g, '').trim();
+            const lastName  = s => normalise(s).split(' ').pop();
+
+            const rosterPlayers = rosterNames.reduce((acc, name) => {
+                const norm = normalise(name);
+                const lnm  = lastName(name);
+                const fi   = norm.split(' ')[0]?.[0] || '';
+                const match = scoredData.find(p => {
+                    const pn = normalise(p.Player);
+                    const pln = lastName(p.Player);
+                    const pfi = pn.split(' ')[0]?.[0] || '';
+                    return pn === norm || (pln === lnm && pfi === fi);
+                });
+                if (match && !acc.find(x => x.Player === match.Player)) acc.push(match);
+                return acc;
+            }, []);
+
+            if (rosterPlayers.length === 0) {
+                if (emptyMsg) { emptyMsg.style.display = ''; emptyMsg.querySelector('.sw-empty').textContent = 'No matched players found in dataset. Make sure player names match the loaded data.'; }
+                if (bodyEl)   bodyEl.style.display = 'none';
+                return;
+            }
+
+            if (emptyMsg) emptyMsg.style.display = 'none';
+            if (bodyEl)   bodyEl.style.display   = '';
+
+            // Key stats to track
+            const stats = [
+                { key: 'ppg',       label: 'Scoring (PPG)',     field: 'PPG',     fmt: v => v.toFixed(1),        higher: true  },
+                { key: 'fg_pct',    label: 'FG%',               field: 'FG%',     fmt: v => (v*100).toFixed(1)+'%', higher: true  },
+                { key: 'three_pct', label: '3-Point%',          field: '3P%',     fmt: v => (v*100).toFixed(1)+'%', higher: true  },
+                { key: 'ft_pct',    label: 'FT%',               field: 'FT%',     fmt: v => (v*100).toFixed(1)+'%', higher: true  },
+                { key: 'apg',       label: 'Assists (APG)',     field: 'APG',     fmt: v => v.toFixed(1),        higher: true  },
+                { key: 'topg',      label: 'Turnovers (TOPG)',  field: 'TOPG',    fmt: v => v.toFixed(1),        higher: false },
+                { key: 'orbg',      label: 'Off. Rebounds',     field: 'ORB/G',   fmt: v => v.toFixed(1),        higher: true  },
+                { key: 'drbg',      label: 'Def. Rebounds',     field: 'DRB/G',   fmt: v => v.toFixed(1),        higher: true  },
+                { key: 'bpg',       label: 'Blocks (BPG)',      field: 'BPG',     fmt: v => v.toFixed(1),        higher: true  },
+                { key: 'spg',       label: 'Steals (SPG)',      field: 'SPG',     fmt: v => v.toFixed(1),        higher: true  },
+                { key: 'efg',       label: 'eFG%',              field: 'eFG%',    fmt: v => (v*100).toFixed(1)+'%', higher: true  },
+                { key: 'per',       label: 'PER',               field: 'PER',     fmt: v => v.toFixed(1),        higher: true  },
+            ];
+
+            const meanArr = arr => arr.length ? arr.reduce((s,v)=>s+v,0)/arr.length : null;
+
+            const relative = stats.map(stat => {
+                const rVals = rosterPlayers.map(p => parseFloat(p[stat.field])).filter(v => !isNaN(v));
+                const lVals = scoredData.map(p => parseFloat(p[stat.field])).filter(v => !isNaN(v));
+                const rAvg  = meanArr(rVals);
+                const lAvg  = meanArr(lVals);
+                if (rAvg === null || lAvg === null || lAvg === 0) return { ...stat, score: 0, rAvg, lAvg };
+                const score = stat.higher ? (rAvg - lAvg) / Math.abs(lAvg) : (lAvg - rAvg) / Math.abs(lAvg);
+                return { ...stat, score, rAvg, lAvg };
+            }).sort((a, b) => b.score - a.score);
+
+            const strengths  = relative.filter(s => s.score > 0).slice(0, 4);
+            const weaknesses = relative.filter(s => s.score < 0).slice(-4).reverse();
+
+            const renderStatRows = (list, type) => list.map(stat => {
+                const diff = ((stat.score) * 100).toFixed(0);
+                const sign = stat.score >= 0 ? '+' : '';
+                const color = type === 'strength' ? 'var(--accent-primary)' : '#ff5050';
+                const rVal  = stat.rAvg !== null ? stat.fmt(stat.rAvg) : '—';
+                const lVal  = stat.lAvg !== null ? stat.fmt(stat.lAvg) : '—';
+                return `<div class="sw-stat-row">
+                    <span>${stat.label}</span>
+                    <div class="sw-stat-meta">
+                        <div style="color:${color};font-weight:700;">${rVal} <span style="font-size:0.6rem;">(${sign}${diff}%)</span></div>
+                        <div>avg: ${lVal}</div>
+                    </div>
+                </div>`;
+            }).join('') || '<div class="sw-empty">None identified.</div>';
+
+            if (strEl)  strEl.innerHTML  = renderStatRows(strengths, 'strength');
+            if (weakEl) weakEl.innerHTML = renderStatRows(weaknesses, 'weakness');
+
+            // Recommendations: players in scoredData not on roster, within remaining budget
+            let totalSalary = 0;
+            rosterSlots.forEach(s => { totalSalary += getRosterSlotValues(s.id).salary; });
+            const remaining = rosterBudget - totalSalary;
+
+            const onRoster = new Set(rosterPlayers.map(p => p.Player));
+            const affordable = scoredData.filter(p =>
+                !onRoster.has(p.Player) &&
+                p.valuation > 0 &&
+                p.valuation <= Math.max(remaining, rosterBudget * 0.25)  // allow up to 25% of budget if remaining is tight
+            );
+
+            // Score each affordable player on how much they address weaknesses
+            const recommendations = affordable.map(p => {
+                let impScore = 0;
+                let reasons  = [];
+                weaknesses.forEach(w => {
+                    const pVal = parseFloat(p[w.field]);
+                    if (isNaN(pVal) || w.lAvg === null || w.lAvg === 0) return;
+                    const contrib = w.higher
+                        ? (pVal - (w.rAvg || w.lAvg)) / Math.abs(w.lAvg)
+                        : ((w.rAvg || w.lAvg) - pVal) / Math.abs(w.lAvg);
+                    if (contrib > 0.05) reasons.push(`${w.label}: ${w.fmt(pVal)}`);
+                    impScore += contrib;
+                });
+                // Boost by overall score
+                impScore += (p.total_score || 0) / 200;
+                return { ...p, impScore, reasons };
+            }).sort((a, b) => b.impScore - a.impScore).slice(0, 6);
+
+            if (recEl) {
+                if (recommendations.length === 0) {
+                    recEl.innerHTML = '<div class="sw-empty">No affordable players found. Try increasing the budget or adding more data.</div>';
+                } else {
+                    recEl.innerHTML = recommendations.map(p => {
+                        const conf     = p.Conference || p.conference || '';
+                        const pos      = p.position_category || p.Pos || '';
+                        const valStr   = p.valuation > 0 ? '$' + Math.round(p.valuation).toLocaleString() : '—';
+                        const scoreStr = p.total_score ? p.total_score.toFixed(1) : '—';
+                        const reasonTxt = p.reasons.length > 0 ? p.reasons.slice(0, 2).join(' · ') : 'Overall quality';
+                        return `<div class="sw-rec-row">
+                            <div>
+                                <div class="sw-rec-name">${p.Player}</div>
+                                <div class="sw-rec-meta">${pos}${conf ? ' · ' + conf : ''} · ${reasonTxt}</div>
+                            </div>
+                            <div>
+                                <div class="sw-rec-score">${scoreStr}</div>
+                                <div class="sw-rec-val">score</div>
+                            </div>
+                            <div>
+                                <div class="sw-rec-score" style="color:var(--accent-secondary);">${valStr}</div>
+                                <div class="sw-rec-val">est. value</div>
+                            </div>
+                        </div>`;
+                    }).join('');
+                }
+            }
         }
 
         function exportRosterCSV() {
