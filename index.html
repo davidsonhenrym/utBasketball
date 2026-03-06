@@ -901,6 +901,287 @@
                 opacity: 0;
             }
         }
+
+        /* ── Shot Chart ── */
+        .shot-chart-wrap { margin-top: 10px; }
+
+        .shot-chart-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .shot-view-toggle {
+            display: flex;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .shot-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.75rem;
+            padding: 7px 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .shot-btn.active {
+            background: var(--accent-primary);
+            color: var(--bg-primary);
+            font-weight: 700;
+        }
+
+        .shot-btn:hover:not(.active) {
+            background: var(--border);
+            color: var(--text-primary);
+        }
+
+        .shot-chart-canvas-wrap {
+            position: relative;
+            display: inline-block;
+        }
+
+        #shotChartOverlay {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(10,14,20,0.75);
+            border-radius: 8px;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--accent-secondary);
+            text-align: center;
+            padding: 20px;
+        }
+
+        #shotChartCanvas {
+            display: block;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .shot-stat-row {
+            font-size: 0.75rem;
+            font-family: 'IBM Plex Mono', monospace;
+            color: var(--text-secondary);
+            line-height: 2.2;
+        }
+
+        .shot-stat-row span { color: var(--text-primary); }
+
+        /* ── Roster Builder ── */
+        .roster-layout {
+            display: grid;
+            grid-template-columns: 270px 1fr;
+            gap: 25px;
+            padding-top: 5px;
+        }
+
+        .roster-sidebar-panel {
+            position: sticky;
+            top: 20px;
+            height: fit-content;
+        }
+
+        .roster-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .roster-budget-input-group label {
+            font-size: 0.7rem;
+            font-family: 'IBM Plex Mono', monospace;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .roster-budget-track {
+            height: 6px;
+            background: var(--bg-tertiary);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .roster-budget-fill {
+            height: 100%;
+            background: var(--accent-primary);
+            border-radius: 3px;
+            width: 0%;
+            transition: width 0.3s, background 0.3s;
+        }
+
+        .roster-wins-number {
+            font-size: 3rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+        }
+
+        .dc-tier-section {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .dc-tier-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 18px;
+            background: var(--bg-tertiary);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .dc-tier-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-primary);
+        }
+
+        .dc-tier-badge {
+            font-size: 0.65rem;
+            font-family: 'IBM Plex Mono', monospace;
+            padding: 3px 9px;
+            border-radius: 10px;
+        }
+
+        .starter-badge { background: rgba(0,255,136,0.15); color: var(--accent-primary); }
+        .reserve-badge { background: rgba(0,212,255,0.15); color: var(--accent-secondary); }
+        .depth-badge   { background: rgba(139,146,168,0.15); color: var(--text-secondary); }
+
+        .dc-header-row,
+        .dc-row {
+            display: grid;
+            grid-template-columns: 88px 1fr 80px 130px 34px;
+            gap: 8px;
+            padding: 8px 15px;
+            align-items: center;
+        }
+
+        .dc-header-row {
+            font-size: 0.62rem;
+            font-family: 'IBM Plex Mono', monospace;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            background: rgba(0,0,0,0.15);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .dc-row {
+            border-bottom: 1px solid rgba(45,55,72,0.4);
+            transition: background 0.15s;
+        }
+
+        .dc-row:last-child { border-bottom: none; }
+        .dc-row:hover { background: rgba(0,255,136,0.025); }
+
+        .dc-pos-badge {
+            font-size: 0.7rem;
+            font-family: 'IBM Plex Mono', monospace;
+            font-weight: 700;
+            color: var(--text-primary);
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 5px 6px;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .dc-player-input {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-family: 'Archivo', sans-serif;
+            font-size: 0.85rem;
+            padding: 7px 10px;
+            width: 100%;
+            transition: border-color 0.2s;
+        }
+
+        .dc-player-input:focus { outline: none; border-color: var(--accent-primary); }
+        .dc-player-input.matched { border-color: var(--accent-primary); }
+
+        .dc-score-input {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--accent-secondary);
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.82rem;
+            padding: 7px 8px;
+            width: 100%;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .dc-score-input:focus { outline: none; border-color: var(--accent-secondary); }
+
+        .dc-salary-input {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.8rem;
+            padding: 7px 10px;
+            width: 100%;
+            text-align: right;
+        }
+
+        .dc-salary-input:focus { outline: none; border-color: var(--accent-tertiary); }
+
+        .dc-clear-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            border-radius: 4px;
+            width: 28px;
+            height: 28px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            padding: 0;
+        }
+
+        .dc-clear-btn:hover {
+            background: rgba(255,70,70,0.15);
+            border-color: #ff5050;
+            color: #ff5050;
+        }
+
+        @media (max-width: 960px) {
+            .roster-layout { grid-template-columns: 1fr; }
+            .roster-sidebar-panel { position: static; }
+        }
     </style>
 </head>
 <body>
@@ -987,6 +1268,7 @@
                     <div class="tabs">
                         <button class="tab active" onclick="switchTab('players')">Player Rankings</button>
                         <button class="tab" onclick="switchTab('teams')">Team Valuations</button>
+                        <button class="tab" onclick="switchTab('roster')">Roster Builder</button>
                     </div>
 
                     <div id="playersTab" class="tab-content active">
@@ -1054,6 +1336,104 @@
                         </div>
                         <div id="teamsContainer"></div>
                     </div>
+
+                    <!-- Roster Builder Tab -->
+                    <div id="rosterTab" class="tab-content">
+                        <datalist id="rosterPlayerDatalist"></datalist>
+
+                        <div class="roster-layout">
+
+                            <!-- Sidebar: Budget & Win Projection -->
+                            <div class="roster-sidebar-panel">
+
+                                <div class="roster-card">
+                                    <div class="section-header">Team Budget</div>
+                                    <div class="roster-budget-input-group">
+                                        <label>Total NIL Budget</label>
+                                        <input type="number" id="rosterBudgetInput" value="1500000" step="50000" min="0"
+                                               oninput="updateRosterBudgetInput()"
+                                               style="width:100%;padding:10px;background:var(--bg-tertiary);border:1px solid var(--border);border-radius:6px;color:var(--text-primary);font-family:'IBM Plex Mono',monospace;font-size:0.9rem;">
+                                    </div>
+                                    <div style="margin:18px 0 6px;">
+                                        <div style="display:flex;justify-content:space-between;font-size:0.7rem;font-family:'IBM Plex Mono',monospace;margin-bottom:6px;">
+                                            <span style="color:var(--text-secondary);">Committed</span>
+                                            <span id="rosterBudgetCommitted" style="color:var(--text-primary);">$0</span>
+                                        </div>
+                                        <div class="roster-budget-track">
+                                            <div id="rosterBudgetBar" class="roster-budget-fill"></div>
+                                        </div>
+                                        <div style="display:flex;justify-content:space-between;font-size:0.7rem;font-family:'IBM Plex Mono',monospace;margin-top:6px;">
+                                            <span style="color:var(--text-secondary);">Remaining</span>
+                                            <span id="rosterBudgetRemaining" style="color:var(--accent-primary);">$1,500,000</span>
+                                        </div>
+                                        <div id="rosterOverBudget" style="display:none;background:rgba(255,70,70,0.12);border:1px solid #ff5050;border-radius:4px;padding:7px 10px;font-size:0.7rem;font-family:'IBM Plex Mono',monospace;color:#ff5050;margin-top:10px;">
+                                            &#9888; Over budget
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="roster-card" style="margin-top:18px;text-align:center;">
+                                    <div class="section-header" style="text-align:left;">Win Projection</div>
+                                    <div style="padding:12px 0 8px;">
+                                        <div id="rosterWinsDisplay" class="roster-wins-number">&#8212;</div>
+                                        <div style="font-size:0.65rem;font-family:'IBM Plex Mono',monospace;color:var(--text-secondary);margin-top:4px;">PROJECTED RECORD</div>
+                                    </div>
+                                    <div id="rosterWinPct" style="font-size:0.78rem;font-family:'IBM Plex Mono',monospace;color:var(--text-secondary);margin-bottom:4px;">Add starters to project wins</div>
+                                    <div id="rosterTQS" style="font-size:0.72rem;font-family:'IBM Plex Mono',monospace;color:var(--accent-secondary);"></div>
+                                    <div style="font-size:0.62rem;font-family:'IBM Plex Mono',monospace;color:var(--text-secondary);border-top:1px solid var(--border);padding-top:12px;margin-top:12px;line-height:2;text-align:left;">
+                                        <div>32-game season model</div>
+                                        <div>Starters 65% &middot; Reserves 30% &middot; Depth 5%</div>
+                                        <div>Score 55 &asymp; .500 team baseline</div>
+                                    </div>
+                                </div>
+
+                                <div style="margin-top:18px;display:flex;flex-direction:column;gap:8px;">
+                                    <button onclick="exportRosterCSV()" class="secondary">Export Roster CSV</button>
+                                    <button onclick="clearFullRoster()" class="secondary">Clear All Slots</button>
+                                </div>
+
+                            </div>
+
+                            <!-- Depth Chart -->
+                            <div>
+
+                                <div class="dc-tier-section">
+                                    <div class="dc-tier-header">
+                                        <span class="dc-tier-label">Starting Lineup</span>
+                                        <span class="dc-tier-badge starter-badge">5 slots &middot; 65% weight</span>
+                                    </div>
+                                    <div class="dc-header-row">
+                                        <div>Position</div><div>Player</div><div style="text-align:center;">Score</div><div style="text-align:right;">NIL Salary ($)</div><div></div>
+                                    </div>
+                                    <div id="dc-starters"></div>
+                                </div>
+
+                                <div class="dc-tier-section" style="margin-top:18px;">
+                                    <div class="dc-tier-header">
+                                        <span class="dc-tier-label">Key Reserves</span>
+                                        <span class="dc-tier-badge reserve-badge">5 slots &middot; 30% weight</span>
+                                    </div>
+                                    <div class="dc-header-row">
+                                        <div>Position</div><div>Player</div><div style="text-align:center;">Score</div><div style="text-align:right;">NIL Salary ($)</div><div></div>
+                                    </div>
+                                    <div id="dc-reserves"></div>
+                                </div>
+
+                                <div class="dc-tier-section" style="margin-top:18px;">
+                                    <div class="dc-tier-header">
+                                        <span class="dc-tier-label">Depth</span>
+                                        <span class="dc-tier-badge depth-badge">5 slots &middot; 5% weight</span>
+                                    </div>
+                                    <div class="dc-header-row">
+                                        <div>Position</div><div>Player</div><div style="text-align:center;">Score</div><div style="text-align:right;">NIL Salary ($)</div><div></div>
+                                    </div>
+                                    <div id="dc-depth"></div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -1072,6 +1452,36 @@
                 
                 <div class="modal-section-title">Stat Breakdown</div>
                 <div class="stat-breakdown" id="modalStatBreakdown"></div>
+
+                <div class="modal-section-title" style="margin-top:30px;">Shot Chart</div>
+                <div class="shot-chart-wrap">
+                    <div class="shot-chart-controls">
+                        <div class="shot-view-toggle">
+                            <button id="scatterBtn" class="shot-btn active" onclick="setShotView('scatter')">Scatter</button>
+                            <button id="heatmapBtn" class="shot-btn" onclick="setShotView('heatmap')">Heatmap</button>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <label style="font-size:0.7rem;color:var(--text-secondary);font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:0.05em;">Season</label>
+                            <select id="shotSeasonSelect" onchange="reloadShotChart()" style="padding:5px 8px;background:var(--bg-tertiary);border:1px solid var(--border);border-radius:4px;color:var(--text-primary);font-family:'IBM Plex Mono',monospace;font-size:0.8rem;">
+                                <option value="2026">2025-26</option>
+                                <option value="2025">2024-25</option>
+                                <option value="2024">2023-24</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap;">
+                        <div class="shot-chart-canvas-wrap">
+                            <canvas id="shotChartCanvas" width="450" height="423"></canvas>
+                            <div id="shotChartOverlay">Loading shot data…</div>
+                        </div>
+                        <div style="flex:1;min-width:140px;padding-top:5px;">
+                            <div style="font-size:0.65rem;font-family:'IBM Plex Mono',monospace;color:var(--accent-primary);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;">Shot Stats</div>
+                            <div id="shotChartStats" class="shot-stat-row"></div>
+                            <div style="font-size:0.65rem;font-family:'IBM Plex Mono',monospace;color:var(--accent-primary);text-transform:uppercase;letter-spacing:0.08em;margin:15px 0 8px;">Legend</div>
+                            <div id="shotChartLegend" class="shot-stat-row"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -1885,21 +2295,21 @@
 
         function switchTab(tab) {
             currentTab = tab;
-            
+
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
-            
+
             if (tab === 'players') {
                 document.querySelector('.tab:nth-child(1)').classList.add('active');
                 document.getElementById('playersTab').classList.add('active');
-            } else {
+            } else if (tab === 'teams') {
                 document.querySelector('.tab:nth-child(2)').classList.add('active');
                 document.getElementById('teamsTab').classList.add('active');
-                // Re-render teams when switching to this tab
-                if (teamData && teamData.length > 0) {
-                    console.log('Switching to teams tab, re-rendering');
-                    renderTeams(teamData);
-                }
+                if (teamData && teamData.length > 0) renderTeams(teamData);
+            } else if (tab === 'roster') {
+                document.querySelector('.tab:nth-child(3)').classList.add('active');
+                document.getElementById('rosterTab').classList.add('active');
+                renderRosterBuilder();
             }
         }
 
@@ -2266,9 +2676,23 @@
             });
             
             document.getElementById('modalStatBreakdown').innerHTML = breakdownHTML;
-            
+
+            // Shot chart — track player and trigger load
+            currentShotPlayer = { name: player.Player, team: player.Team };
+            currentShotView   = 'scatter';
+            document.getElementById('scatterBtn').classList.add('active');
+            document.getElementById('heatmapBtn').classList.remove('active');
+            // Reset overlay
+            const scOverlay = document.getElementById('shotChartOverlay');
+            if (scOverlay) { scOverlay.style.display = 'flex'; scOverlay.textContent = 'Loading shot data…'; }
+            document.getElementById('shotChartStats').innerHTML  = '';
+            document.getElementById('shotChartLegend').innerHTML = '';
+
             // Show modal
             document.getElementById('playerModal').classList.add('active');
+
+            // Load shot chart after modal is visible
+            loadShotChart(player.Player, player.Team);
         }
 
         function getPositionRank(player) {
@@ -2295,6 +2719,520 @@
                 closePlayerModal();
             }
         });
+
+        // ═══════════════════════════════════════════════════════
+        // ROSTER BUILDER
+        // ═══════════════════════════════════════════════════════
+
+        const rosterSlots = [
+            { id: 's1', label: 'PG',      tier: 'starter' },
+            { id: 's2', label: 'SG',      tier: 'starter' },
+            { id: 's3', label: 'SF',      tier: 'starter' },
+            { id: 's4', label: 'PF',      tier: 'starter' },
+            { id: 's5', label: 'C',       tier: 'starter' },
+            { id: 'r1', label: '6th Man', tier: 'reserve' },
+            { id: 'r2', label: 'Res. 2',  tier: 'reserve' },
+            { id: 'r3', label: 'Res. 3',  tier: 'reserve' },
+            { id: 'r4', label: 'Res. 4',  tier: 'reserve' },
+            { id: 'r5', label: 'Res. 5',  tier: 'reserve' },
+            { id: 'd1', label: 'Depth 1', tier: 'depth'   },
+            { id: 'd2', label: 'Depth 2', tier: 'depth'   },
+            { id: 'd3', label: 'Depth 3', tier: 'depth'   },
+            { id: 'd4', label: 'Depth 4', tier: 'depth'   },
+            { id: 'd5', label: 'Depth 5', tier: 'depth'   },
+        ];
+
+        let rosterBudget = 1500000;
+        let rosterBuilt  = false;
+
+        function getRosterSlotValues(slotId) {
+            const nameEl   = document.getElementById(`rp_name_${slotId}`);
+            const scoreEl  = document.getElementById(`rp_score_${slotId}`);
+            const salaryEl = document.getElementById(`rp_salary_${slotId}`);
+            if (!nameEl) return { name: '', score: null, salary: 0 };
+            const s = parseFloat(scoreEl?.value);
+            return {
+                name:   nameEl.value.trim(),
+                score:  isNaN(s) ? null : s,
+                salary: parseFloat(salaryEl?.value) || 0,
+            };
+        }
+
+        function buildRosterRows(tier, containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            container.innerHTML = rosterSlots
+                .filter(s => s.tier === tier)
+                .map(slot => `
+                    <div class="dc-row">
+                        <div class="dc-pos-badge">${slot.label}</div>
+                        <input type="text" class="dc-player-input" id="rp_name_${slot.id}"
+                               list="rosterPlayerDatalist" autocomplete="off"
+                               placeholder="Search or enter name…"
+                               oninput="onRosterNameInput('${slot.id}')">
+                        <input type="number" class="dc-score-input" id="rp_score_${slot.id}"
+                               placeholder="Score" min="0" max="130" step="0.1"
+                               title="Model score (auto-filled if player is in dataset)"
+                               oninput="updateRosterSummary()">
+                        <input type="number" class="dc-salary-input" id="rp_salary_${slot.id}"
+                               placeholder="0" min="0" step="1000"
+                               oninput="updateRosterSummary()">
+                        <button class="dc-clear-btn" onclick="clearRosterSlot('${slot.id}')" title="Clear">&#10005;</button>
+                    </div>
+                `).join('');
+        }
+
+        function renderRosterBuilder() {
+            if (!rosterBuilt) {
+                buildRosterRows('starter', 'dc-starters');
+                buildRosterRows('reserve', 'dc-reserves');
+                buildRosterRows('depth',   'dc-depth');
+                rosterBuilt = true;
+            }
+            populateRosterDatalist();
+            updateRosterSummary();
+        }
+
+        function populateRosterDatalist() {
+            const dl = document.getElementById('rosterPlayerDatalist');
+            if (!dl) return;
+            const source = scoredData.length > 0 ? scoredData : playerData;
+            dl.innerHTML = source
+                .map(p => `<option value="${p.Player.replace(/"/g, '&quot;')}">`)
+                .join('');
+        }
+
+        function onRosterNameInput(slotId) {
+            const nameEl  = document.getElementById(`rp_name_${slotId}`);
+            const scoreEl = document.getElementById(`rp_score_${slotId}`);
+            if (!nameEl || !scoreEl) return;
+            const name   = nameEl.value.trim();
+            const source = scoredData.length > 0 ? scoredData : playerData;
+            const match  = source.find(p => p.Player.toLowerCase() === name.toLowerCase());
+            if (match) {
+                nameEl.classList.add('matched');
+                if (!scoreEl.value || scoreEl.dataset.autoFilled === 'true') {
+                    scoreEl.value = (match.total_score || 0).toFixed(1);
+                    scoreEl.dataset.autoFilled = 'true';
+                }
+            } else {
+                nameEl.classList.remove('matched');
+                if (scoreEl.dataset.autoFilled === 'true') {
+                    scoreEl.value = '';
+                    scoreEl.dataset.autoFilled = '';
+                }
+            }
+            updateRosterSummary();
+        }
+
+        function clearRosterSlot(slotId) {
+            const n = document.getElementById(`rp_name_${slotId}`);
+            const s = document.getElementById(`rp_score_${slotId}`);
+            const sal = document.getElementById(`rp_salary_${slotId}`);
+            if (n)   { n.value = ''; n.classList.remove('matched'); }
+            if (s)   { s.value = ''; s.dataset.autoFilled = ''; }
+            if (sal)   sal.value = '';
+            updateRosterSummary();
+        }
+
+        function clearFullRoster() {
+            if (!confirm('Clear all roster slots?')) return;
+            rosterSlots.forEach(s => clearRosterSlot(s.id));
+        }
+
+        function updateRosterBudgetInput() {
+            const val = parseFloat(document.getElementById('rosterBudgetInput').value);
+            if (!isNaN(val) && val >= 0) rosterBudget = val;
+            updateRosterSummary();
+        }
+
+        function computeRosterWins() {
+            const tiers = { starter: [], reserve: [], depth: [] };
+            rosterSlots.forEach(slot => {
+                const { score } = getRosterSlotValues(slot.id);
+                if (score != null && !isNaN(score)) tiers[slot.tier].push(score);
+            });
+            if (tiers.starter.length === 0) return null;
+            const avg = arr => arr.length ? arr.reduce((s, v) => s + v, 0) / arr.length : 0;
+            // Weighted team quality score
+            const tqs = avg(tiers.starter) * 0.65
+                      + avg(tiers.reserve) * 0.30
+                      + avg(tiers.depth)   * 0.05;
+            // Logistic curve: score 55 ≈ .500 team (16 wins in 32-game season)
+            const winPct = 1 / (1 + Math.exp(-(tqs - 55) / 13));
+            const wins   = Math.round(32 * winPct);
+            return {
+                tqs:            tqs.toFixed(1),
+                winPctDisplay:  (winPct * 100).toFixed(1),
+                wins,
+                losses: 32 - wins,
+            };
+        }
+
+        function updateRosterSummary() {
+            let totalSalary = 0;
+            rosterSlots.forEach(s => { totalSalary += getRosterSlotValues(s.id).salary; });
+
+            const remaining = rosterBudget - totalSalary;
+            const barPct    = rosterBudget > 0 ? Math.min((totalSalary / rosterBudget) * 100, 100) : 0;
+            const over      = remaining < 0;
+
+            const setEl = (id, fn) => { const el = document.getElementById(id); if (el) fn(el); };
+
+            setEl('rosterBudgetBar',       el => { el.style.width = barPct.toFixed(1) + '%'; el.style.background = over ? '#ff5050' : 'var(--accent-primary)'; });
+            setEl('rosterBudgetCommitted', el => { el.textContent = '$' + Math.round(totalSalary).toLocaleString(); });
+            setEl('rosterBudgetRemaining', el => { el.textContent = (over ? '-' : '') + '$' + Math.abs(Math.round(remaining)).toLocaleString(); el.style.color = over ? '#ff5050' : 'var(--accent-primary)'; });
+            setEl('rosterOverBudget',      el => { el.style.display = over ? 'block' : 'none'; });
+
+            const proj = computeRosterWins();
+            setEl('rosterWinsDisplay', el => { el.textContent = proj ? `${proj.wins}-${proj.losses}` : '—'; });
+            setEl('rosterWinPct',      el => { el.textContent = proj ? `Win%: ${proj.winPctDisplay}%` : 'Add starters to project wins'; });
+            setEl('rosterTQS',         el => { el.textContent = proj ? `Team Quality Score: ${proj.tqs}` : ''; });
+        }
+
+        function exportRosterCSV() {
+            const rows = [['Tier', 'Position', 'Player', 'Score', 'NIL Salary ($)']];
+            rosterSlots.forEach(slot => {
+                const d = getRosterSlotValues(slot.id);
+                rows.push([
+                    slot.tier.charAt(0).toUpperCase() + slot.tier.slice(1),
+                    slot.label,
+                    d.name  || '',
+                    d.score != null ? d.score : '',
+                    d.salary > 0    ? d.salary : '',
+                ]);
+            });
+            const proj = computeRosterWins();
+            rows.push(['']);
+            rows.push(['Budget ($)', rosterBudget]);
+            if (proj) rows.push(['Projected Record', `${proj.wins}-${proj.losses}`, `Win% ${proj.winPctDisplay}%`, `TQS ${proj.tqs}`]);
+            const csv  = rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url  = URL.createObjectURL(blob);
+            const a    = document.createElement('a');
+            a.href = url;
+            a.download = `roster_builder_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // ═══════════════════════════════════════════════════════
+        // SHOT CHART  —  CollegeBasketballData.com API
+        // ═══════════════════════════════════════════════════════
+
+        const CBBD_API_KEY  = 'pdWLg89xSIv20jI7i5Lp8N6z0cBmyZOQ8L8kgWfg1W5aoed0IaiaG3wrqNkrwELV';
+        const CBBD_BASE     = 'https://api.collegebasketballdata.com';
+
+        // CBBD coordinate system: 10 units = 1 foot
+        // Full court: x 0–940 (length), y 0–500 (width)
+        // Near basket at (50, 250), far basket at (890, 250)
+        const COURT_FULL_X  = 940;
+        const COURT_FULL_Y  = 500;
+        const COURT_HALF_X  = 470;
+
+        const teamShotsCache   = {};   // { "Team_Season": [...plays] }
+        let   currentShotPlayer = null; // { name, team }
+        let   currentShotView   = 'scatter';
+
+        // Convert court coords → canvas pixels
+        // Canvas layout: baseline at BOTTOM, half-court line at TOP
+        function courtPx(cx, cy, W, H) {
+            const scale = W / COURT_FULL_Y;
+            return [ cy * scale, H - cx * scale ];
+        }
+
+        // Mirror far-end shots to near basket
+        function normShot(cx, cy) {
+            if (cx > COURT_HALF_X) { cx = COURT_FULL_X - cx; cy = COURT_FULL_Y - cy; }
+            return [cx, cy];
+        }
+
+        function drawCourt(ctx, W, H) {
+            const scale = W / COURT_FULL_Y;
+            const p = (cx, cy) => courtPx(cx, cy, W, H);
+
+            ctx.clearRect(0, 0, W, H);
+
+            // Court surface
+            ctx.fillStyle = '#1a3a28';
+            ctx.fillRect(0, 0, W, H);
+
+            ctx.save();
+            ctx.strokeStyle = 'rgba(255,255,255,0.65)';
+            ctx.lineWidth = 1.5;
+
+            // Court outline
+            ctx.strokeRect(0.75, 0.75, W - 1.5, H - 1.5);
+
+            // Paint / lane box: cx 0–190, cy 190–310
+            const [lx1, ly1] = p(190, 190);
+            const [lx2, ly2] = p(0,   310);
+            ctx.strokeRect(
+                Math.min(lx1, lx2), Math.min(ly1, ly2),
+                Math.abs(lx2 - lx1), Math.abs(ly2 - ly1)
+            );
+
+            // Free-throw line: cx=150, cy 190–310
+            const ftA = p(150, 190), ftB = p(150, 310);
+            ctx.beginPath(); ctx.moveTo(ftA[0], ftA[1]); ctx.lineTo(ftB[0], ftB[1]); ctx.stroke();
+
+            // Free-throw circle: cx=150, cy=250, r=6ft=60 units
+            const [ftcx, ftcy] = p(150, 250);
+            const ftR = 60 * scale;
+            // Solid half facing half-court
+            ctx.beginPath(); ctx.arc(ftcx, ftcy, ftR, Math.PI, 0, false); ctx.stroke();
+            // Dashed half facing basket
+            ctx.setLineDash([5, 5]);
+            ctx.beginPath(); ctx.arc(ftcx, ftcy, ftR, 0, Math.PI, false); ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Restricted area arc: basket cx=50, cy=250, r=4ft=40 units
+            const [bx, by] = p(50, 250);
+            const raR = 40 * scale;
+            ctx.beginPath(); ctx.arc(bx, by, raR, Math.PI, 0, false); ctx.stroke();
+
+            // Backboard: cx=40, cy=221–279
+            const bb1 = p(40, 221), bb2 = p(40, 279);
+            ctx.lineWidth = 3;
+            ctx.beginPath(); ctx.moveTo(bb1[0], bb1[1]); ctx.lineTo(bb2[0], bb2[1]); ctx.stroke();
+            ctx.lineWidth = 1.5;
+
+            // Basket rim (orange)
+            ctx.strokeStyle = 'rgba(255,140,0,0.95)';
+            ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.arc(bx, by, 9 * scale, 0, Math.PI * 2); ctx.stroke();
+            ctx.strokeStyle = 'rgba(255,255,255,0.65)';
+            ctx.lineWidth = 1.5;
+
+            // 3-pt corner lines: cy=63 and cy=437, from baseline to cx≈140
+            const c3aA = p(0, 63),  c3aB = p(140, 63);
+            const c3bA = p(0, 437), c3bB = p(140, 437);
+            ctx.beginPath(); ctx.moveTo(c3aA[0], c3aA[1]); ctx.lineTo(c3aB[0], c3aB[1]); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(c3bA[0], c3bA[1]); ctx.lineTo(c3bB[0], c3bB[1]); ctx.stroke();
+
+            // 3-pt arc: center=basket, r=207.5 units, from corner (140,63) to corner (140,437)
+            const arcR    = 207.5 * scale;
+            const startAng = Math.atan2(c3aB[1] - by, c3aB[0] - bx);
+            const endAng   = Math.atan2(c3bB[1] - by, c3bB[0] - bx);
+            ctx.beginPath(); ctx.arc(bx, by, arcR, startAng, endAng, false); ctx.stroke();
+
+            // Half-court dashed line at top
+            ctx.setLineDash([4, 7]);
+            ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(W, 0); ctx.stroke();
+            ctx.setLineDash([]);
+
+            ctx.restore();
+        }
+
+        function drawScatter(ctx, shots, W, H) {
+            shots.forEach(s => {
+                const [px, py] = courtPx(s.cx, s.cy, W, H);
+                ctx.beginPath();
+                ctx.arc(px, py, 4.5, 0, Math.PI * 2);
+                ctx.fillStyle   = s.made ? 'rgba(0,255,136,0.72)' : 'rgba(255,70,70,0.62)';
+                ctx.strokeStyle = s.made ? 'rgba(0,180,90,0.9)'   : 'rgba(200,30,30,0.9)';
+                ctx.lineWidth   = 0.8;
+                ctx.fill();
+                ctx.stroke();
+            });
+        }
+
+        function drawHeatmap(ctx, shots, W, H) {
+            const COLS  = 25;
+            const ROWS  = 24;
+            const cellW = COURT_FULL_Y / COLS;   // court units per cell (y-axis direction)
+            const cellH = COURT_HALF_X / ROWS;   // court units per cell (x-axis direction)
+
+            const grid = {};
+            shots.forEach(s => {
+                const col = Math.min(Math.floor(s.cy / cellW), COLS - 1);
+                const row = Math.min(Math.floor(s.cx / cellH), ROWS - 1);
+                const key = `${col}_${row}`;
+                if (!grid[key]) grid[key] = { made: 0, att: 0 };
+                grid[key].att++;
+                if (s.made) grid[key].made++;
+            });
+
+            const maxAtt = Math.max(...Object.values(grid).map(c => c.att), 1);
+
+            Object.entries(grid).forEach(([key, cell]) => {
+                if (cell.att === 0) return;
+                const [col, row] = key.split('_').map(Number);
+                const fgPct  = cell.made / cell.att;
+                const alpha  = 0.2 + 0.7 * (cell.att / maxAtt);
+
+                // Cold (blue) → neutral (white) → hot (red)
+                let r, g, b;
+                if (fgPct < 0.44) {
+                    const t = fgPct / 0.44;
+                    r = Math.round(30  + t * 200);
+                    g = Math.round(100 + t * 130);
+                    b = Math.round(255 - t * 25);
+                } else {
+                    const t = Math.min((fgPct - 0.44) / 0.40, 1);
+                    r = Math.round(230 + t * 25);
+                    g = Math.round(230 - t * 230);
+                    b = Math.round(230 - t * 230);
+                }
+
+                const [x1, y1] = courtPx(row * cellH,           col * cellW,           W, H);
+                const [x2, y2] = courtPx((row + 1) * cellH,     (col + 1) * cellW,     W, H);
+                ctx.fillStyle = `rgba(${r},${g},${b},${alpha.toFixed(2)})`;
+                ctx.fillRect(
+                    Math.min(x1, x2), Math.min(y1, y2),
+                    Math.abs(x2 - x1) + 1, Math.abs(y2 - y1) + 1
+                );
+            });
+        }
+
+        function updateShotChartSidebar(shots) {
+            const statsEl  = document.getElementById('shotChartStats');
+            const legendEl = document.getElementById('shotChartLegend');
+            if (!statsEl) return;
+
+            const total = shots.length;
+            const made  = shots.filter(s => s.made).length;
+            const pct   = total > 0 ? (made / total * 100).toFixed(1) : '—';
+
+            const zones = { rim: {m:0,a:0}, jumper: {m:0,a:0}, three_pointer: {m:0,a:0} };
+            shots.forEach(s => {
+                const z = zones[s.range];
+                if (z) { z.a++; if (s.made) z.m++; }
+            });
+            const fmt = z => z.a > 0 ? `${(z.m / z.a * 100).toFixed(0)}% (${z.a})` : '—';
+
+            statsEl.innerHTML =
+                `<div><span>Total FG:</span> ${made}/${total} (${pct}%)</div>` +
+                `<div><span>Rim:</span> ${fmt(zones.rim)}</div>` +
+                `<div><span>Mid-Range:</span> ${fmt(zones.jumper)}</div>` +
+                `<div><span>3-Pointer:</span> ${fmt(zones.three_pointer)}</div>`;
+
+            if (currentShotView === 'scatter') {
+                legendEl.innerHTML =
+                    `<div><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#00ff88;margin-right:6px;vertical-align:middle;"></span>Made</div>` +
+                    `<div><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#ff4646;margin-right:6px;vertical-align:middle;"></span>Missed</div>`;
+            } else {
+                legendEl.innerHTML =
+                    `<div><span style="display:inline-block;width:12px;height:8px;background:rgb(255,0,0);margin-right:6px;vertical-align:middle;opacity:0.85;"></span>Hot (&gt;56%)</div>` +
+                    `<div><span style="display:inline-block;width:12px;height:8px;background:rgb(230,230,230);margin-right:6px;vertical-align:middle;opacity:0.85;"></span>Avg (~44–56%)</div>` +
+                    `<div><span style="display:inline-block;width:12px;height:8px;background:rgb(30,100,255);margin-right:6px;vertical-align:middle;opacity:0.85;"></span>Cold (&lt;44%)</div>` +
+                    `<div style="margin-top:4px;font-size:0.65rem;color:var(--text-secondary);">Opacity = volume</div>`;
+            }
+        }
+
+        function namesMatch(apiName, sheetName) {
+            if (!apiName || !sheetName) return false;
+            const norm = s => s.toLowerCase().replace(/\s*(jr\.?|sr\.?|iii|iv|ii)\s*$/i, '').trim();
+            const a = norm(apiName), b = norm(sheetName);
+            if (a === b) return true;
+            const ap = a.split(/\s+/), bp = b.split(/\s+/);
+            return ap[ap.length - 1] === bp[bp.length - 1] && ap[0]?.[0] === bp[0]?.[0];
+        }
+
+        function renderShotChart(canvas, shots) {
+            const ctx = canvas.getContext('2d');
+            drawCourt(ctx, canvas.width, canvas.height);
+            if (currentShotView === 'scatter') {
+                drawScatter(ctx, shots, canvas.width, canvas.height);
+            } else {
+                drawHeatmap(ctx, shots, canvas.width, canvas.height);
+            }
+        }
+
+        async function loadShotChart(playerName, teamName) {
+            const canvas  = document.getElementById('shotChartCanvas');
+            const overlay = document.getElementById('shotChartOverlay');
+            const statsEl = document.getElementById('shotChartStats');
+            const legendEl= document.getElementById('shotChartLegend');
+            if (!canvas) return;
+
+            const season = parseInt(document.getElementById('shotSeasonSelect').value) || 2026;
+            overlay.style.display = 'flex';
+            overlay.textContent   = 'Loading shot data…';
+            if (statsEl)  statsEl.innerHTML  = '';
+            if (legendEl) legendEl.innerHTML = '';
+
+            // Draw empty court while loading
+            const ctx = canvas.getContext('2d');
+            drawCourt(ctx, canvas.width, canvas.height);
+
+            try {
+                const cacheKey = `${teamName}_${season}`;
+                let teamPlays;
+
+                if (teamShotsCache[cacheKey]) {
+                    teamPlays = teamShotsCache[cacheKey];
+                } else {
+                    const url = `${CBBD_BASE}/plays/team?season=${season}&team=${encodeURIComponent(teamName)}&shootingPlaysOnly=true`;
+                    const res = await fetch(url, {
+                        headers: { 'Authorization': `Bearer ${CBBD_API_KEY}` }
+                    });
+                    if (!res.ok) throw new Error(`API ${res.status}: ${res.statusText}`);
+                    teamPlays = await res.json();
+                    teamShotsCache[cacheKey] = teamPlays;
+                }
+
+                // Filter to this player and normalize coordinates
+                const shots = teamPlays
+                    .filter(play =>
+                        play.shotInfo?.location?.x != null &&
+                        namesMatch(play.shotInfo?.shooter?.name, playerName)
+                    )
+                    .map(play => {
+                        let cx = play.shotInfo.location.x;
+                        let cy = play.shotInfo.location.y;
+                        if (cx > COURT_HALF_X) { cx = COURT_FULL_X - cx; cy = COURT_FULL_Y - cy; }
+                        return { cx, cy, made: play.shotInfo.made, range: play.shotInfo.range };
+                    });
+
+                if (shots.length === 0) {
+                    overlay.textContent = `No shot location data found for ${playerName}`;
+                    return;
+                }
+
+                overlay.style.display = 'none';
+                renderShotChart(canvas, shots);
+                updateShotChartSidebar(shots);
+
+            } catch (err) {
+                overlay.textContent = `Could not load shots: ${err.message}`;
+                console.error('Shot chart error:', err);
+            }
+        }
+
+        function setShotView(view) {
+            currentShotView = view;
+            document.getElementById('scatterBtn').classList.toggle('active', view === 'scatter');
+            document.getElementById('heatmapBtn').classList.toggle('active', view === 'heatmap');
+
+            if (!currentShotPlayer) return;
+            const season   = parseInt(document.getElementById('shotSeasonSelect').value) || 2026;
+            const cacheKey = `${currentShotPlayer.team}_${season}`;
+            const teamPlays = teamShotsCache[cacheKey];
+            if (!teamPlays) return;
+
+            const shots = teamPlays
+                .filter(play =>
+                    play.shotInfo?.location?.x != null &&
+                    namesMatch(play.shotInfo?.shooter?.name, currentShotPlayer.name)
+                )
+                .map(play => {
+                    let cx = play.shotInfo.location.x;
+                    let cy = play.shotInfo.location.y;
+                    if (cx > COURT_HALF_X) { cx = COURT_FULL_X - cx; cy = COURT_FULL_Y - cy; }
+                    return { cx, cy, made: play.shotInfo.made, range: play.shotInfo.range };
+                });
+
+            const canvas = document.getElementById('shotChartCanvas');
+            renderShotChart(canvas, shots);
+            updateShotChartSidebar(shots);
+        }
+
+        function reloadShotChart() {
+            if (currentShotPlayer) {
+                loadShotChart(currentShotPlayer.name, currentShotPlayer.team);
+            }
+        }
 
         // Initialize on page load — weights/min/max are editable during the session
         // but always reset to POSITION_DEFAULTS on refresh/reopen
