@@ -1401,8 +1401,20 @@
                     </div>
 
                     <div id="playersTab" class="tab-content active">
+                        <div style="margin-bottom: 16px;">
+                            <div style="position: relative;">
+                                <input type="text" id="smartSearchInput"
+                                    placeholder='Try: "top shooters in the MAC"  or  "affordable rebounders from mid majors"'
+                                    style="width:100%; padding:13px 44px 13px 16px; background:var(--bg-tertiary); border:2px solid var(--accent-primary); border-radius:8px; color:var(--text-primary); font-family:'IBM Plex Mono',monospace; font-size:0.85rem; outline:none; box-shadow:0 0 12px rgba(0,255,136,0.1);"
+                                    oninput="debounceSmartSearch()">
+                                <button onclick="clearSmartSearch()" title="Clear"
+                                    style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:transparent;border:none;color:var(--text-secondary);font-size:1rem;cursor:pointer;padding:0;line-height:1;">&#10005;</button>
+                            </div>
+                            <div id="smartSearchTags" style="margin-top:8px; display:flex; flex-wrap:wrap; gap:6px; min-height:20px;"></div>
+                        </div>
+
                         <div class="filter-controls">
-                            <input type="text" class="filter-input" id="searchInput" placeholder="Search players...">
+                            <input type="text" class="filter-input" id="searchInput" placeholder="Search by name / team...">
                             <select id="conferenceFilter">
                                 <option value="">All Conferences</option>
                             </select>
@@ -1436,9 +1448,11 @@
                                             <th class="sortable" data-sort="position">Position</th>
                                             <th class="sortable" data-sort="score">Score</th>
                                             <th class="sortable" data-sort="valuation">Valuation</th>
+                                            <th class="sortable" data-sort="archetype">Archetype</th>
                                             <th class="sortable" data-sort="ppg">PPG</th>
                                             <th class="sortable" data-sort="apg">APG</th>
                                             <th class="sortable" data-sort="rpg">RPG</th>
+                                            <th class="sortable" data-sort="tpa">3PA/G</th>
                                             <th class="sortable" data-sort="bpm">BPM</th>
                                             <th class="sortable" data-sort="efg">eFG%</th>
                                         </tr>
@@ -1701,22 +1715,22 @@
         // Hardcoded position settings — the single source of truth for scoring
         const POSITION_DEFAULTS = {
             'Guard': {
-                ppg:       { weight: 10, min: 5,    max: 15 },
-                fg_pct:    { weight: 0, min: 0.25, max: 0.50 },
+                ppg:       { weight: 10, min: 5,    max: 17 },
+                fg_pct:    { weight: 10, min: 0.25, max: 0.50 },
                 three_pct: { weight: 10, min: 0.20, max: 0.40 },
                 ft_pct:    { weight: 10, min: 0.50, max: 0.90 },
-                apg:       { weight: 8,  min: 0,    max: 5 },
-                topg:      { weight: 8,  min: 0,    max: 4 },
-                ato:       { weight: 0,  min: 0,    max: 4 },
-                orbg:      { weight: 4,  min: 0,    max: 2 },
-                drbg:      { weight: 4,  min: 0,    max: 4 },
+                apg:       { weight: 6,  min: 0,    max: 6 },
+                topg:      { weight: 6,  min: 0,    max: 3 },
+                ato:       { weight: 3,  min: 0,    max: 4 },
+                orbg:      { weight: 3,  min: 0,    max: 2 },
+                drbg:      { weight: 3,  min: 0,    max: 4 },
                 bpg:       { weight: 0,  min: 0,    max: 0.5 },
-                spg:       { weight: 2,  min: 0,    max: 2 },
-                efg:       { weight: 12,  min: 0.35, max: 0.65 },
+                spg:       { weight: 2,  min: 0,    max: 2.5 },
+                efg:       { weight: 8,  min: 0.40, max: 0.65 },
                 plusminus: { weight: 0,  min: -50,  max: 150 },
-                or_pct:    { weight: 0,  min: 0,    max: 0.05 },
-                dr_pct:    { weight: 0,  min: 0,    max: 0.05 },
-                ws:        { weight: 12,  min: 0,    max: 4 },
+                or_pct:    { weight: 2,  min: 0,    max: 0.05 },
+                dr_pct:    { weight: 2,  min: 0,    max: 0.05 },
+                ws:        { weight: 5,  min: 0,    max: 4 },
                 ortg:      { weight: 5,  min: 95,   max: 125 },
                 drtg:      { weight: 5,  min: 95,   max: 125 },
                 ows:       { weight: 0,  min: 0,    max: 5 },
@@ -1755,24 +1769,24 @@
                 per:       { weight: 0,  min: 8,    max: 30 }
             },
             'Forward/Center': {
-                ppg:       { weight: 10,  min: 5,    max: 14 },
-                fg_pct:    { weight: 0,  min: 0.25, max: 0.60 },
-                three_pct: { weight: 10, min: 0.20, max: 0.375 },
-                ft_pct:    { weight: 10,  min: 0.50, max: 0.80 },
-                apg:       { weight: 4,  min: 0,    max: 3 },
-                topg:      { weight: 4,  min: 0,    max: 3 },
-                ato:       { weight: 0,  min: 0,    max: 4 },
+                ppg:       { weight: 7,  min: 5,    max: 17 },
+                fg_pct:    { weight: 7,  min: 0.25, max: 0.60 },
+                three_pct: { weight: 10, min: 0.20, max: 0.40 },
+                ft_pct:    { weight: 8,  min: 0.50, max: 0.80 },
+                apg:       { weight: 3,  min: 0,    max: 3 },
+                topg:      { weight: 5,  min: 0,    max: 3 },
+                ato:       { weight: 3,  min: 0,    max: 4 },
                 orbg:      { weight: 6,  min: 0,    max: 4 },
                 drbg:      { weight: 6,  min: 1,    max: 5 },
                 bpg:       { weight: 2,  min: 0,    max: 1.5 },
-                spg:       { weight: 0,  min: 0,    max: 1 },
-                efg:       { weight: 12,  min: 0.40, max: 0.7 },
+                spg:       { weight: 1,  min: 0,    max: 1 },
+                efg:       { weight: 5,  min: 0.40, max: 0.7 },
                 plusminus: { weight: 0,  min: -50,  max: 150 },
                 or_pct:    { weight: 5,  min: 0,    max: 0.1 },
                 dr_pct:    { weight: 5,  min: 0,    max: 0.1 },
-                ws:        { weight: 6,  min: 0,    max: 4 },
-                ortg:      { weight: 4,  min: 95,   max: 125 },
-                drtg:      { weight: 6,  min: 95,   max: 125 },
+                ws:        { weight: 5,  min: 0,    max: 4 },
+                ortg:      { weight: 5,  min: 95,   max: 125 },
+                drtg:      { weight: 5,  min: 95,   max: 125 },
                 ows:       { weight: 0,  min: 0,    max: 6 },
                 dws:       { weight: 0,  min: 0,    max: 4 },
                 ws_40:     { weight: 0,  min: 0,    max: 0.30 },
@@ -2095,6 +2109,148 @@
             return 'Forward/Center';
         }
 
+        // ── Archetype Classification ──────────────────────────────────────────
+        function classifyArchetype(player, positionCategory) {
+            const ppg    = parseFloat(player.PPG)       || 0;
+            const tpct   = parseFloat(player['3P%'])    || 0;
+            const tpa    = parseFloat(player['3PA'])    || parseFloat(player['3PA/G']) || 0;
+            const apg    = parseFloat(player.APG)       || 0;
+            const ato    = parseFloat(player['A/TO'])   || 0;
+            const spg    = parseFloat(player.SPG)       || 0;
+            const bpg    = parseFloat(player.BPG)       || 0;
+            const orbg   = parseFloat(player['ORB/G'])  || 0;
+            const drbg   = parseFloat(player['DRB/G'])  || 0;
+            const efg    = parseFloat(player['eFG%'])   || 0;
+            const topg   = parseFloat(player.TOPG)      || 99;
+
+            // Priority order — first match wins
+            if (apg >= 5.5 && ato >= 2.0)                          return 'Floor General';
+            if (tpct >= 0.36 && tpa >= 3.5)                        return 'Shooter';
+            if (ppg >= 15 && efg >= 0.52)                          return 'Pure Scorer';
+            if (apg >= 4.0 && ato >= 1.8)                          return 'Playmaker';
+            if (positionCategory === 'Forward/Center' && tpct >= 0.33 && tpa >= 2.0) return 'Stretch Big';
+            if ((spg + bpg) >= 2.2)                                return 'Two-Way';
+            if (bpg >= 1.3 || spg >= 1.6)                         return 'Defender';
+            if ((orbg + drbg) >= 7.0)                              return 'Rebounder';
+            if (tpct >= 0.33 && tpa >= 2.5)                        return 'Shooter';
+            return 'Versatile';
+        }
+
+        // ── Conference Tier Classification ────────────────────────────────────
+        const CONFERENCE_TIERS = {
+            power:    ['SEC', 'Big 12', 'Big Ten', 'ACC', 'Big East'],
+            high:     ['AAC', 'MWC', 'WCC', 'A-10', 'MVC', 'Pac-12', 'C-USA', 'Sun Belt', 'CAA', 'Ivy', 'Big Sky', 'Big West', 'SoCon', 'Horizon'],
+            mid:      ['MAC', 'MAAC', 'OVC', 'WAC', 'Big South', 'Summit', 'NEC', 'Patriot', 'AEC', 'A-Sun'],
+            low:      ['Southland', 'SWAC', 'MEAC', 'NEC', 'Patriot', 'AEC', 'A-Sun']
+        };
+        function getConferenceTier(conf) {
+            if (!conf) return null;
+            const c = conf.trim();
+            if (CONFERENCE_TIERS.power.includes(c)) return 'power';
+            if (CONFERENCE_TIERS.high.includes(c))  return 'high';
+            if (CONFERENCE_TIERS.mid.includes(c))   return 'mid';
+            if (CONFERENCE_TIERS.low.includes(c))   return 'low';
+            return null;
+        }
+
+        // ── Smart Search Parser ───────────────────────────────────────────────
+        let smartSearchState = null;  // { archetype, position, conference, conferenceTier, valueFilter, qualityFilter }
+        let smartSearchTimer = null;
+
+        function debounceSmartSearch() {
+            clearTimeout(smartSearchTimer);
+            smartSearchTimer = setTimeout(applySmartAndFilters, 280);
+        }
+
+        function clearSmartSearch() {
+            document.getElementById('smartSearchInput').value = '';
+            smartSearchState = null;
+            document.getElementById('smartSearchTags').innerHTML = '';
+            applyFilters();
+        }
+
+        function parseSmartQuery(query) {
+            const q = query.toLowerCase();
+            if (!q.trim()) return null;
+
+            const r = { archetype: null, position: null, conference: null, conferenceTier: null, valueFilter: null, qualityFilter: null };
+
+            // Archetypes
+            if (/shoot(er|ing)|three[- ]point(er)?|spot[ -]up|marksman|3pt|catch[ -]and[ -]shoot/.test(q))   r.archetype = 'Shooter';
+            else if (/floor[ -]general|lead guard|point guard leader/.test(q))                                r.archetype = 'Floor General';
+            else if (/playmaker|assist|passer|distributor/.test(q))                                          r.archetype = 'Playmaker';
+            else if (/pure scor|bucket|high scor|offensiv|scorer/.test(q))                                   r.archetype = 'Pure Scorer';
+            else if (/stretch[ -]big|shooting[ -]big|perimeter[ -]big/.test(q))                              r.archetype = 'Stretch Big';
+            else if (/two[ -]way/.test(q))                                                                   r.archetype = 'Two-Way';
+            else if (/defend(er|ing|sive)?|stopper|lock[ -]down/.test(q))                                    r.archetype = 'Defender';
+            else if (/rebound(er|ing)|glass|board/.test(q))                                                  r.archetype = 'Rebounder';
+            else if (/versatil|swiss army/.test(q))                                                          r.archetype = 'Versatile';
+
+            // Positions
+            if (/\bguard\b|\bpoint guard\b|\bshooting guard\b/.test(q))     r.position = 'Guard';
+            else if (/\bwing\b|\bsmall forward\b|\bsf\b/.test(q))           r.position = 'Wing';
+            else if (/\bforward\b|\bcenter\b|\bbig\b|\bpost\b|\bpf\b/.test(q)) r.position = 'Forward/Center';
+
+            // Conference tiers
+            if (/mid[ -]major|mid major/.test(q))          r.conferenceTier = 'mid';
+            else if (/power five|power conf|p5|high major/.test(q)) r.conferenceTier = 'power';
+            else if (/low[ -]major|low major/.test(q))     r.conferenceTier = 'low';
+            else if (/high[ -]major/.test(q))              r.conferenceTier = 'high';
+
+            // Specific conferences — check against known list
+            const allConfs = Object.keys(conferenceMultipliers);
+            for (const conf of allConfs) {
+                const escaped = conf.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                if (new RegExp(`\\b${escaped}\\b`, 'i').test(query)) {
+                    r.conference = conf;
+                    break;
+                }
+            }
+
+            // Value modifier
+            if (/afford|cheap|budget|low[ -]cost|value|bargain|inexpensive/.test(q)) r.valueFilter = 'affordable';
+            else if (/\belite\b|\bstar\b|premium|high[ -]value|expensive|top[ -]tier/.test(q)) r.valueFilter = 'elite';
+
+            // Quality
+            if (/\btop\b|\bbest\b|\bhighest\b|\bpremier\b|\bleading\b/.test(q)) r.qualityFilter = 'top';
+
+            return r;
+        }
+
+        function buildSmartTags(parsed) {
+            const tags = [];
+            if (parsed.archetype)      tags.push({ label: parsed.archetype, color: '#00ff88' });
+            if (parsed.position)       tags.push({ label: parsed.position, color: '#00d4ff' });
+            if (parsed.conference)     tags.push({ label: parsed.conference, color: '#f0c040' });
+            if (parsed.conferenceTier) tags.push({ label: parsed.conferenceTier.toUpperCase() + ' MAJOR', color: '#fb923c' });
+            if (parsed.valueFilter === 'affordable') tags.push({ label: 'AFFORDABLE', color: '#34d399' });
+            if (parsed.valueFilter === 'elite')      tags.push({ label: 'ELITE VALUE', color: '#ff6b35' });
+            if (parsed.qualityFilter === 'top')      tags.push({ label: 'TOP RANKED', color: '#a78bfa' });
+            return tags;
+        }
+
+        function applySmartAndFilters() {
+            const query = document.getElementById('smartSearchInput').value;
+            if (!query.trim()) {
+                smartSearchState = null;
+                document.getElementById('smartSearchTags').innerHTML = '';
+                applyFilters();
+                return;
+            }
+            smartSearchState = parseSmartQuery(query);
+            // Render tags
+            const tags = buildSmartTags(smartSearchState);
+            const tagsEl = document.getElementById('smartSearchTags');
+            if (tags.length === 0) {
+                tagsEl.innerHTML = '<span style="font-family:\'IBM Plex Mono\',monospace;font-size:0.65rem;color:var(--text-secondary);">No filters detected — try words like "shooter", "MAC", "affordable", "playmaker"</span>';
+            } else {
+                tagsEl.innerHTML = tags.map(t =>
+                    `<span style="display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:12px;border:1px solid ${t.color};color:${t.color};font-family:'IBM Plex Mono',monospace;font-size:0.65rem;font-weight:700;">${t.label}</span>`
+                ).join('');
+            }
+            applyFilters();
+        }
+
         function normalizeValue(value, min, max, ideal) {
             if (value === null || value === undefined || isNaN(value)) return 0;
 
@@ -2291,7 +2447,8 @@
                         total_score: totalScore,
                         valuation: valuation,
                         conference_multiplier: confMultiplier,
-                        component_scores: scores
+                        component_scores: scores,
+                        archetype: classifyArchetype(player, positionCategory)
                     };
                 });
 
@@ -2414,6 +2571,7 @@
             document.getElementById('positionFilter').addEventListener('change', applyFilters);
             document.getElementById('teamFilter').addEventListener('change', applyFilters);
             document.getElementById('minScore').addEventListener('change', applyFilters);
+            // Smart search is wired via oninput in HTML (debounceSmartSearch)
             
             document.getElementById('teamSearchInput').addEventListener('input', applyTeamFilters);
             document.getElementById('teamConferenceFilter').addEventListener('change', applyTeamFilters);
@@ -2575,6 +2733,20 @@
                 const posClass = player.position_category === 'Guard' ? 'position-guard' :
                                 player.position_category === 'Wing' ? 'position-wing' : 'position-forward';
 
+                const archetypeColors = {
+                    'Shooter':      '#f0c040',
+                    'Pure Scorer':  'var(--accent-tertiary)',
+                    'Playmaker':    'var(--accent-secondary)',
+                    'Floor General':'#a78bfa',
+                    'Two-Way':      'var(--accent-primary)',
+                    'Defender':     '#60a5fa',
+                    'Rebounder':    '#fb923c',
+                    'Stretch Big':  '#34d399',
+                    'Versatile':    'var(--text-secondary)',
+                };
+                const archetypeColor = archetypeColors[player.archetype] || 'var(--text-secondary)';
+                const tpa = player['3PA'] || player['3PA/G'] || 0;
+
                 const row = document.createElement('tr');
                 row.className = 'animated clickable';
                 row.onclick = () => showPlayerDetails(player);
@@ -2586,9 +2758,11 @@
                     <td><span class="position-badge ${posClass}">${player.position_category}</span></td>
                     <td class="score-cell ${scoreClass}">${player.total_score.toFixed(1)}</td>
                     <td class="valuation-cell">$${player.valuation >= 1000000 ? (player.valuation / 1000000).toFixed(2) + 'M' : (player.valuation / 1000).toFixed(1) + 'K'}</td>
+                    <td style="font-size:0.72rem; font-weight:700; color:${archetypeColor}; white-space:nowrap;">${player.archetype || '—'}</td>
                     <td>${(player.PPG || 0).toFixed(1)}</td>
                     <td>${(player.APG || 0).toFixed(1)}</td>
                     <td>${(player.RPG || 0).toFixed(1)}</td>
+                    <td>${(+tpa).toFixed(1)}</td>
                     <td>${(player.BPM || 0).toFixed(1)}</td>
                     <td>${((player['eFG%'] || 0) * 100).toFixed(1)}%</td>
                 `;
@@ -2640,6 +2814,12 @@
                     case 'rpg':
                         aVal = a.RPG; bVal = b.RPG;
                         break;
+                    case 'tpa':
+                        aVal = a['3PA'] || a['3PA/G'] || 0; bVal = b['3PA'] || b['3PA/G'] || 0;
+                        break;
+                    case 'archetype':
+                        aVal = a.archetype || ''; bVal = b.archetype || '';
+                        break;
                     case 'bpm':
                         aVal = a.BPM; bVal = b.BPM;
                         break;
@@ -2673,16 +2853,49 @@
             const teamFilter = document.getElementById('teamFilter').value;
             const minScore = parseFloat(document.getElementById('minScore').value);
 
-            const filtered = scoredData.filter(player => {
-                const matchesSearch = player.Player.toLowerCase().includes(searchTerm) || 
+            // Compute affordable threshold (bottom 40% of valuations) when needed
+            let affordableThreshold = 0;
+            let eliteThreshold = 0;
+            if (smartSearchState?.valueFilter) {
+                const vals = scoredData.map(p => p.valuation).filter(v => v > 0).sort((a, b) => a - b);
+                affordableThreshold = vals[Math.floor(vals.length * 0.40)] || 0;
+                eliteThreshold      = vals[Math.floor(vals.length * 0.70)] || Infinity;
+            }
+
+            let filtered = scoredData.filter(player => {
+                const matchesSearch = player.Player.toLowerCase().includes(searchTerm) ||
                                      player.Team.toLowerCase().includes(searchTerm);
                 const matchesConference = !conference || player.Conference === conference;
                 const matchesPosition = !positionFilter || player.position_category === positionFilter;
                 const matchesTeam = !teamFilter || player.Team === teamFilter;
                 const matchesScore = player.total_score >= minScore;
 
-                return matchesSearch && matchesConference && matchesPosition && matchesTeam && matchesScore;
+                // Smart search filters
+                let matchesSmart = true;
+                if (smartSearchState) {
+                    const s = smartSearchState;
+                    if (s.archetype    && player.archetype !== s.archetype)           matchesSmart = false;
+                    if (s.position     && player.position_category !== s.position)    matchesSmart = false;
+                    if (s.conference   && player.Conference !== s.conference)          matchesSmart = false;
+                    if (s.conferenceTier) {
+                        const tier = getConferenceTier(player.Conference);
+                        if (tier !== s.conferenceTier)                                matchesSmart = false;
+                    }
+                    if (s.valueFilter === 'affordable' && player.valuation > affordableThreshold) matchesSmart = false;
+                    if (s.valueFilter === 'elite'      && player.valuation < eliteThreshold)      matchesSmart = false;
+                }
+
+                return matchesSearch && matchesConference && matchesPosition && matchesTeam && matchesScore && matchesSmart;
             });
+
+            // If "top" quality requested, sort by score desc
+            if (smartSearchState?.qualityFilter === 'top') {
+                filtered = filtered.slice().sort((a, b) => b.total_score - a.total_score);
+            }
+            // If "affordable" requested, sort by valuation asc
+            if (smartSearchState?.valueFilter === 'affordable') {
+                filtered = filtered.slice().sort((a, b) => a.valuation - b.valuation);
+            }
 
             renderTable(filtered);
         }
@@ -2767,6 +2980,12 @@
             const scoreClass = player.total_score >= 80 ? 'score-high' : 
                               player.total_score >= 60 ? 'score-medium' : 'score-low';
             
+            const archetypeModalColors = {
+                'Shooter':'#f0c040','Pure Scorer':'var(--accent-tertiary)','Playmaker':'var(--accent-secondary)',
+                'Floor General':'#a78bfa','Two-Way':'var(--accent-primary)','Defender':'#60a5fa',
+                'Rebounder':'#fb923c','Stretch Big':'#34d399','Versatile':'var(--text-secondary)'
+            };
+            const aColor = archetypeModalColors[player.archetype] || 'var(--text-secondary)';
             document.getElementById('modalScoreSummary').innerHTML = `
                 <div class="modal-score-card">
                     <div class="modal-score-label">Overall Score</div>
@@ -2780,13 +2999,22 @@
                     <div class="modal-score-label">Position Rank</div>
                     <div class="modal-score-value" style="font-size: 2rem;">${getPositionRank(player)}</div>
                 </div>
+                <div class="modal-score-card">
+                    <div class="modal-score-label">Archetype</div>
+                    <div class="modal-score-value" style="font-size: 1.3rem; color:${aColor};">${player.archetype || '—'}</div>
+                </div>
             `;
             
             // Build stat breakdown
+            const tpaVal = parseFloat(player['3PA']) || parseFloat(player['3PA/G']) || 0;
             const statMapping = {
                 ppg: { label: 'Points Per Game', value: player.PPG, format: (v) => v.toFixed(1) },
                 fg_pct: { label: 'Field Goal %', value: player['FG%'], format: (v) => (v * 100).toFixed(1) + '%' },
-                three_pct: { label: '3-Point %', value: player['3P%'], format: (v) => (v * 100).toFixed(1) + '%' },
+                three_pct: {
+                    label: '3-Point %\u00a0\u00a0(3PA/G)',
+                    value: player['3P%'],
+                    format: (v) => `<span style="color:var(--accent-secondary)">${(v * 100).toFixed(1)}%</span><span style="color:var(--text-secondary);font-size:0.75em;"> – ${tpaVal.toFixed(1)} att/g</span>`
+                },
                 ft_pct: { label: 'Free Throw %', value: player['FT%'], format: (v) => (v * 100).toFixed(1) + '%' },
                 apg: { label: 'Assists Per Game', value: player.APG, format: (v) => v.toFixed(1) },
                 topg: { label: 'Turnovers Per Game', value: player.TOPG, format: (v) => v.toFixed(1) },
@@ -2816,13 +3044,14 @@
                 const weight = config[key].weight;
                 const normalizedScore = player.component_scores[key] || 0;
                 const rawValue = stat.value || 0;
-                
+                const formattedValue = stat.format(rawValue);
+
                 if (weight > 0) { // Only show stats with weight
                     breakdownHTML += `
                         <div class="stat-breakdown-item">
                             <div class="stat-breakdown-header">
                                 <span class="stat-breakdown-name">${stat.label}</span>
-                                <span class="stat-breakdown-value">${stat.format(rawValue)}</span>
+                                <span class="stat-breakdown-value">${formattedValue}</span>
                             </div>
                             <div class="stat-breakdown-bar">
                                 <div class="stat-breakdown-fill" style="width: ${normalizedScore}%"></div>
@@ -3201,15 +3430,17 @@
                     recEl.innerHTML = '<div class="sw-empty">No affordable players found. Try increasing the budget or adding more data.</div>';
                 } else {
                     recEl.innerHTML = recommendations.map(p => {
-                        const conf     = p.Conference || p.conference || '';
-                        const pos      = p.position_category || p.Pos || '';
-                        const valStr   = p.valuation > 0 ? '$' + Math.round(p.valuation).toLocaleString() : '—';
-                        const scoreStr = p.total_score ? p.total_score.toFixed(1) : '—';
+                        const conf      = p.Conference || p.conference || '';
+                        const school    = p.Team || '';
+                        const pos       = p.position_category || p.Pos || '';
+                        const valStr    = p.valuation > 0 ? '$' + Math.round(p.valuation).toLocaleString() : '—';
+                        const scoreStr  = p.total_score ? p.total_score.toFixed(1) : '—';
                         const reasonTxt = p.reasons.length > 0 ? p.reasons.slice(0, 2).join(' · ') : 'Overall quality';
+                        const schoolConf = [school, conf].filter(Boolean).join(' · ');
                         return `<div class="sw-rec-row">
                             <div>
                                 <div class="sw-rec-name">${p.Player}</div>
-                                <div class="sw-rec-meta">${pos}${conf ? ' · ' + conf : ''} · ${reasonTxt}</div>
+                                <div class="sw-rec-meta">${pos}${schoolConf ? ' · ' + schoolConf : ''} · ${reasonTxt}</div>
                             </div>
                             <div>
                                 <div class="sw-rec-score">${scoreStr}</div>
