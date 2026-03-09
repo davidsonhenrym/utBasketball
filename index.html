@@ -2322,6 +2322,18 @@
             applyFilters();
         }
 
+        function debounceSmartSearch() {
+            clearTimeout(smartSearchTimer);
+            smartSearchTimer = setTimeout(applySmartAndFilters, 300);
+        }
+
+        function clearSmartSearch() {
+            document.getElementById('smartSearchInput').value = '';
+            smartSearchState = null;
+            document.getElementById('smartSearchTags').innerHTML = '';
+            applyFilters();
+        }
+
         function normalizeValue(value, min, max, ideal) {
             if (value === null || value === undefined || isNaN(value)) return 0;
 
