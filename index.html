@@ -2863,13 +2863,11 @@
             const teamFilter = document.getElementById('teamFilter').value;
             const minScore = parseFloat(document.getElementById('minScore').value);
 
-            // Compute affordable threshold (bottom 40% of valuations) when needed
-            let affordableThreshold = 0;
+            const AFFORDABLE_MAX = 85000;
             let eliteThreshold = 0;
-            if (smartSearchState?.valueFilter) {
+            if (smartSearchState?.valueFilter === 'elite') {
                 const vals = scoredData.map(p => p.valuation).filter(v => v > 0).sort((a, b) => a - b);
-                affordableThreshold = vals[Math.floor(vals.length * 0.40)] || 0;
-                eliteThreshold      = vals[Math.floor(vals.length * 0.70)] || Infinity;
+                eliteThreshold = vals[Math.floor(vals.length * 0.70)] || Infinity;
             }
 
             let filtered = scoredData.filter(player => {
@@ -2891,7 +2889,7 @@
                         const tier = getConferenceTier(player.Conference);
                         if (tier !== s.conferenceTier)                                matchesSmart = false;
                     }
-                    if (s.valueFilter === 'affordable' && player.valuation > affordableThreshold) matchesSmart = false;
+                    if (s.valueFilter === 'affordable' && player.valuation > AFFORDABLE_MAX) matchesSmart = false;
                     if (s.valueFilter === 'elite'      && player.valuation < eliteThreshold)      matchesSmart = false;
                 }
 
