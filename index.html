@@ -1448,7 +1448,6 @@
                                             <th class="sortable" data-sort="position">Position</th>
                                             <th class="sortable" data-sort="score">Score</th>
                                             <th class="sortable" data-sort="valuation">Valuation</th>
-                                            <th class="sortable" data-sort="archetype">Archetype</th>
                                             <th class="sortable" data-sort="ppg">PPG</th>
                                             <th class="sortable" data-sort="apg">APG</th>
                                             <th class="sortable" data-sort="rpg">RPG</th>
@@ -2161,65 +2160,123 @@
             return null;
         }
 
-        // ── Smart Search Parser ───────────────────────────────────────────────
-        let smartSearchState = null;  // { archetype, position, conference, conferenceTier, valueFilter, qualityFilter }
+        // ── Smart Search ──────────────────────────────────────────────────────
+        let smartSearchState = null;
         let smartSearchTimer = null;
 
-        function debounceSmartSearch() {
-            clearTimeout(smartSearchTimer);
-            smartSearchTimer = setTimeout(applySmartAndFilters, 280);
-        }
+        // Full conference alias map — longest match wins to avoid partial collisions
+        const CONF_ALIASES = {
+            'mid american conference': 'MAC', 'mid-american conference': 'MAC', 'mid american': 'MAC', 'mid-american': 'MAC', 'mac': 'MAC',
+            'southeastern conference': 'SEC', 'southeastern': 'SEC', 'sec': 'SEC',
+            'big ten conference': 'Big Ten', 'big ten': 'Big Ten', 'big 10': 'Big Ten', 'b1g': 'Big Ten',
+            'atlantic coast conference': 'ACC', 'atlantic coast': 'ACC', 'acc': 'ACC',
+            'big east conference': 'Big East', 'big east': 'Big East',
+            'big 12 conference': 'Big 12', 'big twelve': 'Big 12', 'big 12': 'Big 12', 'big12': 'Big 12',
+            'american athletic conference': 'AAC', 'american athletic': 'AAC', 'aac': 'AAC',
+            'mountain west conference': 'MWC', 'mountain west': 'MWC', 'mwc': 'MWC',
+            'west coast conference': 'WCC', 'west coast': 'WCC', 'wcc': 'WCC',
+            'atlantic 10 conference': 'A-10', 'atlantic ten': 'A-10', 'atlantic 10': 'A-10', 'a-10': 'A-10', 'a10': 'A-10',
+            'missouri valley conference': 'MVC', 'missouri valley': 'MVC', 'mvc': 'MVC',
+            'conference usa': 'C-USA', 'c-usa': 'C-USA', 'cusa': 'C-USA',
+            'sun belt conference': 'Sun Belt', 'sun belt': 'Sun Belt', 'sunbelt': 'Sun Belt',
+            'colonial athletic association': 'CAA', 'colonial athletic': 'CAA', 'colonial': 'CAA', 'caa': 'CAA',
+            'ivy league': 'Ivy', 'ivy': 'Ivy',
+            'big sky conference': 'Big Sky', 'big sky': 'Big Sky',
+            'big west conference': 'Big West', 'big west': 'Big West',
+            'southern conference': 'SoCon', 'socon': 'SoCon',
+            'horizon league': 'Horizon', 'horizon': 'Horizon',
+            'patriot league': 'Patriot', 'patriot': 'Patriot',
+            'metro atlantic athletic conference': 'MAAC', 'metro atlantic': 'MAAC', 'maac': 'MAAC',
+            'ohio valley conference': 'OVC', 'ohio valley': 'OVC', 'ovc': 'OVC',
+            'western athletic conference': 'WAC', 'western athletic': 'WAC', 'wac': 'WAC',
+            'big south conference': 'Big South', 'big south': 'Big South',
+            'summit league': 'Summit', 'summit': 'Summit',
+            'northeast conference': 'NEC', 'northeast': 'NEC', 'nec': 'NEC',
+            'southland conference': 'Southland', 'southland': 'Southland',
+            'southwestern athletic conference': 'SWAC', 'southwestern athletic': 'SWAC', 'swac': 'SWAC',
+            'mid-eastern athletic conference': 'MEAC', 'mid eastern athletic': 'MEAC', 'mid-eastern': 'MEAC', 'meac': 'MEAC',
+            'america east conference': 'AEC', 'america east': 'AEC', 'aec': 'AEC',
+            'atlantic sun conference': 'A-Sun', 'atlantic sun': 'A-Sun', 'a-sun': 'A-Sun', 'asun': 'A-Sun',
+        };
 
-        function clearSmartSearch() {
-            document.getElementById('smartSearchInput').value = '';
-            smartSearchState = null;
-            document.getElementById('smartSearchTags').innerHTML = '';
-            applyFilters();
+        function resolveConference(q) {
+            const sorted = Object.keys(CONF_ALIASES).sort((a, b) => b.length - a.length);
+            for (const alias of sorted) {
+                const escaped = alias.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                if (new RegExp(`(^|[\\s,])${escaped}([\\s,]|$)`, 'i').test(q)) {
+                    return CONF_ALIASES[alias];
+                }
+            }
+            return null;
         }
 
         function parseSmartQuery(query) {
-            const q = query.toLowerCase();
-            if (!q.trim()) return null;
+            const q = query.toLowerCase().trim();
+            if (!q) return null;
 
-            const r = { archetype: null, position: null, conference: null, conferenceTier: null, valueFilter: null, qualityFilter: null };
+            const r = {
+                archetypes:     [],
+                position:       null,
+                conference:     null,
+                conferenceTier: null,
+                valueFilter:    null,
+                qualityFilter:  null,
+                playerClass:    null,
+                minPPG:         null,
+                minAPG:         null,
+                minBPG:         null,
+                minSPG:         null,
+                minRPG:         null,
+                minEFG:         null,
+            };
 
-            // Archetypes
-            if (/shoot(er|ing)|three[- ]point(er)?|spot[ -]up|marksman|3pt|catch[ -]and[ -]shoot/.test(q))   r.archetype = 'Shooter';
-            else if (/floor[ -]general|lead guard|point guard leader/.test(q))                                r.archetype = 'Floor General';
-            else if (/playmaker|assist|passer|distributor/.test(q))                                          r.archetype = 'Playmaker';
-            else if (/pure scor|bucket|high scor|offensiv|scorer/.test(q))                                   r.archetype = 'Pure Scorer';
-            else if (/stretch[ -]big|shooting[ -]big|perimeter[ -]big/.test(q))                              r.archetype = 'Stretch Big';
-            else if (/two[ -]way/.test(q))                                                                   r.archetype = 'Two-Way';
-            else if (/defend(er|ing|sive)?|stopper|lock[ -]down/.test(q))                                    r.archetype = 'Defender';
-            else if (/rebound(er|ing)|glass|board/.test(q))                                                  r.archetype = 'Rebounder';
-            else if (/versatil|swiss army/.test(q))                                                          r.archetype = 'Versatile';
+            // Archetypes — all that match, not just first
+            if (/shoot(er|ing)|three[- ]point(er)?|spot[- ]up|marksman|3pt|catch[- ]and[- ]shoot/.test(q)) r.archetypes.push('Shooter');
+            if (/floor[- ]general|lead\s+guard|pg\s+leader|facilitator/.test(q))                           r.archetypes.push('Floor General');
+            if (/playmaker|pass[- ]first|distributor/.test(q))                                             r.archetypes.push('Playmaker');
+            if (/pure\s+scor|bucket\s+getter|high[- ]scor/.test(q))                                       r.archetypes.push('Pure Scorer');
+            if (/stretch[- ]big|shooting[- ]big|perimeter[- ]big/.test(q))                                r.archetypes.push('Stretch Big');
+            if (/two[- ]way/.test(q))                                                                      r.archetypes.push('Two-Way');
+            if (/defend(er|ing|sive)?|stopper|lock[- ]down|rim\s+protect/.test(q))                        r.archetypes.push('Defender');
+            if (/rebound(er|ing)|glass\s*(eat|guy|man)?|board\s*(eat|guy|man)?/.test(q))                  r.archetypes.push('Rebounder');
+            if (/versatil|do[- ]it[- ]all/.test(q))                                                       r.archetypes.push('Versatile');
 
-            // Positions
-            if (/\bguard\b|\bpoint guard\b|\bshooting guard\b/.test(q))     r.position = 'Guard';
-            else if (/\bwing\b|\bsmall forward\b|\bsf\b/.test(q))           r.position = 'Wing';
-            else if (/\bforward\b|\bcenter\b|\bbig\b|\bpost\b|\bpf\b/.test(q)) r.position = 'Forward/Center';
+            // Position — check specific first, then broad
+            if (/point\s*guard|(?<!\w)pg(?!\w)/.test(q))                                    r.position = 'Guard';
+            else if (/shooting\s*guard|(?<!\w)sg(?!\w)/.test(q))                            r.position = 'Guard';
+            else if (/(?<!\w)guard(s)?(?!\w)/.test(q))                                      r.position = 'Guard';
+            if (/small\s*forward|(?<!\w)sf(?!\w)|(?<!\w)wing(s)?(?!\w)/.test(q))           r.position = 'Wing';
+            if (/power\s*forward|(?<!\w)pf(?!\w)|(?<!\w)center(s)?(?!\w)|(?<!\w)big\s*man|(?<!\w)bigs(?!\w)|post\s*player/.test(q)) r.position = 'Forward/Center';
+            else if (/(?<!\w)forward(s)?(?!\w)/.test(q) && !r.position)                    r.position = 'Forward/Center';
 
-            // Conference tiers
-            if (/mid[ -]major|mid major/.test(q))          r.conferenceTier = 'mid';
-            else if (/power five|power conf|p5|high major/.test(q)) r.conferenceTier = 'power';
-            else if (/low[ -]major|low major/.test(q))     r.conferenceTier = 'low';
-            else if (/high[ -]major/.test(q))              r.conferenceTier = 'high';
+            // Conference (alias map, longest alias tested first)
+            r.conference = resolveConference(q);
 
-            // Specific conferences — check against known list
-            const allConfs = Object.keys(conferenceMultipliers);
-            for (const conf of allConfs) {
-                const escaped = conf.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                if (new RegExp(`\\b${escaped}\\b`, 'i').test(query)) {
-                    r.conference = conf;
-                    break;
-                }
-            }
+            // Conference tier
+            if      (/mid[- ]major/.test(q))                                r.conferenceTier = 'mid';
+            else if (/power\s*(five|5|conf(erence)?)|(?<!\w)p5(?!\w)/.test(q)) r.conferenceTier = 'power';
+            else if (/low[- ]major/.test(q))                                r.conferenceTier = 'low';
+            else if (/high[- ]major/.test(q))                               r.conferenceTier = 'high';
 
-            // Value modifier
-            if (/afford|cheap|budget|low[ -]cost|value|bargain|inexpensive/.test(q)) r.valueFilter = 'affordable';
-            else if (/\belite\b|\bstar\b|premium|high[ -]value|expensive|top[ -]tier/.test(q)) r.valueFilter = 'elite';
+            // Class / eligibility
+            if      (/fresh(man|men)|(?<!\w)fr\.?(?!\w)|first[- ]year/.test(q))  r.playerClass = 'Fr';
+            else if (/sophomore|(?<!\w)so\.?(?!\w)/.test(q))                     r.playerClass = 'So';
+            else if (/(?<!\w)junior(s)?(?!\w)|(?<!\w)jr\.?(?!\w)/.test(q))      r.playerClass = 'Jr';
+            else if (/(?<!\w)senior(s)?(?!\w)|(?<!\w)sr\.?(?!\w)/.test(q))      r.playerClass = 'Sr';
+            else if (/grad(uate)?(\s*transfer)?/.test(q))                         r.playerClass = 'Gr';
 
-            // Quality
+            // Implied stat thresholds from descriptors
+            if (/high[- ]scor|leading\s+scor|prolific|bucket\s+getter/.test(q)) r.minPPG = 14;
+            if (/high[- ]assist|great\s+pass|assist\s+machine/.test(q))         r.minAPG = 4;
+            if (/shot[- ]block|rim\s+protect|reject/.test(q))                   r.minBPG = 1.0;
+            if (/steal|pickpocket|ball\s*hawk/.test(q))                          r.minSPG = 1.2;
+            if (/dominant\s+board|elite\s+rebounder/.test(q))                   r.minRPG = 7;
+            if (/\befficient\b|high[- ]percent/.test(q))                         r.minEFG = 0.52;
+
+            // Value & quality
+            if (/afford|cheap|budget|low[- ]cost|bargain|inexpensive|under[- ]radar/.test(q)) r.valueFilter = 'affordable';
+            else if (/\belite\b|\bstar\b|premium|high[- ]value|top[- ]tier/.test(q))          r.valueFilter = 'elite';
+
             if (/\btop\b|\bbest\b|\bhighest\b|\bpremier\b|\bleading\b/.test(q)) r.qualityFilter = 'top';
 
             return r;
@@ -2227,11 +2284,18 @@
 
         function buildSmartTags(parsed) {
             const tags = [];
-            if (parsed.archetype)      tags.push({ label: parsed.archetype, color: '#00ff88' });
+            parsed.archetypes.forEach(a  => tags.push({ label: a, color: '#00ff88' }));
             if (parsed.position)       tags.push({ label: parsed.position, color: '#00d4ff' });
             if (parsed.conference)     tags.push({ label: parsed.conference, color: '#f0c040' });
             if (parsed.conferenceTier) tags.push({ label: parsed.conferenceTier.toUpperCase() + ' MAJOR', color: '#fb923c' });
-            if (parsed.valueFilter === 'affordable') tags.push({ label: 'AFFORDABLE', color: '#34d399' });
+            if (parsed.playerClass)    tags.push({ label: 'CLASS: ' + parsed.playerClass, color: '#c084fc' });
+            if (parsed.minPPG)         tags.push({ label: `PPG ≥ ${parsed.minPPG}`, color: '#f87171' });
+            if (parsed.minAPG)         tags.push({ label: `APG ≥ ${parsed.minAPG}`, color: '#60a5fa' });
+            if (parsed.minBPG)         tags.push({ label: `BPG ≥ ${parsed.minBPG}`, color: '#34d399' });
+            if (parsed.minSPG)         tags.push({ label: `SPG ≥ ${parsed.minSPG}`, color: '#34d399' });
+            if (parsed.minRPG)         tags.push({ label: `RPG ≥ ${parsed.minRPG}`, color: '#fb923c' });
+            if (parsed.minEFG)         tags.push({ label: 'EFFICIENT', color: '#a78bfa' });
+            if (parsed.valueFilter === 'affordable') tags.push({ label: 'UNDER $85K', color: '#34d399' });
             if (parsed.valueFilter === 'elite')      tags.push({ label: 'ELITE VALUE', color: '#ff6b35' });
             if (parsed.qualityFilter === 'top')      tags.push({ label: 'TOP RANKED', color: '#a78bfa' });
             return tags;
@@ -2246,14 +2310,13 @@
                 return;
             }
             smartSearchState = parseSmartQuery(query);
-            // Render tags
             const tags = buildSmartTags(smartSearchState);
             const tagsEl = document.getElementById('smartSearchTags');
             if (tags.length === 0) {
-                tagsEl.innerHTML = '<span style="font-family:\'IBM Plex Mono\',monospace;font-size:0.65rem;color:var(--text-secondary);">No filters detected — try words like "shooter", "MAC", "affordable", "playmaker"</span>';
+                tagsEl.innerHTML = `<span style="font-family:'IBM Plex Mono',monospace;font-size:0.65rem;color:var(--text-secondary);">No filters detected — try: "affordable shooters in the Horizon League", "senior MAC guards", "two-way wings under $85k"</span>`;
             } else {
                 tagsEl.innerHTML = tags.map(t =>
-                    `<span style="display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:12px;border:1px solid ${t.color};color:${t.color};font-family:'IBM Plex Mono',monospace;font-size:0.65rem;font-weight:700;">${t.label}</span>`
+                    `<span style="display:inline-flex;align-items:center;padding:3px 10px;border-radius:12px;border:1px solid ${t.color};color:${t.color};font-family:'IBM Plex Mono',monospace;font-size:0.65rem;font-weight:700;">${t.label}</span>`
                 ).join('');
             }
             applyFilters();
@@ -2741,20 +2804,6 @@
                 const posClass = player.position_category === 'Guard' ? 'position-guard' :
                                 player.position_category === 'Wing' ? 'position-wing' : 'position-forward';
 
-                const ARCH_COLORS = {
-                    'Shooter':      '#f0c040',
-                    'Pure Scorer':  'var(--accent-tertiary)',
-                    'Playmaker':    'var(--accent-secondary)',
-                    'Floor General':'#a78bfa',
-                    'Two-Way':      'var(--accent-primary)',
-                    'Defender':     '#60a5fa',
-                    'Rebounder':    '#fb923c',
-                    'Stretch Big':  '#34d399',
-                    'Versatile':    'var(--text-secondary)',
-                };
-                const archetypeBadges = (player.archetypes || ['—']).map(a =>
-                    `<span style="display:inline-block;margin:1px 2px;padding:2px 6px;border-radius:4px;border:1px solid ${ARCH_COLORS[a]||'#888'};color:${ARCH_COLORS[a]||'#888'};font-size:0.62rem;font-weight:700;white-space:nowrap;">${a}</span>`
-                ).join('');
                 const tpa = get3PA(player);
 
                 const row = document.createElement('tr');
@@ -2768,7 +2817,6 @@
                     <td><span class="position-badge ${posClass}">${player.position_category}</span></td>
                     <td class="score-cell ${scoreClass}">${player.total_score.toFixed(1)}</td>
                     <td class="valuation-cell">$${player.valuation >= 1000000 ? (player.valuation / 1000000).toFixed(2) + 'M' : (player.valuation / 1000).toFixed(1) + 'K'}</td>
-                    <td style="line-height:1.6;">${archetypeBadges}</td>
                     <td>${(player.PPG || 0).toFixed(1)}</td>
                     <td>${(player.APG || 0).toFixed(1)}</td>
                     <td>${(player.RPG || 0).toFixed(1)}</td>
@@ -2827,9 +2875,6 @@
                     case 'tpa':
                         aVal = a['3PA'] || a['3PA/G'] || 0; bVal = b['3PA'] || b['3PA/G'] || 0;
                         break;
-                    case 'archetype':
-                        aVal = (a.archetypes || []).join(','); bVal = (b.archetypes || []).join(',');
-                        break;
                     case 'bpm':
                         aVal = a.BPM; bVal = b.BPM;
                         break;
@@ -2882,15 +2927,26 @@
                 let matchesSmart = true;
                 if (smartSearchState) {
                     const s = smartSearchState;
-                    if (s.archetype    && !(player.archetypes || []).includes(s.archetype)) matchesSmart = false;
-                    if (s.position     && player.position_category !== s.position)    matchesSmart = false;
-                    if (s.conference   && player.Conference !== s.conference)          matchesSmart = false;
+                    const pa = player.archetypes || [];
+                    // All requested archetypes must be present
+                    if (s.archetypes.length > 0 && !s.archetypes.every(a => pa.includes(a))) matchesSmart = false;
+                    if (s.position     && player.position_category !== s.position)             matchesSmart = false;
+                    if (s.conference   && player.Conference !== s.conference)                   matchesSmart = false;
                     if (s.conferenceTier) {
-                        const tier = getConferenceTier(player.Conference);
-                        if (tier !== s.conferenceTier)                                matchesSmart = false;
+                        if (getConferenceTier(player.Conference) !== s.conferenceTier)         matchesSmart = false;
                     }
-                    if (s.valueFilter === 'affordable' && player.valuation > AFFORDABLE_MAX) matchesSmart = false;
-                    if (s.valueFilter === 'elite'      && player.valuation < eliteThreshold)      matchesSmart = false;
+                    if (s.playerClass) {
+                        const cls = (player.Class || player.Yr || '').trim();
+                        if (!cls.toLowerCase().startsWith(s.playerClass.toLowerCase()))        matchesSmart = false;
+                    }
+                    if (s.minPPG && (parseFloat(player.PPG)      || 0) < s.minPPG)            matchesSmart = false;
+                    if (s.minAPG && (parseFloat(player.APG)      || 0) < s.minAPG)            matchesSmart = false;
+                    if (s.minBPG && (parseFloat(player.BPG)      || 0) < s.minBPG)            matchesSmart = false;
+                    if (s.minSPG && (parseFloat(player.SPG)      || 0) < s.minSPG)            matchesSmart = false;
+                    if (s.minRPG && (parseFloat(player.RPG)      || 0) < s.minRPG)            matchesSmart = false;
+                    if (s.minEFG && (parseFloat(player['eFG%'])  || 0) < s.minEFG)            matchesSmart = false;
+                    if (s.valueFilter === 'affordable' && player.valuation > AFFORDABLE_MAX)   matchesSmart = false;
+                    if (s.valueFilter === 'elite'      && player.valuation < eliteThreshold)   matchesSmart = false;
                 }
 
                 return matchesSearch && matchesConference && matchesPosition && matchesTeam && matchesScore && matchesSmart;
