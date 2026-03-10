@@ -2418,6 +2418,8 @@
             if (!name) return '';
             // Remove Jr., Sr., III, etc.
             name = name.replace(/\s+(Jr\.?|Sr\.?|III|IV|II)$/i, '');
+            // Strip periods so "A.J." and "AJ" both match
+            name = name.replace(/\./g, '');
             // Convert to lowercase and trim
             return name.toLowerCase().trim();
         }
@@ -4686,15 +4688,24 @@
             if (offAgg.ortg > 80 && defAgg.drtg > 80) {
                 score *= Math.pow(offAgg.ortg / defAgg.drtg, 0.35);
             }
+            // BPM differential: most schedule-adjusted per-player metric available.
+            // Each point of BPM gap shifts score ~0.8%, capped at ±15% total effect.
+            const bpmDiff = (offAgg.bpm || 0) - (defAgg.bpm || 0);
+            score *= (1 + Math.max(-0.15, Math.min(0.15, bpmDiff * 0.008)));
+            // Regress 40% toward NCAA average (72 pts) to dampen raw-stat inflation
+            // from players in weaker conferences — prevents unrealistic margins.
+            const NCAA_AVG = 72;
+            score = score * 0.60 + NCAA_AVG * 0.40;
             return Math.max(35, score);
         }
 
         function simulateSingleGame(nameA, nameB, aggA, aggB) {
             const expA = expectedTeamScore(nameA, nameB, aggA, aggB);
             const expB = expectedTeamScore(nameB, nameA, aggB, aggA);
-            // ~8-9 pt std dev reflects real college basketball game-to-game variance
-            const stdA = Math.max(5, expA * 0.095);
-            const stdB = Math.max(5, expB * 0.095);
+            // ~10-11 pt std dev — college basketball has high game-to-game variance;
+            // using 9.5% created extreme win probs (e.g. 96%) for modest score gaps
+            const stdA = Math.max(6, expA * 0.115);
+            const stdB = Math.max(6, expB * 0.115);
             const scoreA = Math.round(gaussianRandom(expA, stdA));
             const scoreB = Math.round(gaussianRandom(expB, stdB));
             return { A: scoreA, B: scoreB };
