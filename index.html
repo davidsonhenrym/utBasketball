@@ -1311,6 +1311,269 @@
             .roster-layout { grid-template-columns: 1fr; }
             .roster-sidebar-panel { position: static; }
         }
+
+        /* ── Matchup Simulator ── */
+        .matchup-setup {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .matchup-team-selectors {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 20px;
+            align-items: start;
+        }
+
+        @media (max-width: 700px) {
+            .matchup-team-selectors { grid-template-columns: 1fr; }
+            .matchup-vs-badge { text-align: center; }
+        }
+
+        .matchup-team-picker {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .matchup-picker-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--accent-primary);
+            margin-bottom: 12px;
+        }
+
+        #pickerB .matchup-picker-label { color: #00d4ff; }
+
+        .matchup-select {
+            width: 100%;
+            padding: 10px 14px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+
+        .matchup-vs-badge {
+            font-size: 1.6rem;
+            font-weight: 900;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding-top: 38px;
+        }
+
+        .matchup-team-preview {
+            margin-top: 14px;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.72rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        .matchup-team-preview .preview-name {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+            font-family: 'Archivo', sans-serif;
+        }
+
+        .matchup-team-preview .preview-stat {
+            display: flex;
+            justify-content: space-between;
+            padding: 3px 0;
+            border-bottom: 1px solid rgba(45,55,72,0.4);
+        }
+
+        .matchup-team-preview .preview-stat:last-child { border-bottom: none; }
+
+        .matchup-team-preview .preview-val {
+            color: var(--accent-primary);
+            font-weight: 700;
+        }
+
+        #pickerB .matchup-team-preview .preview-val { color: #00d4ff; }
+
+        .matchup-sim-controls {
+            display: flex;
+            justify-content: center;
+            padding: 8px 0;
+        }
+
+        .matchup-banner {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 16px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px 28px;
+            align-items: center;
+        }
+
+        .matchup-banner-team {
+            text-align: center;
+        }
+
+        .matchup-banner-team-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+
+        .matchup-banner-prob {
+            font-size: 3rem;
+            font-weight: 900;
+            line-height: 1;
+        }
+
+        .matchup-banner-prob.team-a { color: var(--accent-primary); }
+        .matchup-banner-prob.team-b { color: #00d4ff; }
+
+        .matchup-banner-avg {
+            font-size: 0.75rem;
+            font-family: 'IBM Plex Mono', monospace;
+            color: var(--text-secondary);
+            margin-top: 6px;
+        }
+
+        .matchup-banner-divider {
+            text-align: center;
+            font-size: 0.7rem;
+            font-family: 'IBM Plex Mono', monospace;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .matchup-prob-bar {
+            height: 10px;
+            background: var(--bg-secondary);
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 14px;
+            border: 1px solid var(--border);
+        }
+
+        .matchup-prob-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-primary), #00d4ff);
+            border-radius: 5px;
+            transition: width 0.6s ease;
+        }
+
+        .matchup-dist-wrap {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 12px;
+        }
+
+        .matchup-strategy-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 800px) {
+            .matchup-strategy-grid { grid-template-columns: 1fr; }
+        }
+
+        .matchup-strategy-card {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .matchup-strategy-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 14px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .matchup-strategy-title.team-a { color: var(--accent-primary); }
+        .matchup-strategy-title.team-b { color: #00d4ff; }
+
+        .matchup-strategy-item {
+            display: flex;
+            gap: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(45,55,72,0.4);
+            font-size: 0.8rem;
+            color: var(--text-primary);
+            line-height: 1.5;
+        }
+
+        .matchup-strategy-item:last-child { border-bottom: none; }
+
+        .matchup-strategy-bullet {
+            color: var(--accent-primary);
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .team-b-card .matchup-strategy-bullet { color: #00d4ff; }
+
+        .matchup-edge-a {
+            background: rgba(0,255,136,0.15);
+            color: var(--accent-primary);
+            border-radius: 4px;
+            padding: 2px 8px;
+            font-size: 0.65rem;
+            font-family: 'IBM Plex Mono', monospace;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .matchup-edge-b {
+            background: rgba(0,212,255,0.15);
+            color: #00d4ff;
+            border-radius: 4px;
+            padding: 2px 8px;
+            font-size: 0.65rem;
+            font-family: 'IBM Plex Mono', monospace;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .matchup-edge-even {
+            background: rgba(139,146,168,0.15);
+            color: var(--text-secondary);
+            border-radius: 4px;
+            padding: 2px 8px;
+            font-size: 0.65rem;
+            font-family: 'IBM Plex Mono', monospace;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        #matchupStatsTable td, #matchupPlayersTable td {
+            vertical-align: middle;
+        }
+
+        .matchup-running {
+            text-align: center;
+            padding: 40px;
+            color: var(--accent-primary);
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.9rem;
+        }
     </style>
 </head>
 <body>
@@ -1401,6 +1664,7 @@
                         <button class="tab active" onclick="switchTab('players')">Player Rankings</button>
                         <button class="tab" onclick="switchTab('teams')">Team Valuations</button>
                         <button class="tab" onclick="switchTab('roster')">Roster Builder</button>
+                        <button class="tab" onclick="switchTab('matchup')">Matchup Simulator</button>
                     </div>
 
                     <div id="playersTab" class="tab-content active">
@@ -1609,6 +1873,100 @@
                             </div>
                         </div>
 
+                    </div>
+
+                    <!-- Matchup Simulator Tab -->
+                    <div id="matchupTab" class="tab-content">
+                        <div class="matchup-setup">
+                            <div class="matchup-team-selectors">
+                                <div class="matchup-team-picker" id="pickerA">
+                                    <div class="matchup-picker-label">Team A</div>
+                                    <select id="matchupTeamA" class="matchup-select" onchange="onMatchupTeamChange()">
+                                        <option value="">-- Select Team --</option>
+                                    </select>
+                                    <div id="matchupTeamAPreview" class="matchup-team-preview"></div>
+                                </div>
+                                <div class="matchup-vs-badge">VS</div>
+                                <div class="matchup-team-picker" id="pickerB">
+                                    <div class="matchup-picker-label">Team B</div>
+                                    <select id="matchupTeamB" class="matchup-select" onchange="onMatchupTeamChange()">
+                                        <option value="">-- Select Team --</option>
+                                    </select>
+                                    <div id="matchupTeamBPreview" class="matchup-team-preview"></div>
+                                </div>
+                            </div>
+                            <div class="matchup-sim-controls">
+                                <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+                                    <label style="font-size:0.7rem;font-family:'IBM Plex Mono',monospace;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;">Simulations</label>
+                                    <select id="matchupSimCount" style="padding:8px 12px;background:var(--bg-tertiary);border:1px solid var(--border);border-radius:6px;color:var(--text-primary);font-family:'IBM Plex Mono',monospace;font-size:0.8rem;">
+                                        <option value="500">500</option>
+                                        <option value="1000" selected>1,000</option>
+                                        <option value="5000">5,000</option>
+                                        <option value="10000">10,000</option>
+                                    </select>
+                                    <button onclick="runMatchupSimulation()" id="matchupRunBtn" style="padding:10px 28px;background:linear-gradient(135deg,var(--accent-primary),var(--accent-secondary));color:var(--bg-primary);border:none;border-radius:8px;font-weight:700;font-size:0.85rem;cursor:pointer;text-transform:uppercase;letter-spacing:0.05em;font-family:'Archivo',sans-serif;">Run Simulation</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="matchupResults" style="display:none;margin-top:24px;">
+                            <!-- Win Probability Banner -->
+                            <div class="matchup-banner" id="matchupBanner"></div>
+
+                            <!-- Score Distribution -->
+                            <div style="margin-top:20px;">
+                                <div class="section-header" style="font-size:0.75rem;">Score Distribution (1,000 Simulations)</div>
+                                <div class="matchup-dist-wrap">
+                                    <canvas id="matchupDistCanvas" height="120"></canvas>
+                                </div>
+                            </div>
+
+                            <!-- Team Stats Comparison -->
+                            <div style="margin-top:24px;">
+                                <div class="section-header" style="font-size:0.75rem;">Team Statistics Comparison</div>
+                                <div class="table-wrapper">
+                                    <table id="matchupStatsTable">
+                                        <thead>
+                                            <tr>
+                                                <th>Stat</th>
+                                                <th id="matchupStatHdrA" style="color:var(--accent-primary);">Team A</th>
+                                                <th style="text-align:center;">Edge</th>
+                                                <th id="matchupStatHdrB" style="color:#00d4ff;">Team B</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="matchupStatsBody"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Player Matchups -->
+                            <div style="margin-top:24px;">
+                                <div class="section-header" style="font-size:0.75rem;">Player Matchups (Starters)</div>
+                                <div class="table-wrapper">
+                                    <table id="matchupPlayersTable">
+                                        <thead>
+                                            <tr>
+                                                <th>Pos</th>
+                                                <th id="matchupPlayerHdrA" style="color:var(--accent-primary);">Team A Player</th>
+                                                <th style="text-align:center;">Score</th>
+                                                <th style="text-align:center;">vs</th>
+                                                <th style="text-align:center;">Score</th>
+                                                <th id="matchupPlayerHdrB" style="color:#00d4ff;">Team B Player</th>
+                                                <th style="text-align:center;">Edge</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="matchupPlayersBody"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Strategy Cards -->
+                            <div class="matchup-strategy-grid" id="matchupStrategyGrid" style="margin-top:24px;"></div>
+                        </div>
+
+                        <div id="matchupEmpty" style="padding:60px;text-align:center;color:var(--text-secondary);font-family:'IBM Plex Mono',monospace;font-size:0.85rem;">
+                            Select two teams above and click Run Simulation to analyze the matchup.
+                        </div>
                     </div>
 
                 </div>
@@ -2049,6 +2407,11 @@
                 fileInfo.textContent = `✓ Loaded ${jsonData.length} players from Google Sheets`;
 
                 calculateScores();
+
+                // Auto-sync stats from CBBD API (uses 2-hour cache; fetches live if stale)
+                fileInfo.textContent += ' — syncing live stats…';
+                await syncStatsFromCBBD(false);
+                fileInfo.textContent = `✓ ${jsonData.length} players loaded & synced`;
             } catch (error) {
                 console.error('Error loading Google Sheet:', error);
                 fileInfo.textContent = `✗ Error: ${error.message}`;
@@ -2715,6 +3078,10 @@
                 document.querySelector('.tab:nth-child(3)').classList.add('active');
                 document.getElementById('rosterTab').classList.add('active');
                 renderRosterBuilder();
+            } else if (tab === 'matchup') {
+                document.querySelector('.tab:nth-child(4)').classList.add('active');
+                document.getElementById('matchupTab').classList.add('active');
+                populateMatchupTeamSelects();
             }
         }
 
@@ -3574,7 +3941,7 @@
         // Stats and shot data are cached for CBBD_CACHE_TTL ms (default 24 h).
         // Each unique team+season combination counts as one API call; once cached
         // no further calls are made until the TTL expires.
-        const CBBD_CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours
+        const CBBD_CACHE_TTL = 2 * 60 * 60 * 1000; // 2 hours — keeps stats current during the season
 
         function cbbdCacheGet(key) {
             try {
@@ -3610,6 +3977,7 @@
         const COURT_HALF_X  = 470;
 
         const teamShotsCache   = {};   // { "Team_Season": [...plays] }
+        let   cbbdTeamStats    = {};   // { teamName: { offRating, defRating, pace, fourFactors, … } }
         let   currentShotPlayer = null; // { name, team }
         let   currentShotView   = 'scatter';
 
@@ -4008,8 +4376,13 @@
                 player['FT%']   = parseFloat((cbbd.freeThrows.pct              / 100).toFixed(4));
                 player['eFG%']  = parseFloat((cbbd.effectiveFieldGoalPct       / 100).toFixed(4));
 
+                // ── 3-point attempts (season total + per-game) — needed by get3PA() ──
+                player['3PA']   = cbbd.threePointFieldGoals.attempts;
+                player['3PAG']  = parseFloat((cbbd.threePointFieldGoals.attempts / g).toFixed(2));
+
                 // ── Rebound % (CBBD returns 0-100, model uses 0.0-1.0) ───
                 player['OR%']   = parseFloat((cbbd.offensiveReboundPct         / 100).toFixed(4));
+                player['DR%']   = parseFloat(((cbbd.defensiveReboundPct || 0)  / 100).toFixed(4));
 
                 // ── Team-context / advanced stats ─────────────────────────
                 player['+/-']   = cbbd.netRating;
@@ -4042,6 +4415,666 @@
 
             if (missed > 0) console.warn('CBBD sync — unmatched players:', notFound);
             if (updated > 0) calculateScores();
+
+            // Also fetch team-level stats for the matchup simulator
+            await syncTeamStatsFromCBBD(forceRefresh);
+        }
+
+        async function syncTeamStatsFromCBBD(forceRefresh = false) {
+            if (!playerData || playerData.length === 0) return;
+            const season = parseInt(document.getElementById('shotSeasonSelect')?.value) || 2026;
+            const teams  = [...new Set(playerData.map(p => p.Team).filter(t => t && String(t).trim()))];
+
+            for (const team of teams) {
+                const lsKey = `cbbd_team_stats_v2_${team}_${season}`;
+
+                if (!forceRefresh) {
+                    const cached = cbbdCacheGet(lsKey);
+                    if (cached) { cbbdTeamStats[team] = cached; continue; }
+                }
+
+                try {
+                    const url = `${CBBD_BASE}/stats/team/season?season=${season}&team=${encodeURIComponent(team)}`;
+                    const res = await fetch(url, { headers: { 'Authorization': `Bearer ${CBBD_API_KEY}` } });
+                    if (!res.ok) { console.warn(`CBBD team stats: no data for "${team}" (${res.status})`); continue; }
+                    const data = await res.json();
+                    if (!data || !data.length) continue;
+
+                    const ts = data[0];
+                    const g  = Math.max(ts.games || 1, 1);
+                    const entry = {
+                        games:              ts.games,
+                        wins:               ts.wins,
+                        losses:             ts.losses,
+                        pace:               ts.pace,
+                        conference:         ts.conference,
+                        // Offensive efficiency
+                        offRating:          ts.teamStats.rating,
+                        trueShooting:       ts.teamStats.trueShooting,
+                        ptsPerGame:         ts.teamStats.points.total / g,
+                        ptsInPaint:         ts.teamStats.points.inPaint / g,
+                        ptsFastBreak:       ts.teamStats.points.fastBreak / g,
+                        ptsOffTurnovers:    ts.teamStats.points.offTurnovers / g,
+                        fgPct:              ts.teamStats.fieldGoals.pct,
+                        threePct:           ts.teamStats.threePointFieldGoals.pct,
+                        threePaPerGame:     ts.teamStats.threePointFieldGoals.attempted / g,
+                        ftPct:              ts.teamStats.freeThrows.pct,
+                        assists:            ts.teamStats.assists / g,
+                        turnovers:          ts.teamStats.turnovers.total / g,
+                        oRebounds:          ts.teamStats.rebounds.offensive / g,
+                        dRebounds:          ts.teamStats.rebounds.defensive / g,
+                        totalRebounds:      ts.teamStats.rebounds.total / g,
+                        blocks:             ts.teamStats.blocks / g,
+                        steals:             ts.teamStats.steals / g,
+                        possessions:        ts.teamStats.possessions / g,
+                        // Four Factors (offensive)
+                        eFGPct:             ts.teamStats.fourFactors.effectiveFieldGoalPct,
+                        tovRate:            ts.teamStats.fourFactors.turnoverRatio,
+                        orbPct:             ts.teamStats.fourFactors.offensiveReboundPct,
+                        freeThrowRate:      ts.teamStats.fourFactors.freeThrowRate,
+                        // Defensive efficiency (opponent stats)
+                        defRating:          ts.opponentStats.rating,
+                        oppEFGPct:          ts.opponentStats.fourFactors.effectiveFieldGoalPct,
+                        oppTovRate:         ts.opponentStats.fourFactors.turnoverRatio,
+                        oppOrbPct:          ts.opponentStats.fourFactors.offensiveReboundPct,
+                        oppFTR:             ts.opponentStats.fourFactors.freeThrowRate,
+                        oppPtsPerGame:      ts.opponentStats.points.total / g,
+                        oppThreePct:        ts.opponentStats.threePointFieldGoals.pct,
+                        oppFGPct:           ts.opponentStats.fieldGoals.pct,
+                    };
+                    cbbdTeamStats[team] = entry;
+                    cbbdCacheSet(lsKey, entry);
+                } catch (err) {
+                    console.warn(`CBBD team stats fetch error for "${team}":`, err);
+                }
+                await new Promise(r => setTimeout(r, 80)); // gentle rate-limit
+            }
+            console.log(`Team stats synced: ${Object.keys(cbbdTeamStats).length} teams`);
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        //  MATCHUP SIMULATOR
+        // ═══════════════════════════════════════════════════════════════
+
+        function populateMatchupTeamSelects() {
+            const selA = document.getElementById('matchupTeamA');
+            const selB = document.getElementById('matchupTeamB');
+            const prevA = selA.value;
+            const prevB = selB.value;
+
+            // Sort teams: those with team-level stats first, then alphabetically
+            const sorted = [...teamData].sort((a, b) => {
+                const hasA = !!cbbdTeamStats[a.name], hasB = !!cbbdTeamStats[b.name];
+                if (hasA !== hasB) return hasA ? -1 : 1;
+                return a.name.localeCompare(b.name);
+            });
+
+            const opts = sorted.map(t => {
+                const ts = cbbdTeamStats[t.name];
+                const rec = ts ? ` · ${ts.wins}-${ts.losses}` : '';
+                return `<option value="${t.name}">${t.name} (${t.conference}${rec})</option>`;
+            }).join('');
+            selA.innerHTML = '<option value="">-- Select Team --</option>' + opts;
+            selB.innerHTML = '<option value="">-- Select Team --</option>' + opts;
+
+            if (prevA) selA.value = prevA;
+            if (prevB) selB.value = prevB;
+
+            onMatchupTeamChange();
+        }
+
+        function onMatchupTeamChange() {
+            const nameA = document.getElementById('matchupTeamA').value;
+            const nameB = document.getElementById('matchupTeamB').value;
+            renderMatchupTeamPreview('A', nameA);
+            renderMatchupTeamPreview('B', nameB);
+        }
+
+        function renderMatchupTeamPreview(side, teamName) {
+            const el = document.getElementById(`matchupTeam${side}Preview`);
+            if (!teamName) { el.innerHTML = ''; return; }
+            const team = teamData.find(t => t.name === teamName);
+            if (!team) { el.innerHTML = ''; return; }
+            const ts   = cbbdTeamStats[teamName];
+            const agg  = getMatchupTeamAggregates(team);
+
+            if (ts) {
+                el.innerHTML = `
+                    <div class="preview-name">${team.name}</div>
+                    <div class="preview-stat"><span>Record</span><span class="preview-val">${ts.wins}-${ts.losses} (${ts.games} G)</span></div>
+                    <div class="preview-stat"><span>Pts/Game</span><span class="preview-val">${ts.ptsPerGame.toFixed(1)}</span></div>
+                    <div class="preview-stat"><span>Off Rating</span><span class="preview-val">${ts.offRating.toFixed(1)}</span></div>
+                    <div class="preview-stat"><span>Def Rating</span><span class="preview-val">${ts.defRating.toFixed(1)}</span></div>
+                    <div class="preview-stat"><span>Pace</span><span class="preview-val">${ts.pace.toFixed(1)} pos/G</span></div>
+                    <div class="preview-stat"><span>eFG%</span><span class="preview-val">${ts.eFGPct.toFixed(1)}%</span></div>
+                    <div class="preview-stat"><span>TO Rate</span><span class="preview-val">${(ts.tovRate * 100).toFixed(1)}%</span></div>
+                    <div class="preview-stat"><span>ORB%</span><span class="preview-val">${ts.orbPct.toFixed(1)}%</span></div>
+                `;
+            } else {
+                el.innerHTML = `
+                    <div class="preview-name">${team.name}</div>
+                    <div style="font-size:0.65rem;color:var(--accent-tertiary);margin-bottom:8px;">No team stats — using player aggregates</div>
+                    <div class="preview-stat"><span>Starters PPG</span><span class="preview-val">${agg.ppg.toFixed(1)}</span></div>
+                    <div class="preview-stat"><span>Starters RPG</span><span class="preview-val">${agg.rpg.toFixed(1)}</span></div>
+                    <div class="preview-stat"><span>Starters APG</span><span class="preview-val">${agg.apg.toFixed(1)}</span></div>
+                    <div class="preview-stat"><span>eFG%</span><span class="preview-val">${(agg.efg * 100).toFixed(1)}%</span></div>
+                `;
+            }
+        }
+
+        function getMatchupTeamAggregates(team) {
+            // Sort players by score, take top 8 (starters = top 5, bench = next 3)
+            const sorted = [...team.players].sort((a, b) => b.total_score - a.total_score);
+            const starters = sorted.slice(0, 5);
+            const bench    = sorted.slice(5, 8);
+
+            function avg(players, key) {
+                const vals = players.map(p => parseFloat(p[key]) || 0).filter(v => v !== 0);
+                return vals.length ? vals.reduce((s, v) => s + v, 0) / vals.length : 0;
+            }
+            function sum(players, key) {
+                return players.reduce((s, p) => s + (parseFloat(p[key]) || 0), 0);
+            }
+            function wavg(starterVal, benchVal) {
+                return starterVal * 0.65 + benchVal * 0.35;
+            }
+
+            const sOrtg = avg(starters, 'ORtg');
+            const sDrtg = avg(starters, 'DRtg');
+            const bOrtg = avg(bench,    'ORtg');
+            const bDrtg = avg(bench,    'DRtg');
+
+            return {
+                starters,
+                bench,
+                ppg:   sum(starters, 'PPG'),
+                rpg:   sum(starters, 'RPG'),
+                apg:   sum(starters, 'APG'),
+                spg:   sum(starters, 'SPG'),
+                bpg:   sum(starters, 'BPG'),
+                topg:  sum(starters, 'TOPG'),
+                efg:   avg(starters, 'eFG%'),
+                fgpct: avg(starters, 'FG%'),
+                tppct: avg(starters, '3P%'),
+                ftpct: avg(starters, 'FT%'),
+                bpm:   avg(starters, 'BPM'),
+                ortg:  sOrtg > 0 ? wavg(sOrtg, bOrtg) : 0,
+                drtg:  sDrtg > 0 ? wavg(sDrtg, bDrtg) : 0,
+                tpa:   starters.reduce((s, p) => s + get3PA(p), 0),
+                avgScore: avg(starters, 'total_score')
+            };
+        }
+
+        // Box-Muller Gaussian random
+        function gaussianRandom(mean, std) {
+            let u = 0, v = 0;
+            while (u === 0) u = Math.random();
+            while (v === 0) v = Math.random();
+            return mean + std * Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+        }
+
+        // Expected score using team-level ratings (primary) or player aggregates (fallback)
+        function expectedTeamScore(offName, defName, offAgg, defAgg) {
+            const offTs = cbbdTeamStats[offName];
+            const defTs = cbbdTeamStats[defName];
+
+            if (offTs && defTs && offTs.offRating > 0 && defTs.defRating > 0) {
+                // Four-factor adjusted efficiency rating model
+                // Dean Oliver method: base = offRating * pace / 100 possessions
+                // Opponent adjustment: scale by (avgDefRating / opponent.defRating)
+                // where college average defRating ≈ 100 (by definition)
+                const sharedPace = (offTs.pace + defTs.pace) / 2;
+                // pts = offRating/100 * possessions, adjusted down by opponent defense
+                const base = (offTs.offRating * sharedPace) / defTs.defRating;
+                return Math.max(35, base);
+            }
+
+            // Fallback: player-aggregate model (used when team stats unavailable)
+            let score = offAgg.ppg;
+            if (offAgg.efg > 0) score *= (offAgg.efg / 0.50);
+            const defPressure = Math.min(0.10, (defAgg.spg + defAgg.bpg * 0.5) * 0.01);
+            score *= (1 - defPressure);
+            if (offAgg.topg > 0) score *= Math.max(0.82, 1 - offAgg.topg * 0.015);
+            if (offAgg.ortg > 80 && defAgg.drtg > 80) {
+                score *= Math.pow(offAgg.ortg / defAgg.drtg, 0.35);
+            }
+            return Math.max(35, score);
+        }
+
+        function simulateSingleGame(nameA, nameB, aggA, aggB) {
+            const expA = expectedTeamScore(nameA, nameB, aggA, aggB);
+            const expB = expectedTeamScore(nameB, nameA, aggB, aggA);
+            // ~8-9 pt std dev reflects real college basketball game-to-game variance
+            const stdA = Math.max(5, expA * 0.095);
+            const stdB = Math.max(5, expB * 0.095);
+            const scoreA = Math.round(gaussianRandom(expA, stdA));
+            const scoreB = Math.round(gaussianRandom(expB, stdB));
+            return { A: scoreA, B: scoreB };
+        }
+
+        function runMatchupSimulation() {
+            const nameA = document.getElementById('matchupTeamA').value;
+            const nameB = document.getElementById('matchupTeamB').value;
+            if (!nameA || !nameB) { alert('Please select both teams.'); return; }
+            if (nameA === nameB) { alert('Please select two different teams.'); return; }
+
+            const teamA = teamData.find(t => t.name === nameA);
+            const teamB = teamData.find(t => t.name === nameB);
+            if (!teamA || !teamB) return;
+
+            const n = parseInt(document.getElementById('matchupSimCount').value) || 1000;
+            const aggA = getMatchupTeamAggregates(teamA);
+            const aggB = getMatchupTeamAggregates(teamB);
+            const tsA  = cbbdTeamStats[nameA];
+            const tsB  = cbbdTeamStats[nameB];
+
+            let winsA = 0, winsB = 0;
+            const scoresA = [], scoresB = [], margins = [];
+
+            for (let i = 0; i < n; i++) {
+                const { A, B } = simulateSingleGame(nameA, nameB, aggA, aggB);
+                scoresA.push(A);
+                scoresB.push(B);
+                margins.push(A - B);
+                if (A > B) winsA++; else winsB++;
+            }
+
+            const avgA = scoresA.reduce((s, v) => s + v, 0) / n;
+            const avgB = scoresB.reduce((s, v) => s + v, 0) / n;
+            const avgMargin = margins.reduce((s, v) => s + v, 0) / n;
+            const usingTeamStats = !!(tsA && tsB);
+
+            renderMatchupResults({ teamA, teamB, aggA, aggB, tsA, tsB, winsA, winsB, n, avgA, avgB, avgMargin, scoresA, scoresB, usingTeamStats });
+        }
+
+        function renderMatchupResults({ teamA, teamB, aggA, aggB, tsA, tsB, winsA, winsB, n, avgA, avgB, avgMargin, scoresA, scoresB, usingTeamStats }) {
+            document.getElementById('matchupEmpty').style.display = 'none';
+            document.getElementById('matchupResults').style.display = 'block';
+
+            const pctA = ((winsA / n) * 100).toFixed(1);
+            const pctB = ((winsB / n) * 100).toFixed(1);
+            const shortA = teamA.name.split(' ').pop();
+            const shortB = teamB.name.split(' ').pop();
+
+            document.getElementById('matchupStatHdrA').textContent = teamA.name;
+            document.getElementById('matchupStatHdrB').textContent = teamB.name;
+            document.getElementById('matchupPlayerHdrA').textContent = teamA.name;
+            document.getElementById('matchupPlayerHdrB').textContent = teamB.name;
+
+            const favTagA = `<span style="font-size:0.65rem;font-family:'IBM Plex Mono',monospace;background:rgba(0,255,136,0.15);color:var(--accent-primary);padding:3px 10px;border-radius:10px;font-weight:700;">FAVORED</span>`;
+            const favTagB = `<span style="font-size:0.65rem;font-family:'IBM Plex Mono',monospace;background:rgba(0,212,255,0.15);color:#00d4ff;padding:3px 10px;border-radius:10px;font-weight:700;">FAVORED</span>`;
+
+            const recA = tsA ? ` <span style="font-size:0.75rem;color:var(--text-secondary);">(${tsA.wins}-${tsA.losses})</span>` : '';
+            const recB = tsB ? ` <span style="font-size:0.75rem;color:var(--text-secondary);">(${tsB.wins}-${tsB.losses})</span>` : '';
+            const modelNote = usingTeamStats
+                ? `<div style="font-size:0.6rem;color:var(--accent-primary);margin-top:4px;">&#10003; Using live team efficiency ratings</div>`
+                : `<div style="font-size:0.6rem;color:var(--accent-tertiary);margin-top:4px;">&#9888; Using player aggregates (sync CBBD for team stats)</div>`;
+
+            document.getElementById('matchupBanner').innerHTML = `
+                <div class="matchup-banner-team">
+                    <div class="matchup-banner-team-name">${teamA.name}${recA} ${winsA >= winsB ? favTagA : ''}</div>
+                    <div class="matchup-banner-prob team-a">${pctA}%</div>
+                    <div class="matchup-banner-avg">Win Probability</div>
+                    <div class="matchup-banner-avg" style="margin-top:4px;">Avg Score: <strong style="color:var(--text-primary);">${avgA.toFixed(1)}</strong></div>
+                    <div class="matchup-banner-avg">${winsA.toLocaleString()} wins / ${n.toLocaleString()} sims</div>
+                </div>
+                <div class="matchup-banner-divider">
+                    <div style="font-size:1.2rem;font-weight:900;color:var(--text-secondary);margin-bottom:8px;">VS</div>
+                    <div style="font-size:0.65rem;margin-bottom:4px;color:var(--text-secondary);">Avg Margin</div>
+                    <div style="font-size:1.4rem;font-weight:900;color:${avgMargin > 0 ? 'var(--accent-primary)' : '#00d4ff'};">${avgMargin > 0 ? '+' : ''}${avgMargin.toFixed(1)}</div>
+                    <div class="matchup-prob-bar" style="width:150px;margin:10px auto 0;">
+                        <div class="matchup-prob-fill" style="width:${pctA}%;"></div>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;width:150px;margin:4px auto 0;font-size:0.6rem;">
+                        <span style="color:var(--accent-primary);">${pctA}%</span>
+                        <span style="color:#00d4ff;">${pctB}%</span>
+                    </div>
+                    ${modelNote}
+                </div>
+                <div class="matchup-banner-team">
+                    <div class="matchup-banner-team-name">${teamB.name}${recB} ${winsB > winsA ? favTagB : ''}</div>
+                    <div class="matchup-banner-prob team-b">${pctB}%</div>
+                    <div class="matchup-banner-avg">Win Probability</div>
+                    <div class="matchup-banner-avg" style="margin-top:4px;">Avg Score: <strong style="color:var(--text-primary);">${avgB.toFixed(1)}</strong></div>
+                    <div class="matchup-banner-avg">${winsB.toLocaleString()} wins / ${n.toLocaleString()} sims</div>
+                </div>
+            `;
+
+            // ── Score Distribution Canvas ──
+            renderMatchupDistribution(scoresA, scoresB, teamA.name, teamB.name);
+
+            // ── Stats Comparison Table ──
+            // Build rows: team-level stats first (if available), then player aggregates
+            const statsRows = [];
+            if (tsA && tsB) {
+                statsRows.push(
+                    { label: 'Offensive Rating', a: tsA.offRating, b: tsB.offRating, fmt: v => v.toFixed(1), higherBetter: true, group: 'Team Stats (Live)' },
+                    { label: 'Defensive Rating', a: tsA.defRating, b: tsB.defRating, fmt: v => v.toFixed(1), higherBetter: false },
+                    { label: 'Pace (Poss/G)', a: tsA.pace, b: tsB.pace, fmt: v => v.toFixed(1), higherBetter: null },
+                    { label: 'Points Per Game', a: tsA.ptsPerGame, b: tsB.ptsPerGame, fmt: v => v.toFixed(1), higherBetter: true },
+                    { label: 'True Shooting %', a: tsA.trueShooting, b: tsB.trueShooting, fmt: v => v.toFixed(1) + '%', higherBetter: true },
+                    { label: '— Four Factors (Offense) —', a: null, b: null, header: true },
+                    { label: 'eFG%', a: tsA.eFGPct, b: tsB.eFGPct, fmt: v => v.toFixed(1) + '%', higherBetter: true },
+                    { label: 'Turnover Rate', a: tsA.tovRate * 100, b: tsB.tovRate * 100, fmt: v => v.toFixed(1) + '%', higherBetter: false },
+                    { label: 'Off. Reb %', a: tsA.orbPct, b: tsB.orbPct, fmt: v => v.toFixed(1) + '%', higherBetter: true },
+                    { label: 'FT Rate (FTA/FGA)', a: tsA.freeThrowRate, b: tsB.freeThrowRate, fmt: v => v.toFixed(1) + '%', higherBetter: true },
+                    { label: '— Four Factors (Defense) —', a: null, b: null, header: true },
+                    { label: 'Opp eFG% Allowed', a: tsA.oppEFGPct, b: tsB.oppEFGPct, fmt: v => v.toFixed(1) + '%', higherBetter: false },
+                    { label: 'Opp TO Rate Forced', a: tsA.oppTovRate * 100, b: tsB.oppTovRate * 100, fmt: v => v.toFixed(1) + '%', higherBetter: true },
+                    { label: 'Opp ORB% Allowed', a: tsA.oppOrbPct, b: tsB.oppOrbPct, fmt: v => v.toFixed(1) + '%', higherBetter: false },
+                    { label: '— Counting Stats (Per Game) —', a: null, b: null, header: true },
+                    { label: '3P%', a: tsA.threePct, b: tsB.threePct, fmt: v => v.toFixed(1) + '%', higherBetter: true },
+                    { label: '3PA/G', a: tsA.threePaPerGame, b: tsB.threePaPerGame, fmt: v => v.toFixed(1), higherBetter: true },
+                    { label: 'FT%', a: tsA.ftPct, b: tsB.ftPct, fmt: v => v.toFixed(1) + '%', higherBetter: true },
+                    { label: 'Assists/G', a: tsA.assists, b: tsB.assists, fmt: v => v.toFixed(1), higherBetter: true },
+                    { label: 'Turnovers/G', a: tsA.turnovers, b: tsB.turnovers, fmt: v => v.toFixed(1), higherBetter: false },
+                    { label: 'Rebounds/G', a: tsA.totalRebounds, b: tsB.totalRebounds, fmt: v => v.toFixed(1), higherBetter: true },
+                    { label: 'Blocks/G', a: tsA.blocks, b: tsB.blocks, fmt: v => v.toFixed(1), higherBetter: true },
+                    { label: 'Steals/G', a: tsA.steals, b: tsB.steals, fmt: v => v.toFixed(1), higherBetter: true },
+                    { label: 'Pts in Paint/G', a: tsA.ptsInPaint, b: tsB.ptsInPaint, fmt: v => v.toFixed(1), higherBetter: true },
+                    { label: 'Fast Break Pts/G', a: tsA.ptsFastBreak, b: tsB.ptsFastBreak, fmt: v => v.toFixed(1), higherBetter: true },
+                    { label: 'Pts off TOs/G', a: tsA.ptsOffTurnovers, b: tsB.ptsOffTurnovers, fmt: v => v.toFixed(1), higherBetter: true },
+                );
+            } else {
+                // Fallback rows using player aggregates
+                statsRows.push(
+                    { label: 'Starters PPG', a: aggA.ppg, b: aggB.ppg, fmt: v => v.toFixed(1), higherBetter: true },
+                    { label: 'eFG%', a: aggA.efg * 100, b: aggB.efg * 100, fmt: v => v.toFixed(1) + '%', higherBetter: true },
+                    { label: 'FG%', a: aggA.fgpct * 100, b: aggB.fgpct * 100, fmt: v => v.toFixed(1) + '%', higherBetter: true },
+                    { label: '3P%', a: aggA.tppct * 100, b: aggB.tppct * 100, fmt: v => v.toFixed(1) + '%', higherBetter: true },
+                    { label: 'FT%', a: aggA.ftpct * 100, b: aggB.ftpct * 100, fmt: v => v.toFixed(1) + '%', higherBetter: true },
+                    { label: 'Starters RPG', a: aggA.rpg, b: aggB.rpg, fmt: v => v.toFixed(1), higherBetter: true },
+                    { label: 'Starters APG', a: aggA.apg, b: aggB.apg, fmt: v => v.toFixed(1), higherBetter: true },
+                    { label: 'Starters SPG', a: aggA.spg, b: aggB.spg, fmt: v => v.toFixed(1), higherBetter: true },
+                    { label: 'Starters BPG', a: aggA.bpg, b: aggB.bpg, fmt: v => v.toFixed(1), higherBetter: true },
+                    { label: 'Starters TOPG', a: aggA.topg, b: aggB.topg, fmt: v => v.toFixed(1), higherBetter: false },
+                    { label: '3PA/G', a: aggA.tpa, b: aggB.tpa, fmt: v => v.toFixed(1), higherBetter: true },
+                    { label: 'Avg BPM', a: aggA.bpm, b: aggB.bpm, fmt: v => (v > 0 ? '+' : '') + v.toFixed(1), higherBetter: true },
+                    { label: 'Avg Player Score', a: aggA.avgScore, b: aggB.avgScore, fmt: v => v.toFixed(1), higherBetter: true },
+                );
+            }
+
+            const tbody = document.getElementById('matchupStatsBody');
+            tbody.innerHTML = statsRows.map(row => {
+                if (row.header) {
+                    return `<tr><td colspan="4" style="background:var(--bg-primary);font-size:0.65rem;font-family:'IBM Plex Mono',monospace;color:var(--accent-primary);text-transform:uppercase;letter-spacing:0.08em;padding:10px 12px 6px;">${row.label}</td></tr>`;
+                }
+                let edgeHtml = '<span class="matchup-edge-even">EVEN</span>';
+                if (row.higherBetter !== null && row.a !== null && row.b !== null) {
+                    const threshold = Math.max(Math.abs(row.a) * 0.04, 0.5);
+                    const diff = row.a - row.b;
+                    if (Math.abs(diff) > threshold) {
+                        const aWins = row.higherBetter ? diff > 0 : diff < 0;
+                        edgeHtml = aWins
+                            ? `<span class="matchup-edge-a">${shortA} ↑</span>`
+                            : `<span class="matchup-edge-b">${shortB} ↑</span>`;
+                    }
+                }
+                const aStyle = row.a !== null && row.b !== null && row.higherBetter !== null && (row.higherBetter ? row.a >= row.b : row.a <= row.b) ? 'color:var(--accent-primary);font-weight:700;' : '';
+                const bStyle = row.a !== null && row.b !== null && row.higherBetter !== null && (row.higherBetter ? row.b >= row.a : row.b <= row.a) ? 'color:#00d4ff;font-weight:700;' : '';
+                return `<tr>
+                    <td>${row.label}</td>
+                    <td style="${aStyle}">${row.a !== null ? row.fmt(row.a) : '—'}</td>
+                    <td style="text-align:center;">${edgeHtml}</td>
+                    <td style="${bStyle}">${row.b !== null ? row.fmt(row.b) : '—'}</td>
+                </tr>`;
+            }).join('');
+
+            // ── Player Matchups ──
+            renderPlayerMatchups(aggA.starters, aggB.starters, teamA.name, teamB.name);
+
+            // ── Strategies ──
+            renderMatchupStrategies(aggA, aggB, tsA, tsB, teamA.name, teamB.name, pctA, pctB);
+        }
+
+        function renderMatchupDistribution(scoresA, scoresB, nameA, nameB) {
+            const canvas = document.getElementById('matchupDistCanvas');
+            if (!canvas) return;
+            canvas.width = canvas.parentElement.clientWidth - 32 || 600;
+
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const allScores = [...scoresA, ...scoresB];
+            const minS = Math.floor(Math.min(...allScores) / 5) * 5;
+            const maxS = Math.ceil(Math.max(...allScores) / 5) * 5;
+            const binW = 5;
+            const bins = [];
+            for (let s = minS; s <= maxS; s += binW) bins.push(s);
+
+            const countA = new Array(bins.length).fill(0);
+            const countB = new Array(bins.length).fill(0);
+            scoresA.forEach(s => { const i = Math.min(bins.length - 1, Math.floor((s - minS) / binW)); if (i >= 0) countA[i]++; });
+            scoresB.forEach(s => { const i = Math.min(bins.length - 1, Math.floor((s - minS) / binW)); if (i >= 0) countB[i]++; });
+
+            const maxCount = Math.max(...countA, ...countB) || 1;
+            const n = scoresA.length;
+            const W = canvas.width, H = canvas.height;
+            const padL = 36, padR = 12, padT = 12, padB = 30;
+            const chartW = W - padL - padR;
+            const chartH = H - padT - padB;
+            const barW = (chartW / bins.length) * 0.4;
+
+            // Axis
+            ctx.strokeStyle = '#2d3748';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(padL, padT);
+            ctx.lineTo(padL, H - padB);
+            ctx.lineTo(W - padR, H - padB);
+            ctx.stroke();
+
+            // Bars
+            bins.forEach((bin, i) => {
+                const x = padL + (i / bins.length) * chartW;
+                const hA = (countA[i] / maxCount) * chartH;
+                const hB = (countB[i] / maxCount) * chartH;
+
+                // Team A bars
+                ctx.fillStyle = 'rgba(0,255,136,0.5)';
+                ctx.fillRect(x + 1, H - padB - hA, barW, hA);
+
+                // Team B bars
+                ctx.fillStyle = 'rgba(0,212,255,0.5)';
+                ctx.fillRect(x + barW + 2, H - padB - hB, barW, hB);
+            });
+
+            // X-axis labels (every other bin)
+            ctx.fillStyle = '#8b92a8';
+            ctx.font = '10px IBM Plex Mono, monospace';
+            ctx.textAlign = 'center';
+            bins.forEach((bin, i) => {
+                if (i % 2 === 0) {
+                    const x = padL + (i / bins.length) * chartW + barW;
+                    ctx.fillText(bin, x, H - padB + 14);
+                }
+            });
+
+            // Legend
+            ctx.font = '11px IBM Plex Mono, monospace';
+            ctx.fillStyle = 'rgba(0,255,136,0.8)';
+            ctx.fillRect(padL, padT, 12, 10);
+            ctx.fillStyle = '#00ff88';
+            ctx.textAlign = 'left';
+            ctx.fillText(nameA, padL + 16, padT + 9);
+
+            const legendBX = padL + 14 + ctx.measureText(nameA).width + 20;
+            ctx.fillStyle = 'rgba(0,212,255,0.8)';
+            ctx.fillRect(legendBX, padT, 12, 10);
+            ctx.fillStyle = '#00d4ff';
+            ctx.fillText(nameB, legendBX + 16, padT + 9);
+
+            // Y-axis label (% of sims)
+            ctx.save();
+            ctx.fillStyle = '#8b92a8';
+            ctx.font = '9px IBM Plex Mono, monospace';
+            ctx.translate(10, H / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.textAlign = 'center';
+            ctx.fillText('Sim Count', 0, 0);
+            ctx.restore();
+        }
+
+        function renderPlayerMatchups(startersA, startersB, nameA, nameB) {
+            const posOrder = { 'Guard': 1, 'Wing': 2, 'Forward/Center': 3 };
+            const sortedA = [...startersA].sort((a, b) => (posOrder[a.position_category] || 9) - (posOrder[b.position_category] || 9));
+            const sortedB = [...startersB].sort((a, b) => (posOrder[a.position_category] || 9) - (posOrder[b.position_category] || 9));
+
+            const rows = Array.from({ length: Math.max(sortedA.length, sortedB.length) }, (_, i) => {
+                const pA = sortedA[i];
+                const pB = sortedB[i];
+                const sA = pA ? pA.total_score : 0;
+                const sB = pB ? pB.total_score : 0;
+                const pos = (pA || pB)?.position_category || '';
+                const diff = sA - sB;
+                let edgeHtml = '<span class="matchup-edge-even">EVEN</span>';
+                if (Math.abs(diff) > 3) {
+                    edgeHtml = diff > 0
+                        ? `<span class="matchup-edge-a">${nameA.split(' ').slice(-1)[0]} ↑</span>`
+                        : `<span class="matchup-edge-b">${nameB.split(' ').slice(-1)[0]} ↑</span>`;
+                }
+                const aStyle = sA >= sB ? 'color:var(--accent-primary);font-weight:700;' : '';
+                const bStyle = sB >= sA ? 'color:#00d4ff;font-weight:700;' : '';
+
+                // Short position label
+                const posLabel = pos === 'Guard' ? 'G' : pos === 'Wing' ? 'W' : pos === 'Forward/Center' ? 'F/C' : pos;
+
+                return `<tr>
+                    <td><span class="dc-pos-badge">${posLabel}</span></td>
+                    <td style="${aStyle}">${pA ? pA.Player : '—'}<br><span style="font-size:0.65rem;color:var(--text-secondary);">${pA ? (pA.archetypes || []).join(', ') : ''}</span></td>
+                    <td style="text-align:center;${aStyle}">${pA ? sA.toFixed(1) : '—'}</td>
+                    <td style="text-align:center;color:var(--text-secondary);font-size:0.8rem;">vs</td>
+                    <td style="text-align:center;${bStyle}">${pB ? sB.toFixed(1) : '—'}</td>
+                    <td style="${bStyle}">${pB ? pB.Player : '—'}<br><span style="font-size:0.65rem;color:var(--text-secondary);">${pB ? (pB.archetypes || []).join(', ') : ''}</span></td>
+                    <td style="text-align:center;">${edgeHtml}</td>
+                </tr>`;
+            });
+
+            document.getElementById('matchupPlayersBody').innerHTML = rows.join('');
+        }
+
+        function renderMatchupStrategies(aggA, aggB, tsA, tsB, nameA, nameB, pctA, pctB) {
+            function buildStrategies(myAgg, oppAgg, myTs, oppTs, myName, oppName) {
+                const tips = [];
+
+                if (myTs && oppTs) {
+                    // ── Team-stats-based strategies (most accurate) ──
+
+                    // Efficiency edge
+                    const offGap = myTs.offRating - oppTs.defRating;
+                    if (offGap > 8) {
+                        tips.push(`Unleash the offense — offensive rating (${myTs.offRating.toFixed(1)}) vs opponent's defensive rating (${oppTs.defRating.toFixed(1)}) is a massive +${offGap.toFixed(1)} gap. Play fast and keep the game high-scoring.`);
+                    }
+
+                    // Pace strategy
+                    if (myTs.pace > oppTs.pace + 3) {
+                        tips.push(`Push the tempo — ${myName} plays at ${myTs.pace.toFixed(1)} poss/G vs opponent's ${oppTs.pace.toFixed(1)}. Up-tempo favors the faster team; avoid half-court sets and run in transition after every make and miss.`);
+                    } else if (myTs.pace < oppTs.pace - 3) {
+                        tips.push(`Slow it down — ${myName} thrives in a slower pace (${myTs.pace.toFixed(1)} vs ${oppTs.pace.toFixed(1)} poss/G). Take time off the clock, execute in the half-court, and limit fast-break opportunities.`);
+                    }
+
+                    // Four Factors — eFG%
+                    if (myTs.eFGPct > oppTs.oppEFGPct + 3) {
+                        tips.push(`Exploit the shooting gap — team eFG% (${myTs.eFGPct.toFixed(1)}%) is significantly above what opponent allows (${oppTs.oppEFGPct.toFixed(1)}%). Space the floor and take volume from perimeter positions.`);
+                    }
+
+                    // Four Factors — Turnover rate
+                    if (myTs.tovRate < oppTs.oppTovRate - 0.03) {
+                        tips.push(`Ball security is key — ${myName} turns it over on only ${(myTs.tovRate * 100).toFixed(1)}% of possessions while opponent forces ${(oppTs.oppTovRate * 100).toFixed(1)}% TOs. Value every possession and avoid live-ball mistakes.`);
+                    }
+                    if (myTs.oppTovRate > oppTs.tovRate + 0.03) {
+                        tips.push(`Apply defensive pressure — ${myName} forces turnovers on ${(myTs.oppTovRate * 100).toFixed(1)}% of possessions vs opponent's ${(oppTs.tovRate * 100).toFixed(1)}% rate. Trap ball-handlers and jump passing lanes.`);
+                    }
+
+                    // Four Factors — Offensive rebounding
+                    if (myTs.orbPct > oppTs.oppOrbPct + 4) {
+                        tips.push(`Crash the offensive glass — ORB% (${myTs.orbPct.toFixed(1)}%) exceeds what opponent allows (${oppTs.oppOrbPct.toFixed(1)}%). Second-chance opportunities could be the margin — send multiple players to the glass.`);
+                    }
+
+                    // Paint points
+                    if (myTs.ptsInPaint > oppTs.ptsInPaint + 5) {
+                        tips.push(`Dominate the paint — ${myTs.ptsInPaint.toFixed(1)} pts/G inside vs opponent's ${oppTs.ptsInPaint.toFixed(1)}. Attack the rim relentlessly and draw fouls (FT rate: ${myTs.freeThrowRate.toFixed(1)}%).`);
+                    }
+
+                    // Fast break
+                    if (myTs.ptsFastBreak > oppTs.ptsFastBreak + 5) {
+                        tips.push(`Run in transition — ${myTs.ptsFastBreak.toFixed(1)} fast-break pts/G advantage. Force misses, rebound quickly, and sprint ahead before the defense sets.`);
+                    }
+
+                    // Points off turnovers
+                    if (myTs.ptsOffTurnovers > oppTs.ptsOffTurnovers + 5) {
+                        tips.push(`Turn defense into offense — ${myTs.ptsOffTurnovers.toFixed(1)} pts/G off turnovers. Pressure the ball and convert live-ball TOs into easy buckets.`);
+                    }
+
+                    // Three-point volume vs opponent three-pt defense
+                    if (myTs.threePct > oppTs.oppThreePct + 3) {
+                        tips.push(`Shoot the three — team 3P% (${myTs.threePct.toFixed(1)}%) tops what opponent allows (${oppTs.oppThreePct.toFixed(1)}%). Locate shooters early in shot clock and value clean looks behind the arc.`);
+                    }
+
+                    // Defensive identity
+                    if (myTs.defRating < oppTs.offRating - 8) {
+                        tips.push(`Trust your defense — defensive rating (${myTs.defRating.toFixed(1)}) is well below opponent's offensive rating (${oppTs.offRating.toFixed(1)}). Commit to the defensive system — it can hold opponents under their average.`);
+                    }
+
+                } else {
+                    // ── Player-aggregate-based strategies (fallback) ──
+                    if (myAgg.tppct > oppAgg.tppct + 0.02) {
+                        tips.push(`Exploit 3-point advantage — starters shoot ${(myAgg.tppct * 100).toFixed(1)}% vs opponent's ${(oppAgg.tppct * 100).toFixed(1)}%. Space the floor and attack off kick-outs.`);
+                    }
+                    if (myAgg.efg > oppAgg.efg + 0.02) {
+                        tips.push(`Push shot volume — superior eFG% (${(myAgg.efg * 100).toFixed(1)}% vs ${(oppAgg.efg * 100).toFixed(1)}%) means more shots is better.`);
+                    }
+                    if (myAgg.topg < oppAgg.topg - 0.5) {
+                        tips.push(`Protect the ball — turnover advantage (${myAgg.topg.toFixed(1)} vs ${oppAgg.topg.toFixed(1)} TOPG). Keep possessions clean and push opponent into transition.`);
+                    }
+                    if (myAgg.apg > oppAgg.apg + 1.0) {
+                        tips.push(`Move the ball — strong passing advantage (${myAgg.apg.toFixed(1)} APG). Generate open looks through ball movement.`);
+                    }
+                    if (myAgg.rpg > oppAgg.rpg + 3) {
+                        tips.push(`Win the glass — dominant rebounding edge (${myAgg.rpg.toFixed(1)} vs ${oppAgg.rpg.toFixed(1)} RPG). Crash offensive boards for second chances.`);
+                    }
+                    if (myAgg.spg > oppAgg.spg + 0.5) {
+                        tips.push(`Press and trap — steal advantage (${myAgg.spg.toFixed(1)} vs ${oppAgg.spg.toFixed(1)} SPG). Apply pressure to force live-ball turnovers.`);
+                    }
+                    if (myAgg.bpm > oppAgg.bpm + 1.5) {
+                        tips.push(`Ride your impact players — BPM advantage (${myAgg.bpm > 0 ? '+' : ''}${myAgg.bpm.toFixed(1)}). Maximize minutes for top performers.`);
+                    }
+                }
+
+                // Key player to neutralize (always included)
+                const topOpp = oppAgg.starters[0];
+                if (topOpp) {
+                    tips.push(`Neutralize ${oppName}'s top player (${topOpp.Player} — score ${topOpp.total_score.toFixed(1)}, ${topOpp.archetypes?.join('/')}) with your best perimeter or interior defender.`);
+                }
+
+                if (tips.length === 0) {
+                    tips.push('Matchup is statistically tight. Execution and game-plan adjustments will be the deciding factor.');
+                    tips.push('Control tempo — dictate the pace that best suits your roster.');
+                    tips.push('Free throw execution could be the tiebreaker — attack the paint and draw fouls late.');
+                }
+
+                return tips.slice(0, 6);
+            }
+
+            const tipsA = buildStrategies(aggA, aggB, tsA, tsB, nameA, nameB);
+            const tipsB = buildStrategies(aggB, aggA, tsB, tsA, nameB, nameA);
+
+            const fmt = (tips, teamName, cls, pct) => `
+                <div class="matchup-strategy-card ${cls}">
+                    <div class="matchup-strategy-title ${cls === 'team-b-card' ? 'team-b' : 'team-a'}">
+                        How ${teamName} Wins <span style="font-weight:400;opacity:0.7;">(${pct}% prob)</span>
+                    </div>
+                    ${tips.map(t => `
+                        <div class="matchup-strategy-item">
+                            <span class="matchup-strategy-bullet">▸</span>
+                            <span>${t}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+
+            document.getElementById('matchupStrategyGrid').innerHTML =
+                fmt(tipsA, nameA, 'team-a-card', pctA) + fmt(tipsB, nameB, 'team-b-card', pctB);
         }
 
         // Initialize on page load — weights/min/max are editable during the session
