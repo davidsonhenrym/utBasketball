@@ -4669,13 +4669,14 @@
             const defTs = cbbdTeamStats[defName];
 
             if (offTs && defTs && offTs.offRating > 0 && defTs.defRating > 0) {
-                // Four-factor adjusted efficiency rating model
-                // Dean Oliver method: base = offRating * pace / 100 possessions
-                // Opponent adjustment: scale by (avgDefRating / opponent.defRating)
-                // where college average defRating ≈ 100 (by definition)
+                // Four-factor adjusted efficiency rating model (Dean Oliver)
+                // Step 1: raw offensive output = (offRating / 100) * possessions
+                // Step 2: defensive adjustment = multiply by (defRating / 100)
+                //   lower defRating = better defense = fewer points allowed ✓
+                //   higher defRating = worse defense = more points allowed ✓
+                // Combined: (offRating * pace * defRating) / 10000
                 const sharedPace = (offTs.pace + defTs.pace) / 2;
-                // pts = offRating/100 * possessions, adjusted down by opponent defense
-                const base = (offTs.offRating * sharedPace) / defTs.defRating;
+                const base = (offTs.offRating * sharedPace * defTs.defRating) / 10000;
                 return Math.max(35, base);
             }
 
