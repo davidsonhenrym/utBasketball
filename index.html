@@ -2061,6 +2061,7 @@
 
         let playerData = [];
         let scoredData = [];
+        let currentDisplayedData = [];
         let teamData = [];
         let currentTab = 'players';
         let currentPosition = 'Guard';
@@ -3008,8 +3009,9 @@
                 console.error('Error populating team filter:', error);
             }
 
+            currentDisplayedData = scoredData;
             renderTable(scoredData);
-            
+
             // Render teams immediately
             console.log('Team data:', teamData);
             renderTeams(teamData);
@@ -3223,7 +3225,7 @@
             const direction = currentSort.column === column && currentSort.direction === 'asc' ? 'desc' : 'asc';
             currentSort = { column, direction };
 
-            const sorted = [...scoredData].sort((a, b) => {
+            const sorted = [...currentDisplayedData].sort((a, b) => {
                 let aVal, bVal;
 
                 switch(column) {
@@ -3266,11 +3268,12 @@
                         aVal = a['eFG%']; bVal = b['eFG%'];
                         break;
                     case 'ortg':
-                        aVal = a.ORtg || 0; bVal = b.ORtg || 0;
+                        aVal = a.ORtg ?? -Infinity; bVal = b.ORtg ?? -Infinity;
                         break;
                     case 'drtg':
-                        // Lower DRtg = better defense, so invert for desc sort to show best defenders first
-                        aVal = a.DRtg ? -a.DRtg : 0; bVal = b.DRtg ? -b.DRtg : 0;
+                        // Lower DRtg = better defense, invert so desc puts best defenders first
+                        // Players missing DRtg get -Infinity after inversion so they sink to bottom
+                        aVal = a.DRtg != null ? -a.DRtg : -Infinity; bVal = b.DRtg != null ? -b.DRtg : -Infinity;
                         break;
                 }
 
@@ -3289,6 +3292,7 @@
                 }
             });
 
+            currentDisplayedData = sorted;
             renderTable(sorted);
         }
 
@@ -3352,6 +3356,7 @@
                 filtered = filtered.slice().sort((a, b) => a.valuation - b.valuation);
             }
 
+            currentDisplayedData = filtered;
             renderTable(filtered);
         }
 
