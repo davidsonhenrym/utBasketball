@@ -3009,8 +3009,9 @@
                 console.error('Error populating team filter:', error);
             }
 
-            currentDisplayedData = scoredData;
-            renderTable(scoredData);
+            // Apply any active filters (team/conference/etc.) rather than showing all data,
+            // so filters are preserved when calculateScores reruns (e.g. slider changes)
+            applyFilters();
 
             // Render teams immediately
             console.log('Team data:', teamData);
@@ -3267,14 +3268,19 @@
                     case 'efg':
                         aVal = a['eFG%']; bVal = b['eFG%'];
                         break;
-                    case 'ortg':
-                        aVal = a.ORtg ?? -Infinity; bVal = b.ORtg ?? -Infinity;
+                    case 'ortg': {
+                        const sentinel = direction === 'asc' ? Infinity : -Infinity;
+                        aVal = a.ORtg != null ? a.ORtg : sentinel;
+                        bVal = b.ORtg != null ? b.ORtg : sentinel;
                         break;
-                    case 'drtg':
-                        // Lower DRtg = better defense, invert so desc puts best defenders first
-                        // Players missing DRtg get -Infinity after inversion so they sink to bottom
-                        aVal = a.DRtg != null ? -a.DRtg : -Infinity; bVal = b.DRtg != null ? -b.DRtg : -Infinity;
+                    }
+                    case 'drtg': {
+                        // Lower DRtg = better defense, invert so desc shows best defenders first
+                        const sentinel = direction === 'asc' ? Infinity : -Infinity;
+                        aVal = a.DRtg != null ? -a.DRtg : sentinel;
+                        bVal = b.DRtg != null ? -b.DRtg : sentinel;
                         break;
+                    }
                 }
 
                 if (typeof aVal === 'string') {
