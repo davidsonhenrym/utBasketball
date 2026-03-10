@@ -1721,6 +1721,8 @@
                                             <th class="sortable" data-sort="tpa">3PA/G</th>
                                             <th class="sortable" data-sort="bpm">BPM</th>
                                             <th class="sortable" data-sort="efg">eFG%</th>
+                                            <th class="sortable" data-sort="ortg">ORtg</th>
+                                            <th class="sortable" data-sort="drtg">DRtg</th>
                                         </tr>
                                     </thead>
                                     <tbody id="resultsBody"></tbody>
@@ -3203,6 +3205,8 @@
                     <td>${tpa > 0 ? tpa.toFixed(1) : '—'}</td>
                     <td>${(player.BPM || 0).toFixed(1)}</td>
                     <td>${((player['eFG%'] || 0) * 100).toFixed(1)}%</td>
+                    <td>${player.ORtg ? player.ORtg.toFixed(1) : '—'}</td>
+                    <td style="color:${player.DRtg && player.DRtg < 100 ? 'var(--accent-primary)' : player.DRtg && player.DRtg > 110 ? 'var(--accent-tertiary)' : ''}">${player.DRtg ? player.DRtg.toFixed(1) : '—'}</td>
                 `;
                 tbody.appendChild(row);
             });
@@ -3260,6 +3264,13 @@
                         break;
                     case 'efg':
                         aVal = a['eFG%']; bVal = b['eFG%'];
+                        break;
+                    case 'ortg':
+                        aVal = a.ORtg || 0; bVal = b.ORtg || 0;
+                        break;
+                    case 'drtg':
+                        // Lower DRtg = better defense, so invert for desc sort to show best defenders first
+                        aVal = a.DRtg ? -a.DRtg : 0; bVal = b.DRtg ? -b.DRtg : 0;
                         break;
                 }
 
