@@ -3223,7 +3223,12 @@
         let currentSort = { column: null, direction: 'desc' };
 
         function sortTable(column) {
-            const direction = currentSort.column === column && currentSort.direction === 'asc' ? 'desc' : 'asc';
+            // Columns where higher = better default to descending on first click
+            const defaultDesc = ['score', 'valuation', 'ppg', 'apg', 'rpg', 'tpa', 'bpm', 'efg', 'ortg'];
+            const defaultDirection = defaultDesc.includes(column) ? 'desc' : 'asc';
+            const direction = currentSort.column === column
+                ? (currentSort.direction === 'asc' ? 'desc' : 'asc')
+                : defaultDirection;
             currentSort = { column, direction };
 
             const sorted = [...currentDisplayedData].sort((a, b) => {
