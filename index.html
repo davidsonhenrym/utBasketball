@@ -3643,7 +3643,13 @@
             if (!nameEl || !scoreEl) return;
             const name   = nameEl.value.trim();
             const source = scoredData.length > 0 ? scoredData : playerData;
-            const match  = source.find(p => p.Player.toLowerCase() === name.toLowerCase());
+            // Normalize: remove dots (A.J.→AJ), strip Jr/Sr/II/III/IV suffixes, lowercase
+            const normName = s => (s || '').toLowerCase()
+                .replace(/\./g, '')
+                .replace(/\s+(jr|sr|ii|iii|iv)\s*$/i, '')
+                .replace(/\s+/g, ' ').trim();
+            const normInput = normName(name);
+            const match  = source.find(p => normName(p.Player) === normInput);
             if (match) {
                 nameEl.classList.add('matched');
                 if (!scoreEl.value || scoreEl.dataset.autoFilled === 'true') {
@@ -3764,8 +3770,13 @@
             }
 
             // Match roster names to scoredData
-            const normalise = s => (s || '').toLowerCase().replace(/[^a-z ]/g, '').trim();
-            const lastName  = s => normalise(s).split(' ').pop();
+            // Strip dots (A.J.→AJ) and suffixes (Jr./Sr./III) before comparing
+            const normalise = s => (s || '').toLowerCase()
+                .replace(/\./g, '')
+                .replace(/[^a-z0-9 ]/g, '')
+                .replace(/\s+(jr|sr|ii|iii|iv)\s*$/i, '')
+                .replace(/\s+/g, ' ').trim();
+            const lastName  = s => { const parts = normalise(s).split(' '); return parts.length > 1 ? parts[parts.length - 1] : parts[0]; };
 
             const rosterPlayers = rosterNames.reduce((acc, name) => {
                 const norm = normalise(name);
@@ -4321,19 +4332,24 @@
                     }
                 }
 
-                // Cache miss — fetch from API
+                // Cache miss — fetch from API (try alias if sheet name fails)
                 try {
-                    const url = `${CBBD_BASE}/stats/player/season?season=${season}&team=${encodeURIComponent(team)}`;
-                    const res = await fetch(url, { headers: { 'Authorization': `Bearer ${CBBD_API_KEY}` } });
-                    if (!res.ok) {
-                        console.warn(`CBBD: no data for team "${team}" (${res.status})`);
-                        teamsFailed++;
-                    } else {
+                    const alias = TEAM_NAME_ALIASES[team];
+                    const namesToTry = alias ? [team, alias] : [team];
+                    let fetched = false;
+                    for (const tryName of namesToTry) {
+                        const url = `${CBBD_BASE}/stats/player/season?season=${season}&team=${encodeURIComponent(tryName)}`;
+                        const res = await fetch(url, { headers: { 'Authorization': `Bearer ${CBBD_API_KEY}` } });
+                        if (!res.ok) { console.warn(`CBBD: "${tryName}" → ${res.status}`); continue; }
                         const players = await res.json();
+                        if (!players || !players.length) continue;
                         players.forEach(p => { cbbdPlayerMap[normalizePlayerName(p.name)] = p; });
-                        cbbdCacheSet(lsKey, players); // persist for next 24 h
+                        cbbdCacheSet(lsKey, players);
                         teamsFromApi++;
+                        fetched = true;
+                        break;
                     }
+                    if (!fetched) teamsFailed++;
                 } catch (err) {
                     console.warn(`CBBD fetch error for "${team}":`, err);
                     teamsFailed++;
@@ -4424,6 +4440,18 @@
             await syncTeamStatsFromCBBD(forceRefresh);
         }
 
+        // Maps sheet team names → CBBD API team names where they differ
+        const TEAM_NAME_ALIASES = {
+            'Bowling Green': 'Bowling Green State',
+            'Miami (OH)':    'Miami Ohio',
+            'Miami OH':      'Miami Ohio',
+            'UMass':         'Massachusetts',
+            'UTEP':          'Texas-El Paso',
+            'Ole Miss':      'Mississippi',
+            'USC':           'Southern California',
+            'UNLV':          'Nevada-Las Vegas',
+        };
+
         async function syncTeamStatsFromCBBD(forceRefresh = false) {
             if (!playerData || playerData.length === 0) return;
             const season = parseInt(document.getElementById('shotSeasonSelect')?.value) || 2026;
@@ -4437,12 +4465,21 @@
                     if (cached) { cbbdTeamStats[team] = cached; continue; }
                 }
 
+                // Try the sheet name first, then the alias if one is defined
+                const alias = TEAM_NAME_ALIASES[team];
+                const namesToTry = alias ? [team, alias] : [team];
+
                 try {
-                    const url = `${CBBD_BASE}/stats/team/season?season=${season}&team=${encodeURIComponent(team)}`;
-                    const res = await fetch(url, { headers: { 'Authorization': `Bearer ${CBBD_API_KEY}` } });
-                    if (!res.ok) { console.warn(`CBBD team stats: no data for "${team}" (${res.status})`); continue; }
-                    const data = await res.json();
-                    if (!data || !data.length) continue;
+                    let data = null;
+                    for (const tryName of namesToTry) {
+                        const url = `${CBBD_BASE}/stats/team/season?season=${season}&team=${encodeURIComponent(tryName)}`;
+                        const res = await fetch(url, { headers: { 'Authorization': `Bearer ${CBBD_API_KEY}` } });
+                        if (!res.ok) { console.warn(`CBBD team stats: "${tryName}" → ${res.status}`); continue; }
+                        const result = await res.json();
+                        if (result && result.length) { data = result; break; }
+                        console.warn(`CBBD team stats: empty response for "${tryName}"`);
+                    }
+                    if (!data || !data.length) { console.warn(`CBBD team stats: no data found for "${team}"`); continue; }
 
                     const ts  = data[0];
                     const g   = Math.max(ts.games || 1, 1);
