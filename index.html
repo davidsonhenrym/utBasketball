@@ -2405,17 +2405,13 @@
 
                 playerData = jsonData;
                 fileInfo.textContent = `✓ Loaded ${jsonData.length} players from Google Sheets`;
-
                 calculateScores();
-
-                // Auto-sync stats from CBBD API (uses 2-hour cache; fetches live if stale)
-                fileInfo.textContent += ' — syncing live stats…';
-                await syncStatsFromCBBD(false);
-                fileInfo.textContent = `✓ ${jsonData.length} players loaded & synced`;
             } catch (error) {
                 console.error('Error loading Google Sheet:', error);
                 fileInfo.textContent = `✗ Error: ${error.message}`;
+                return;
             }
+
         }
 
         function normalizePlayerName(name) {
@@ -3941,7 +3937,7 @@
         // Stats and shot data are cached for CBBD_CACHE_TTL ms (default 24 h).
         // Each unique team+season combination counts as one API call; once cached
         // no further calls are made until the TTL expires.
-        const CBBD_CACHE_TTL = 2 * 60 * 60 * 1000; // 2 hours — keeps stats current during the season
+        const CBBD_CACHE_TTL = 8 * 60 * 60 * 1000; // 8 hours — avoids excess API calls while keeping stats same-day fresh
 
         function cbbdCacheGet(key) {
             try {
@@ -4355,48 +4351,56 @@
                 const cbbd = cbbdPlayerMap[key];
                 if (!cbbd) { notFound.push(player.Player); return; }
 
-                const g = Math.max(cbbd.games, 1);
+                const g = Math.max(cbbd.games || 1, 1);
+
+                // set(field, apiValue) — writes only when the API returned a real value.
+                // If apiValue is null/undefined the existing Google Sheet value is kept.
+                const set = (field, apiVal) => { if (apiVal != null) player[field] = apiVal; };
+
+                // Helpers that return null (not 0) when the source is missing,
+                // so set() can fall back to the sheet value instead of overwriting with 0.
+                const pg  = (v, dec = 1) => v != null ? parseFloat((v / g).toFixed(dec)) : null;
+                const pct = (v, dec = 4) => v != null ? parseFloat((v / 100).toFixed(dec)) : null;
 
                 // ── Per-game counting stats ────────────────────────────────
-                player['G']     = cbbd.games;
-                player['MPG']   = parseFloat((cbbd.minutes / g).toFixed(1));
-                player['PPG']   = parseFloat((cbbd.points   / g).toFixed(1));
-                player['APG']   = parseFloat((cbbd.assists  / g).toFixed(1));
-                player['TOPG']  = parseFloat((cbbd.turnovers / g).toFixed(2));
-                player['A/TO']  = parseFloat(cbbd.assistsTurnoverRatio.toFixed(2));
-                player['ORB/G'] = parseFloat((cbbd.rebounds.offensive / g).toFixed(1));
-                player['DRB/G'] = parseFloat((cbbd.rebounds.defensive / g).toFixed(1));
-                player['RPG']   = parseFloat((cbbd.rebounds.total     / g).toFixed(1));
-                player['BPG']   = parseFloat((cbbd.blocks  / g).toFixed(2));
-                player['SPG']   = parseFloat((cbbd.steals  / g).toFixed(2));
+                set('G',     cbbd.games ?? null);
+                set('MPG',   pg(cbbd.minutes));
+                set('PPG',   pg(cbbd.points));
+                set('APG',   pg(cbbd.assists));
+                set('TOPG',  pg(cbbd.turnovers, 2));
+                set('A/TO',  cbbd.assistsTurnoverRatio != null ? parseFloat(cbbd.assistsTurnoverRatio.toFixed(2)) : null);
+                set('ORB/G', pg(cbbd.rebounds?.offensive));
+                set('DRB/G', pg(cbbd.rebounds?.defensive));
+                set('RPG',   pg(cbbd.rebounds?.total));
+                set('BPG',   pg(cbbd.blocks, 2));
+                set('SPG',   pg(cbbd.steals, 2));
 
                 // ── Shooting % (CBBD returns 0-100, model uses 0.0-1.0) ───
-                player['FG%']   = parseFloat((cbbd.fieldGoals.pct              / 100).toFixed(4));
-                player['3P%']   = parseFloat((cbbd.threePointFieldGoals.pct    / 100).toFixed(4));
-                player['FT%']   = parseFloat((cbbd.freeThrows.pct              / 100).toFixed(4));
-                player['eFG%']  = parseFloat((cbbd.effectiveFieldGoalPct       / 100).toFixed(4));
+                set('FG%',  pct(cbbd.fieldGoals?.pct));
+                set('3P%',  pct(cbbd.threePointFieldGoals?.pct));
+                set('FT%',  pct(cbbd.freeThrows?.pct));
+                set('eFG%', pct(cbbd.effectiveFieldGoalPct));
 
                 // ── 3-point attempts (season total + per-game) — needed by get3PA() ──
-                player['3PA']   = cbbd.threePointFieldGoals.attempts;
-                player['3PAG']  = parseFloat((cbbd.threePointFieldGoals.attempts / g).toFixed(2));
+                set('3PA',  cbbd.threePointFieldGoals?.attempts ?? null);
+                set('3PAG', pg(cbbd.threePointFieldGoals?.attempts, 2));
 
                 // ── Rebound % (CBBD returns 0-100, model uses 0.0-1.0) ───
-                player['OR%']   = parseFloat((cbbd.offensiveReboundPct         / 100).toFixed(4));
-                player['DR%']   = parseFloat(((cbbd.defensiveReboundPct || 0)  / 100).toFixed(4));
+                set('OR%', pct(cbbd.offensiveReboundPct));
+                set('DR%', pct(cbbd.defensiveReboundPct));
 
                 // ── Team-context / advanced stats ─────────────────────────
-                player['+/-']   = cbbd.netRating;
-                player['ORtg']  = cbbd.offensiveRating;
-                player['DRtg']  = cbbd.defensiveRating;
-                player['WS']    = cbbd.winShares.total;
-                player['OWS']   = cbbd.winShares.offensive;
-                player['DWS']   = cbbd.winShares.defensive;
-                player['WS/40'] = cbbd.winShares.totalPer40;
+                set('+/-',   cbbd.netRating       ?? null);
+                set('ORtg',  cbbd.offensiveRating  ?? null);
+                set('DRtg',  cbbd.defensiveRating  ?? null);
+                set('WS',    cbbd.winShares?.total     ?? null);
+                set('OWS',   cbbd.winShares?.offensive ?? null);
+                set('DWS',   cbbd.winShares?.defensive ?? null);
+                set('WS/40', cbbd.winShares?.totalPer40 ?? null);
 
-                // PORPAG (Points Over Replacement Per Adjusted Game) is the
-                // closest CBBD equivalent to BPM/OBPM — use as proxy for both.
-                player['OBPM']  = cbbd.PORPAG;
-                player['BPM']   = cbbd.PORPAG;
+                // PORPAG — closest CBBD equivalent to BPM/OBPM
+                set('OBPM', cbbd.PORPAG ?? null);
+                set('BPM',  cbbd.PORPAG ?? null);
 
                 // Sync conference from CBBD (authoritative)
                 if (cbbd.conference) player['Conference'] = cbbd.conference;
@@ -4440,47 +4444,54 @@
                     const data = await res.json();
                     if (!data || !data.length) continue;
 
-                    const ts = data[0];
-                    const g  = Math.max(ts.games || 1, 1);
+                    const ts  = data[0];
+                    const g   = Math.max(ts.games || 1, 1);
+                    const off = ts.teamStats  || {};
+                    const def = ts.opponentStats || {};
+                    const offPts = off.points  || {};
+                    const defPts = def.points  || {};
+                    const offFF  = off.fourFactors || {};
+                    const defFF  = def.fourFactors || {};
+
                     const entry = {
-                        games:              ts.games,
-                        wins:               ts.wins,
-                        losses:             ts.losses,
-                        pace:               ts.pace,
-                        conference:         ts.conference,
+                        games:              ts.games  || 0,
+                        wins:               ts.wins   || 0,
+                        losses:             ts.losses || 0,
+                        pace:               ts.pace   || 0,
+                        conference:         ts.conference || '',
                         // Offensive efficiency
-                        offRating:          ts.teamStats.rating,
-                        trueShooting:       ts.teamStats.trueShooting,
-                        ptsPerGame:         ts.teamStats.points.total / g,
-                        ptsInPaint:         ts.teamStats.points.inPaint / g,
-                        ptsFastBreak:       ts.teamStats.points.fastBreak / g,
-                        ptsOffTurnovers:    ts.teamStats.points.offTurnovers / g,
-                        fgPct:              ts.teamStats.fieldGoals.pct,
-                        threePct:           ts.teamStats.threePointFieldGoals.pct,
-                        threePaPerGame:     ts.teamStats.threePointFieldGoals.attempted / g,
-                        ftPct:              ts.teamStats.freeThrows.pct,
-                        assists:            ts.teamStats.assists / g,
-                        turnovers:          ts.teamStats.turnovers.total / g,
-                        oRebounds:          ts.teamStats.rebounds.offensive / g,
-                        dRebounds:          ts.teamStats.rebounds.defensive / g,
-                        totalRebounds:      ts.teamStats.rebounds.total / g,
-                        blocks:             ts.teamStats.blocks / g,
-                        steals:             ts.teamStats.steals / g,
-                        possessions:        ts.teamStats.possessions / g,
+                        offRating:          off.rating       || 0,
+                        trueShooting:       off.trueShooting || 0,
+                        ptsPerGame:         (offPts.total    || 0) / g,
+                        ptsInPaint:         (offPts.inPaint  || 0) / g,
+                        ptsFastBreak:       (offPts.fastBreak|| 0) / g,
+                        ptsOffTurnovers:    (offPts.offTurnovers || 0) / g,
+                        fgPct:              off.fieldGoals?.pct              || 0,
+                        threePct:           off.threePointFieldGoals?.pct    || 0,
+                        threePaPerGame:     (off.threePointFieldGoals?.attempted || 0) / g,
+                        ftPct:              off.freeThrows?.pct              || 0,
+                        assists:            (off.assists  || 0) / g,
+                        turnovers:          (off.turnovers?.total || 0) / g,
+                        oRebounds:          (off.rebounds?.offensive || 0) / g,
+                        dRebounds:          (off.rebounds?.defensive || 0) / g,
+                        totalRebounds:      (off.rebounds?.total     || 0) / g,
+                        blocks:             (off.blocks  || 0) / g,
+                        steals:             (off.steals  || 0) / g,
+                        possessions:        (off.possessions || 0) / g,
                         // Four Factors (offensive)
-                        eFGPct:             ts.teamStats.fourFactors.effectiveFieldGoalPct,
-                        tovRate:            ts.teamStats.fourFactors.turnoverRatio,
-                        orbPct:             ts.teamStats.fourFactors.offensiveReboundPct,
-                        freeThrowRate:      ts.teamStats.fourFactors.freeThrowRate,
+                        eFGPct:             offFF.effectiveFieldGoalPct || 0,
+                        tovRate:            offFF.turnoverRatio         || 0,
+                        orbPct:             offFF.offensiveReboundPct   || 0,
+                        freeThrowRate:      offFF.freeThrowRate         || 0,
                         // Defensive efficiency (opponent stats)
-                        defRating:          ts.opponentStats.rating,
-                        oppEFGPct:          ts.opponentStats.fourFactors.effectiveFieldGoalPct,
-                        oppTovRate:         ts.opponentStats.fourFactors.turnoverRatio,
-                        oppOrbPct:          ts.opponentStats.fourFactors.offensiveReboundPct,
-                        oppFTR:             ts.opponentStats.fourFactors.freeThrowRate,
-                        oppPtsPerGame:      ts.opponentStats.points.total / g,
-                        oppThreePct:        ts.opponentStats.threePointFieldGoals.pct,
-                        oppFGPct:           ts.opponentStats.fieldGoals.pct,
+                        defRating:          def.rating       || 0,
+                        oppEFGPct:          defFF.effectiveFieldGoalPct || 0,
+                        oppTovRate:         defFF.turnoverRatio         || 0,
+                        oppOrbPct:          defFF.offensiveReboundPct   || 0,
+                        oppFTR:             defFF.freeThrowRate         || 0,
+                        oppPtsPerGame:      (defPts.total   || 0) / g,
+                        oppThreePct:        def.threePointFieldGoals?.pct || 0,
+                        oppFGPct:           def.fieldGoals?.pct           || 0,
                     };
                     cbbdTeamStats[team] = entry;
                     cbbdCacheSet(lsKey, entry);
