@@ -1386,9 +1386,12 @@
                         Connected to live Google Sheet
                     </p>
                     <div class="file-info" id="fileInfo"></div>
-                    <div style="margin-top: 15px;">
+                    <div style="margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
                         <button onclick="loadFromGoogleSheet()" style="padding: 10px 20px;">Reload Data</button>
+                        <button onclick="syncStatsFromCBBD()" style="padding: 10px 20px; background: linear-gradient(135deg, #00d4ff, #0088bb); flex: 0 1 auto;">Sync from CBBD API</button>
+                        <button onclick="syncStatsFromCBBD(true)" class="secondary" style="padding: 10px 14px; font-size: 0.75rem;" title="Ignore cache and force fresh API calls">↺ Force Refresh</button>
                     </div>
+                    <div id="cbbdSyncStatus" style="margin-top: 10px; font-family: 'IBM Plex Mono', monospace; font-size: 0.75rem; color: var(--text-secondary); min-height: 1.2em;"></div>
                 </div>
 
                 <div id="resultsSection" style="display: none;">
@@ -3567,6 +3570,38 @@
         const CBBD_API_KEY  = 'pdWLg89xSIv20jI7i5Lp8N6z0cBmyZOQ8L8kgWfg1W5aoed0IaiaG3wrqNkrwELV';
         const CBBD_BASE     = 'https://api.collegebasketballdata.com';
 
+        // ── Persistent cache (localStorage) — avoids repeat API calls ─────────
+        // Stats and shot data are cached for CBBD_CACHE_TTL ms (default 24 h).
+        // Each unique team+season combination counts as one API call; once cached
+        // no further calls are made until the TTL expires.
+        const CBBD_CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours
+
+        function cbbdCacheGet(key) {
+            try {
+                const raw = localStorage.getItem(key);
+                if (!raw) return null;
+                const entry = JSON.parse(raw);
+                if (Date.now() - entry.ts > CBBD_CACHE_TTL) { localStorage.removeItem(key); return null; }
+                return entry.data;
+            } catch { return null; }
+        }
+
+        function cbbdCacheSet(key, data) {
+            try { localStorage.setItem(key, JSON.stringify({ ts: Date.now(), data })); }
+            catch (e) { console.warn('CBBD cache write skipped (storage full?):', e.message); }
+        }
+
+        function cbbdCacheAgeLabel(key) {
+            try {
+                const raw = localStorage.getItem(key);
+                if (!raw) return null;
+                const mins = Math.round((Date.now() - JSON.parse(raw).ts) / 60000);
+                if (mins < 60)   return `${mins}m ago`;
+                if (mins < 1440) return `${Math.round(mins / 60)}h ago`;
+                return `${Math.round(mins / 1440)}d ago`;
+            } catch { return null; }
+        }
+
         // CBBD coordinate system: 10 units = 1 foot
         // Full court: x 0–940 (length), y 0–500 (width)
         // Near basket at (50, 250), far basket at (890, 250)
@@ -3801,33 +3836,47 @@
             drawCourt(ctx, canvas.width, canvas.height);
 
             try {
-                const cacheKey = `${teamName}_${season}`;
-                let teamPlays;
+                const cacheKey    = `${teamName}_${season}`;
+                const lsKey       = `cbbd_shots_v1_${teamName}_${season}`;
+                let   compactShots;   // [{name, cx, cy, made, range}] — one entry per shot
 
                 if (teamShotsCache[cacheKey]) {
-                    teamPlays = teamShotsCache[cacheKey];
+                    // In-memory hit (same page session)
+                    compactShots = teamShotsCache[cacheKey];
                 } else {
-                    const url = `${CBBD_BASE}/plays/team?season=${season}&team=${encodeURIComponent(teamName)}&shootingPlaysOnly=true`;
-                    const res = await fetch(url, {
-                        headers: { 'Authorization': `Bearer ${CBBD_API_KEY}` }
-                    });
-                    if (!res.ok) throw new Error(`API ${res.status}: ${res.statusText}`);
-                    teamPlays = await res.json();
-                    teamShotsCache[cacheKey] = teamPlays;
+                    const cached = cbbdCacheGet(lsKey);
+                    if (cached) {
+                        // localStorage hit — zero API calls
+                        compactShots = cached;
+                        teamShotsCache[cacheKey] = compactShots;
+                        const age = cbbdCacheAgeLabel(lsKey);
+                        overlay.textContent = `Using cached data (${age})…`;
+                    } else {
+                        // Cache miss — must hit the API
+                        const url = `${CBBD_BASE}/plays/team?season=${season}&team=${encodeURIComponent(teamName)}&shootingPlaysOnly=true`;
+                        const res = await fetch(url, {
+                            headers: { 'Authorization': `Bearer ${CBBD_API_KEY}` }
+                        });
+                        if (!res.ok) throw new Error(`API ${res.status}: ${res.statusText}`);
+                        const teamPlays = await res.json();
+
+                        // Convert to compact format (all players, minimal fields)
+                        compactShots = teamPlays
+                            .filter(p => p.shotInfo?.location?.x != null)
+                            .map(p => {
+                                let cx = p.shotInfo.location.x;
+                                let cy = p.shotInfo.location.y;
+                                if (cx > COURT_HALF_X) { cx = COURT_FULL_X - cx; cy = COURT_FULL_Y - cy; }
+                                return { name: p.shotInfo.shooter?.name || '', cx, cy, made: p.shotInfo.made, range: p.shotInfo.range };
+                            });
+
+                        teamShotsCache[cacheKey] = compactShots;
+                        cbbdCacheSet(lsKey, compactShots); // persist to localStorage
+                    }
                 }
 
-                // Filter to this player and normalize coordinates
-                const shots = teamPlays
-                    .filter(play =>
-                        play.shotInfo?.location?.x != null &&
-                        namesMatch(play.shotInfo?.shooter?.name, playerName)
-                    )
-                    .map(play => {
-                        let cx = play.shotInfo.location.x;
-                        let cy = play.shotInfo.location.y;
-                        if (cx > COURT_HALF_X) { cx = COURT_FULL_X - cx; cy = COURT_FULL_Y - cy; }
-                        return { cx, cy, made: play.shotInfo.made, range: play.shotInfo.range };
-                    });
+                // Filter to this player (compact format uses .name directly)
+                const shots = compactShots.filter(s => namesMatch(s.name, playerName));
 
                 if (shots.length === 0) {
                     overlay.textContent = `No shot location data found for ${playerName}`;
@@ -3855,17 +3904,8 @@
             const teamPlays = teamShotsCache[cacheKey];
             if (!teamPlays) return;
 
-            const shots = teamPlays
-                .filter(play =>
-                    play.shotInfo?.location?.x != null &&
-                    namesMatch(play.shotInfo?.shooter?.name, currentShotPlayer.name)
-                )
-                .map(play => {
-                    let cx = play.shotInfo.location.x;
-                    let cy = play.shotInfo.location.y;
-                    if (cx > COURT_HALF_X) { cx = COURT_FULL_X - cx; cy = COURT_FULL_Y - cy; }
-                    return { cx, cy, made: play.shotInfo.made, range: play.shotInfo.range };
-                });
+            // teamShotsCache now stores compact {name, cx, cy, made, range} objects
+            const shots = teamPlays.filter(s => namesMatch(s.name, currentShotPlayer.name));
 
             const canvas = document.getElementById('shotChartCanvas');
             renderShotChart(canvas, shots);
@@ -3876,6 +3916,132 @@
             if (currentShotPlayer) {
                 loadShotChart(currentShotPlayer.name, currentShotPlayer.team);
             }
+        }
+
+        // ═══════════════════════════════════════════════════════
+        // CBBD STATS SYNC — update all model stats from the CBBD API
+        // ═══════════════════════════════════════════════════════
+
+        async function syncStatsFromCBBD(forceRefresh = false) {
+            const statusEl = document.getElementById('cbbdSyncStatus');
+            if (!playerData || playerData.length === 0) {
+                alert('Load player data from Google Sheets first, then sync.');
+                return;
+            }
+
+            // Use the same season selector as the shot chart (defaults to 2026)
+            const season = parseInt(document.getElementById('shotSeasonSelect')?.value) || 2026;
+            const seasonLabel = `${season - 1}-${String(season).slice(2)}`;
+
+            // Collect unique team names from loaded data
+            const teams = [...new Set(playerData.map(p => p.Team).filter(t => t && String(t).trim()))];
+            statusEl.style.color = 'var(--text-secondary)';
+            statusEl.textContent = `Syncing ${teams.length} teams (${seasonLabel})…`;
+
+            // Build normalized-name → cbbd player object lookup across all teams
+            const cbbdPlayerMap = {};
+            let teamsFromCache = 0;
+            let teamsFromApi   = 0;
+            let teamsFailed    = 0;
+
+            for (const team of teams) {
+                const lsKey = `cbbd_stats_v1_${team}_${season}`;
+
+                // Check localStorage cache first (unless force-refresh requested)
+                if (!forceRefresh) {
+                    const cached = cbbdCacheGet(lsKey);
+                    if (cached) {
+                        cached.forEach(p => { cbbdPlayerMap[normalizePlayerName(p.name)] = p; });
+                        teamsFromCache++;
+                        continue; // no API call needed
+                    }
+                }
+
+                // Cache miss — fetch from API
+                try {
+                    const url = `${CBBD_BASE}/stats/player/season?season=${season}&team=${encodeURIComponent(team)}`;
+                    const res = await fetch(url, { headers: { 'Authorization': `Bearer ${CBBD_API_KEY}` } });
+                    if (!res.ok) {
+                        console.warn(`CBBD: no data for team "${team}" (${res.status})`);
+                        teamsFailed++;
+                    } else {
+                        const players = await res.json();
+                        players.forEach(p => { cbbdPlayerMap[normalizePlayerName(p.name)] = p; });
+                        cbbdCacheSet(lsKey, players); // persist for next 24 h
+                        teamsFromApi++;
+                    }
+                } catch (err) {
+                    console.warn(`CBBD fetch error for "${team}":`, err);
+                    teamsFailed++;
+                }
+                statusEl.textContent = `Loading… ${teamsFromCache + teamsFromApi + teamsFailed}/${teams.length} teams (${teamsFromApi} API calls)`;
+                await new Promise(r => setTimeout(r, 120)); // gentle rate-limit
+            }
+
+            // Map CBBD player objects onto playerData rows
+            let updated = 0;
+            const notFound = [];
+
+            playerData.forEach(player => {
+                const key  = normalizePlayerName(player.Player);
+                const cbbd = cbbdPlayerMap[key];
+                if (!cbbd) { notFound.push(player.Player); return; }
+
+                const g = Math.max(cbbd.games, 1);
+
+                // ── Per-game counting stats ────────────────────────────────
+                player['G']     = cbbd.games;
+                player['MPG']   = parseFloat((cbbd.minutes / g).toFixed(1));
+                player['PPG']   = parseFloat((cbbd.points   / g).toFixed(1));
+                player['APG']   = parseFloat((cbbd.assists  / g).toFixed(1));
+                player['TOPG']  = parseFloat((cbbd.turnovers / g).toFixed(2));
+                player['A/TO']  = parseFloat(cbbd.assistsTurnoverRatio.toFixed(2));
+                player['ORB/G'] = parseFloat((cbbd.rebounds.offensive / g).toFixed(1));
+                player['DRB/G'] = parseFloat((cbbd.rebounds.defensive / g).toFixed(1));
+                player['RPG']   = parseFloat((cbbd.rebounds.total     / g).toFixed(1));
+                player['BPG']   = parseFloat((cbbd.blocks  / g).toFixed(2));
+                player['SPG']   = parseFloat((cbbd.steals  / g).toFixed(2));
+
+                // ── Shooting % (CBBD returns 0-100, model uses 0.0-1.0) ───
+                player['FG%']   = parseFloat((cbbd.fieldGoals.pct              / 100).toFixed(4));
+                player['3P%']   = parseFloat((cbbd.threePointFieldGoals.pct    / 100).toFixed(4));
+                player['FT%']   = parseFloat((cbbd.freeThrows.pct              / 100).toFixed(4));
+                player['eFG%']  = parseFloat((cbbd.effectiveFieldGoalPct       / 100).toFixed(4));
+
+                // ── Rebound % (CBBD returns 0-100, model uses 0.0-1.0) ───
+                player['OR%']   = parseFloat((cbbd.offensiveReboundPct         / 100).toFixed(4));
+
+                // ── Team-context / advanced stats ─────────────────────────
+                player['+/-']   = cbbd.netRating;
+                player['ORtg']  = cbbd.offensiveRating;
+                player['DRtg']  = cbbd.defensiveRating;
+                player['WS']    = cbbd.winShares.total;
+                player['OWS']   = cbbd.winShares.offensive;
+                player['DWS']   = cbbd.winShares.defensive;
+                player['WS/40'] = cbbd.winShares.totalPer40;
+
+                // PORPAG (Points Over Replacement Per Adjusted Game) is the
+                // closest CBBD equivalent to BPM/OBPM — use as proxy for both.
+                player['OBPM']  = cbbd.PORPAG;
+                player['BPM']   = cbbd.PORPAG;
+
+                // Sync conference from CBBD (authoritative)
+                if (cbbd.conference) player['Conference'] = cbbd.conference;
+
+                updated++;
+            });
+
+            // ── Status feedback ───────────────────────────────────────────
+            const missed   = notFound.length;
+            const preview  = notFound.slice(0, 4).join(', ') + (missed > 4 ? `… +${missed - 4}` : '');
+            const cacheInfo = teamsFromCache > 0 ? ` | ${teamsFromCache} cached, ${teamsFromApi} API calls` : ` | ${teamsFromApi} API calls`;
+            statusEl.style.color = updated > 0 ? 'var(--accent-primary)' : 'var(--accent-tertiary)';
+            statusEl.textContent =
+                `✓ ${updated}/${playerData.length} players updated (${seasonLabel})${cacheInfo}` +
+                (missed ? ` | ${missed} not matched: ${preview}` : '');
+
+            if (missed > 0) console.warn('CBBD sync — unmatched players:', notFound);
+            if (updated > 0) calculateScores();
         }
 
         // Initialize on page load — weights/min/max are editable during the session
