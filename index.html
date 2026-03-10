@@ -2921,10 +2921,10 @@
             document.getElementById('resultsSection').style.display = 'block';
             
             // Update summary stats
-            const avgScore = scoredData.reduce((sum, p) => sum + p.total_score, 0) / scoredData.length;
-            const maxScore = Math.max(...scoredData.map(p => p.total_score));
-            const totalValuation = scoredData.reduce((sum, p) => sum + p.valuation, 0);
-            
+            const avgScore = scoredData.length > 0 ? scoredData.reduce((sum, p) => sum + (p.total_score || 0), 0) / scoredData.length : 0;
+            const maxScore = scoredData.length > 0 ? Math.max(...scoredData.map(p => p.total_score || 0)) : 0;
+            const totalValuation = scoredData.reduce((sum, p) => sum + (p.valuation || 0), 0);
+
             document.getElementById('statsSummary').innerHTML = `
                 <div class="stat-card">
                     <div class="stat-card-label">Total Players</div>
@@ -3118,7 +3118,7 @@
                         </div>
                         <div class="team-stat">
                             <div class="team-stat-label">Avg Score</div>
-                            <div class="team-stat-value">${team.avgScore.toFixed(1)}</div>
+                            <div class="team-stat-value">${(team.avgScore || 0).toFixed(1)}</div>
                         </div>
                         <div class="team-stat">
                             <div class="team-stat-label">Guards</div>
@@ -3193,7 +3193,7 @@
                     <td>${player.Team}</td>
                     <td style="font-size: 0.75rem;">${player.Conference || 'N/A'}</td>
                     <td><span class="position-badge ${posClass}">${player.position_category}</span></td>
-                    <td class="score-cell ${scoreClass}">${player.total_score.toFixed(1)}</td>
+                    <td class="score-cell ${scoreClass}">${(player.total_score || 0).toFixed(1)}</td>
                     <td class="valuation-cell">$${player.valuation >= 1000000 ? (player.valuation / 1000000).toFixed(2) + 'M' : (player.valuation / 1000).toFixed(1) + 'K'}</td>
                     <td>${(player.PPG || 0).toFixed(1)}</td>
                     <td>${(player.APG || 0).toFixed(1)}</td>
@@ -3355,8 +3355,8 @@
                 Conference: player.Conference || 'N/A',
                 Position: player.position_category,
                 Height: player.Height,
-                Score: player.total_score.toFixed(2),
-                Valuation: player.valuation.toFixed(2),
+                Score: (player.total_score || 0).toFixed(2),
+                Valuation: (player.valuation || 0).toFixed(2),
                 'Conf Multiplier': (player.conference_multiplier || 1.0).toFixed(2),
                 PPG: (player.PPG || 0).toFixed(1),
                 'FG%': ((player['FG%'] || 0) * 100).toFixed(1),
@@ -3433,7 +3433,7 @@
             document.getElementById('modalScoreSummary').innerHTML = `
                 <div class="modal-score-card">
                     <div class="modal-score-label">Overall Score</div>
-                    <div class="modal-score-value ${scoreClass}">${player.total_score.toFixed(1)}</div>
+                    <div class="modal-score-value ${scoreClass}">${(player.total_score || 0).toFixed(1)}</div>
                 </div>
                 <div class="modal-score-card">
                     <div class="modal-score-label">Valuation</div>
