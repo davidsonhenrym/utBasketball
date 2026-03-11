@@ -3986,7 +3986,7 @@
         // Stats and shot data are cached for CBBD_CACHE_TTL ms (default 24 h).
         // Each unique team+season combination counts as one API call; once cached
         // no further calls are made until the TTL expires.
-        const CBBD_CACHE_TTL = 8 * 60 * 60 * 1000; // 8 hours — avoids excess API calls while keeping stats same-day fresh
+        const CBBD_CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours — season stats don't change hourly; reduces daily API calls
 
         function cbbdCacheGet(key) {
             try {
@@ -4368,60 +4368,77 @@
             let teamsFailed    = 0;
 
             for (const team of teams) {
-                const lsKey = `cbbd_stats_v1_${team}_${season}`;
+                const playerKey = `cbbd_stats_v1_${team}_${season}`;
+                const teamKey   = `cbbd_team_stats_v2_${team}_${season}`;
 
                 // Check localStorage cache first (unless force-refresh requested)
                 if (!forceRefresh) {
-                    const cached = cbbdCacheGet(lsKey);
+                    const cached = cbbdCacheGet(playerKey);
                     if (cached) {
                         cached.forEach(p => { cbbdPlayerMap[normalizePlayerName(p.name)] = p; });
                         teamsFromCache++;
-                        continue; // no API call needed
+                        // Also hydrate team stats from cache — no API call, no delay
+                        const teamCached = cbbdCacheGet(teamKey);
+                        if (teamCached) cbbdTeamStats[team] = teamCached;
+                        continue;
                     }
                 }
 
-                // Cache miss — fetch from API (try alias if sheet name fails)
+                // Cache miss — fetch player stats AND team stats in parallel (one delay covers both)
+                const alias      = TEAM_NAME_ALIASES[team];
+                const namesToTry = alias ? [team, alias] : [team];
                 try {
-                    const alias = TEAM_NAME_ALIASES[team];
-                    const namesToTry = alias ? [team, alias] : [team];
                     let fetched = false;
                     for (const tryName of namesToTry) {
-                        const url = `${CBBD_BASE}/stats/player/season?season=${season}&team=${encodeURIComponent(tryName)}`;
-                        const res = await fetch(url, { headers: { 'Authorization': `Bearer ${CBBD_API_KEY}` } });
-                        if (!res.ok) { console.warn(`CBBD: "${tryName}" → ${res.status}`); continue; }
-                        const players = await res.json();
+                        const authHdr   = { 'Authorization': `Bearer ${CBBD_API_KEY}` };
+                        const playerUrl = `${CBBD_BASE}/stats/player/season?season=${season}&team=${encodeURIComponent(tryName)}`;
+                        const teamUrl   = `${CBBD_BASE}/stats/team/season?season=${season}&team=${encodeURIComponent(tryName)}`;
+
+                        // Fire both requests simultaneously — cuts per-team wait in half
+                        const [playerRes, teamRes] = await Promise.all([
+                            fetch(playerUrl, { headers: authHdr }),
+                            fetch(teamUrl,   { headers: authHdr })
+                        ]);
+
+                        if (!playerRes.ok) { console.warn(`CBBD: "${tryName}" → ${playerRes.status}`); continue; }
+                        const players = await playerRes.json();
                         if (!players || !players.length) continue;
+
                         players.forEach(p => { cbbdPlayerMap[normalizePlayerName(p.name)] = p; });
-                        cbbdCacheSet(lsKey, players);
+                        cbbdCacheSet(playerKey, players);
                         teamsFromApi++;
                         fetched = true;
+
+                        // Process team stats from the parallel fetch
+                        if (teamRes.ok) {
+                            const teamData = await teamRes.json();
+                            if (teamData && teamData.length) {
+                                const entry = buildTeamStatsEntry(teamData[0]);
+                                cbbdTeamStats[team] = entry;
+                                cbbdCacheSet(teamKey, entry);
+                            }
+                        }
                         break;
                     }
                     if (!fetched) {
-                        // API returned no data — try stale cache before giving up
-                        const stale = cbbdCacheGetStale(`cbbd_stats_v1_${team}_${season}`);
+                        const stale = cbbdCacheGetStale(playerKey);
                         if (stale) {
                             stale.forEach(p => { cbbdPlayerMap[normalizePlayerName(p.name)] = p; });
                             console.warn(`CBBD: using stale cache for "${team}"`);
                             teamsFromCache++;
-                        } else {
-                            teamsFailed++;
-                        }
+                        } else { teamsFailed++; }
                     }
                 } catch (err) {
                     console.warn(`CBBD fetch error for "${team}":`, err);
-                    // Network/API failure — fall back to stale cache if available
-                    const stale = cbbdCacheGetStale(`cbbd_stats_v1_${team}_${season}`);
+                    const stale = cbbdCacheGetStale(playerKey);
                     if (stale) {
                         stale.forEach(p => { cbbdPlayerMap[normalizePlayerName(p.name)] = p; });
                         console.warn(`CBBD: using stale cache for "${team}" after error`);
                         teamsFromCache++;
-                    } else {
-                        teamsFailed++;
-                    }
+                    } else { teamsFailed++; }
                 }
                 statusEl.textContent = `Loading… ${teamsFromCache + teamsFromApi + teamsFailed}/${teams.length} teams (${teamsFromApi} API calls)`;
-                await new Promise(r => setTimeout(r, 600)); // rate-limit (CBBD throttles at ~429 if too fast)
+                await new Promise(r => setTimeout(r, 350)); // one delay covers both parallel fetches
             }
 
             // Map CBBD player objects onto playerData rows
@@ -4502,7 +4519,8 @@
             if (missed > 0) console.warn('CBBD sync — unmatched players:', notFound);
             if (updated > 0) calculateScores();
 
-            // Also fetch team-level stats for the matchup simulator
+            // Hydrate any remaining team stats not already fetched in the parallel loop above.
+            // When all teams were fetched above this is a fast cache-only pass (no API calls).
             await syncTeamStatsFromCBBD(forceRefresh);
         }
 
@@ -4518,6 +4536,59 @@
             'UNLV':          'Nevada-Las Vegas',
         };
 
+        // Converts a raw CBBD team stats API record into the shape cbbdTeamStats expects.
+        // Shared by syncStatsFromCBBD (parallel fetch) and syncTeamStatsFromCBBD (standalone).
+        function buildTeamStatsEntry(ts) {
+            const g      = Math.max(ts.games || 1, 1);
+            const off    = ts.teamStats     || {};
+            const def    = ts.opponentStats || {};
+            const offPts = off.points       || {};
+            const defPts = def.points       || {};
+            const offFF  = off.fourFactors  || {};
+            const defFF  = def.fourFactors  || {};
+            return {
+                games:           ts.games  || 0,
+                wins:            ts.wins   || 0,
+                losses:          ts.losses || 0,
+                pace:            ts.pace   || 0,
+                conference:      ts.conference || '',
+                offRating:       off.rating       || 0,
+                trueShooting:    off.trueShooting || 0,
+                ptsPerGame:      (offPts.total    || 0) / g,
+                ptsInPaint:      (offPts.inPaint  || 0) / g,
+                ptsFastBreak:    (offPts.fastBreak|| 0) / g,
+                ptsOffTurnovers: (offPts.offTurnovers || 0) / g,
+                fgPct:           off.fieldGoals?.pct              || 0,
+                threePct:        off.threePointFieldGoals?.pct    || 0,
+                threePaPerGame:  (off.threePointFieldGoals?.attempted || 0) / g,
+                ftPct:           off.freeThrows?.pct              || 0,
+                assists:         (off.assists  || 0) / g,
+                turnovers:       (off.turnovers?.total || 0) / g,
+                oRebounds:       (off.rebounds?.offensive || 0) / g,
+                dRebounds:       (off.rebounds?.defensive || 0) / g,
+                totalRebounds:   (off.rebounds?.total     || 0) / g,
+                blocks:          (off.blocks  || 0) / g,
+                steals:          (off.steals  || 0) / g,
+                possessions:     (off.possessions || 0) / g,
+                eFGPct:          offFF.effectiveFieldGoalPct || 0,
+                tovRate:         offFF.turnoverRatio         || 0,
+                orbPct:          offFF.offensiveReboundPct   || 0,
+                freeThrowRate:   offFF.freeThrowRate         || 0,
+                defRating:       def.rating       || 0,
+                oppEFGPct:       defFF.effectiveFieldGoalPct || 0,
+                oppTovRate:      defFF.turnoverRatio         || 0,
+                oppOrbPct:       defFF.offensiveReboundPct   || 0,
+                oppFTR:          defFF.freeThrowRate         || 0,
+                oppPtsPerGame:   (defPts.total   || 0) / g,
+                oppThreePct:     def.threePointFieldGoals?.pct || 0,
+                oppFGPct:        def.fieldGoals?.pct           || 0,
+            };
+        }
+
+        // Standalone team stats sync — used when player stats are already cached but
+        // team stats are missing (e.g. first load after a schema version bump).
+        // Under normal operation syncStatsFromCBBD pre-fetches team stats in parallel,
+        // so this function almost always reads from cache and returns instantly.
         async function syncTeamStatsFromCBBD(forceRefresh = false) {
             if (!playerData || playerData.length === 0) return;
             const season = parseInt(document.getElementById('shotSeasonSelect')?.value) || 2026;
@@ -4531,7 +4602,6 @@
                     if (cached) { cbbdTeamStats[team] = cached; continue; }
                 }
 
-                // Try the sheet name first, then the alias if one is defined
                 const alias = TEAM_NAME_ALIASES[team];
                 const namesToTry = alias ? [team, alias] : [team];
 
@@ -4543,76 +4613,22 @@
                         if (!res.ok) { console.warn(`CBBD team stats: "${tryName}" → ${res.status}`); continue; }
                         const result = await res.json();
                         if (result && result.length) { data = result; break; }
-                        console.warn(`CBBD team stats: empty response for "${tryName}"`);
                     }
                     if (!data || !data.length) {
                         const stale = cbbdCacheGetStale(lsKey);
                         if (stale) { cbbdTeamStats[team] = stale; console.warn(`CBBD team stats: using stale cache for "${team}"`); }
-                        else { console.warn(`CBBD team stats: no data found for "${team}"`); }
+                        else { console.warn(`CBBD team stats: no data for "${team}"`); }
                         continue;
                     }
-
-                    const ts  = data[0];
-                    const g   = Math.max(ts.games || 1, 1);
-                    const off = ts.teamStats  || {};
-                    const def = ts.opponentStats || {};
-                    const offPts = off.points  || {};
-                    const defPts = def.points  || {};
-                    const offFF  = off.fourFactors || {};
-                    const defFF  = def.fourFactors || {};
-
-                    const entry = {
-                        games:              ts.games  || 0,
-                        wins:               ts.wins   || 0,
-                        losses:             ts.losses || 0,
-                        pace:               ts.pace   || 0,
-                        conference:         ts.conference || '',
-                        // Offensive efficiency
-                        offRating:          off.rating       || 0,
-                        trueShooting:       off.trueShooting || 0,
-                        ptsPerGame:         (offPts.total    || 0) / g,
-                        ptsInPaint:         (offPts.inPaint  || 0) / g,
-                        ptsFastBreak:       (offPts.fastBreak|| 0) / g,
-                        ptsOffTurnovers:    (offPts.offTurnovers || 0) / g,
-                        fgPct:              off.fieldGoals?.pct              || 0,
-                        threePct:           off.threePointFieldGoals?.pct    || 0,
-                        threePaPerGame:     (off.threePointFieldGoals?.attempted || 0) / g,
-                        ftPct:              off.freeThrows?.pct              || 0,
-                        assists:            (off.assists  || 0) / g,
-                        turnovers:          (off.turnovers?.total || 0) / g,
-                        oRebounds:          (off.rebounds?.offensive || 0) / g,
-                        dRebounds:          (off.rebounds?.defensive || 0) / g,
-                        totalRebounds:      (off.rebounds?.total     || 0) / g,
-                        blocks:             (off.blocks  || 0) / g,
-                        steals:             (off.steals  || 0) / g,
-                        possessions:        (off.possessions || 0) / g,
-                        // Four Factors (offensive)
-                        eFGPct:             offFF.effectiveFieldGoalPct || 0,
-                        tovRate:            offFF.turnoverRatio         || 0,
-                        orbPct:             offFF.offensiveReboundPct   || 0,
-                        freeThrowRate:      offFF.freeThrowRate         || 0,
-                        // Defensive efficiency (opponent stats)
-                        defRating:          def.rating       || 0,
-                        oppEFGPct:          defFF.effectiveFieldGoalPct || 0,
-                        oppTovRate:         defFF.turnoverRatio         || 0,
-                        oppOrbPct:          defFF.offensiveReboundPct   || 0,
-                        oppFTR:             defFF.freeThrowRate         || 0,
-                        oppPtsPerGame:      (defPts.total   || 0) / g,
-                        oppThreePct:        def.threePointFieldGoals?.pct || 0,
-                        oppFGPct:           def.fieldGoals?.pct           || 0,
-                    };
+                    const entry = buildTeamStatsEntry(data[0]);
                     cbbdTeamStats[team] = entry;
                     cbbdCacheSet(lsKey, entry);
                 } catch (err) {
                     console.warn(`CBBD team stats fetch error for "${team}":`, err);
-                    // Network/API failure — use stale cache so matchup simulator still works
                     const stale = cbbdCacheGetStale(lsKey);
-                    if (stale) {
-                        cbbdTeamStats[team] = stale;
-                        console.warn(`CBBD team stats: using stale cache for "${team}"`);
-                    }
+                    if (stale) { cbbdTeamStats[team] = stale; console.warn(`CBBD team stats: stale fallback for "${team}"`); }
                 }
-                await new Promise(r => setTimeout(r, 600)); // rate-limit (CBBD throttles at ~429 if too fast)
+                await new Promise(r => setTimeout(r, 350));
             }
             console.log(`Team stats synced: ${Object.keys(cbbdTeamStats).length} teams`);
         }
