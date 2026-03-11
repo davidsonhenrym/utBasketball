@@ -4699,13 +4699,28 @@
             const defTs = cbbdTeamStats[defName];
 
             if (offTs && defTs && offTs.offRating > 0 && defTs.defRating > 0) {
-                // Formula: (offRating/100) × possessions × (defRating/100)
+                // ── Primary: team efficiency formula ────────────────────────
                 // offRating = pts scored per 100 poss; defRating = pts allowed per 100 poss
                 // Lower defRating = better defense = fewer points for the offense ✓
                 const sharedPace = (offTs.pace + defTs.pace) / 2;
                 const base = (offTs.offRating * sharedPace * defTs.defRating) / 10000;
-                console.log(`[Matchup] ${offName} vs ${defName} defense | offRtg=${offTs.offRating.toFixed(1)} defRtg=${defTs.defRating.toFixed(1)} pace=${sharedPace.toFixed(1)} → projected=${base.toFixed(1)}`);
-                return Math.max(35, base);
+
+                // ── Secondary: player-quality adjustment ─────────────────────
+                // Adjusts the team-stats base using individual player metrics.
+                // Captures roster changes, transfer additions, and matchup edges
+                // that season-long team averages don't fully reflect.
+                //
+                // BPM (PORPAG): schedule-adjusted individual impact — cap ±6%
+                const bpmDiff     = (offAgg.bpm      || 0) - (defAgg.bpm      || 0);
+                const bpmFactor   = Math.max(-0.06, Math.min(0.06, bpmDiff   * 0.006));
+                // Model score delta: composite shooting/rebounding/defense quality — cap ±4%
+                const scoreDiff   = (offAgg.avgScore  || 0) - (defAgg.avgScore  || 0);
+                const scoreFactor = Math.max(-0.04, Math.min(0.04, scoreDiff * 0.0008));
+                const playerAdj   = bpmFactor + scoreFactor; // combined ±8% max
+
+                const projected = base * (1 + playerAdj);
+                console.log(`[Matchup] ${offName} vs ${defName} | base=${base.toFixed(1)} bpmAdj=${(bpmFactor*100).toFixed(1)}% qualityAdj=${(scoreFactor*100).toFixed(1)}% → projected=${projected.toFixed(1)}`);
+                return Math.max(35, projected);
             }
 
             // Fallback: player-aggregate model (used when team stats unavailable)
@@ -4795,35 +4810,49 @@
             const recA = tsA ? ` <span style="font-size:0.75rem;color:var(--text-secondary);">(${tsA.wins}-${tsA.losses})</span>` : '';
             const recB = tsB ? ` <span style="font-size:0.75rem;color:var(--text-secondary);">(${tsB.wins}-${tsB.losses})</span>` : '';
             const modelNote = usingTeamStats
-                ? `<div style="font-size:0.6rem;color:var(--accent-primary);margin-top:4px;">&#10003; Using live team efficiency ratings</div>`
+                ? `<div style="font-size:0.6rem;color:var(--accent-primary);margin-top:4px;">&#10003; Team efficiency + player quality combined</div>`
                 : `<div style="font-size:0.6rem;color:var(--accent-tertiary);margin-top:4px;">&#9888; Using player aggregates (sync CBBD for team stats)</div>`;
 
             // Build diagnostic formula breakdown
             let diagHTML = '';
             if (tsA && tsB && tsA.offRating > 0 && tsB.defRating > 0 && tsB.offRating > 0 && tsA.defRating > 0) {
                 const sharedPace = ((tsA.pace + tsB.pace) / 2).toFixed(1);
-                const projA = (tsA.offRating * (tsA.pace + tsB.pace) / 2 * tsB.defRating / 10000).toFixed(1);
-                const projB = (tsB.offRating * (tsA.pace + tsB.pace) / 2 * tsA.defRating / 10000).toFixed(1);
+                const baseA = tsA.offRating * (tsA.pace + tsB.pace) / 2 * tsB.defRating / 10000;
+                const baseB = tsB.offRating * (tsA.pace + tsB.pace) / 2 * tsA.defRating / 10000;
+                // Mirror the player-quality adjustment from expectedTeamScore
+                const bpmFA  = Math.max(-0.06, Math.min(0.06, ((aggA.bpm || 0) - (aggB.bpm || 0)) * 0.006));
+                const bpmFB  = Math.max(-0.06, Math.min(0.06, ((aggB.bpm || 0) - (aggA.bpm || 0)) * 0.006));
+                const sFA    = Math.max(-0.04, Math.min(0.04, ((aggA.avgScore || 0) - (aggB.avgScore || 0)) * 0.0008));
+                const sFB    = Math.max(-0.04, Math.min(0.04, ((aggB.avgScore || 0) - (aggA.avgScore || 0)) * 0.0008));
+                const projA  = (baseA * (1 + bpmFA + sFA)).toFixed(1);
+                const projB  = (baseB * (1 + bpmFB + sFB)).toFixed(1);
+                const fmtAdj = v => (v >= 0 ? '+' : '') + (v * 100).toFixed(1) + '%';
                 diagHTML = `
                 <div style="margin:12px 0;padding:10px 16px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:8px;font-family:'IBM Plex Mono',monospace;font-size:0.62rem;color:var(--text-secondary);">
-                    <div style="color:var(--text-primary);font-weight:700;margin-bottom:8px;font-size:0.65rem;">MODEL INPUTS (team efficiency ratings)</div>
+                    <div style="color:var(--text-primary);font-weight:700;margin-bottom:8px;font-size:0.65rem;">MODEL INPUTS (team efficiency + player quality)</div>
                     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
                         <div>
                             <div style="color:var(--accent-primary);font-weight:700;margin-bottom:4px;">${teamA.name} scoring</div>
                             <div>ORtg: <span style="color:var(--text-primary);">${tsA.offRating.toFixed(1)}</span></div>
                             <div>vs ${teamB.name} DRtg: <span style="color:var(--text-primary);">${tsB.defRating.toFixed(1)}</span></div>
                             <div>Shared pace: <span style="color:var(--text-primary);">${sharedPace}</span></div>
-                            <div style="margin-top:4px;color:var(--accent-primary);">→ Projected: ${projA} pts</div>
+                            <div>Base: <span style="color:var(--text-primary);">${baseA.toFixed(1)} pts</span></div>
+                            <div>BPM adj: <span style="color:${bpmFA >= 0 ? 'var(--accent-primary)' : '#ff5050'};">${fmtAdj(bpmFA)}</span></div>
+                            <div>Quality adj: <span style="color:${sFA >= 0 ? 'var(--accent-primary)' : '#ff5050'};">${fmtAdj(sFA)}</span></div>
+                            <div style="margin-top:4px;color:var(--accent-primary);font-weight:700;">→ Projected: ${projA} pts</div>
                         </div>
                         <div>
                             <div style="color:#00d4ff;font-weight:700;margin-bottom:4px;">${teamB.name} scoring</div>
                             <div>ORtg: <span style="color:var(--text-primary);">${tsB.offRating.toFixed(1)}</span></div>
                             <div>vs ${teamA.name} DRtg: <span style="color:var(--text-primary);">${tsA.defRating.toFixed(1)}</span></div>
                             <div>Shared pace: <span style="color:var(--text-primary);">${sharedPace}</span></div>
-                            <div style="margin-top:4px;color:#00d4ff;">→ Projected: ${projB} pts</div>
+                            <div>Base: <span style="color:var(--text-primary);">${baseB.toFixed(1)} pts</span></div>
+                            <div>BPM adj: <span style="color:${bpmFB >= 0 ? '#00d4ff' : '#ff5050'};">${fmtAdj(bpmFB)}</span></div>
+                            <div>Quality adj: <span style="color:${sFB >= 0 ? '#00d4ff' : '#ff5050'};">${fmtAdj(sFB)}</span></div>
+                            <div style="margin-top:4px;color:#00d4ff;font-weight:700;">→ Projected: ${projB} pts</div>
                         </div>
                     </div>
-                    <div style="margin-top:6px;opacity:0.7;">Formula: (ORtg × pace × opp DRtg) ÷ 10000 | Lower DRtg = better defense</div>
+                    <div style="margin-top:6px;opacity:0.7;">Base: (ORtg × pace × opp DRtg) ÷ 10000 · Player adj: BPM diff (±6%) + quality score diff (±4%)</div>
                 </div>`;
             }
 
