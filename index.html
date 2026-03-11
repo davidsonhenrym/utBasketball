@@ -2088,7 +2088,7 @@
         const POSITION_DEFAULTS = {
             'Guard': {
                 ppg:       { weight: 10, min: 5,    max: 17 },
-                fg_pct:    { weight: 10, min: 0.25, max: 0.50 },
+                fg_pct:    { weight: 6,  min: 0.25, max: 0.50 },
                 three_pct: { weight: 10, min: 0.20, max: 0.40 },
                 ft_pct:    { weight: 10, min: 0.50, max: 0.90 },
                 apg:       { weight: 6,  min: 0,    max: 6 },
@@ -2098,7 +2098,7 @@
                 drbg:      { weight: 3,  min: 0,    max: 4 },
                 bpg:       { weight: 0,  min: 0,    max: 0.5 },
                 spg:       { weight: 2,  min: 0,    max: 2.5 },
-                efg:       { weight: 8,  min: 0.40, max: 0.65 },
+                efg:       { weight: 13, min: 0.40, max: 0.65 },
                 plusminus: { weight: 0,  min: -50,  max: 150 },
                 or_pct:    { weight: 2,  min: 0,    max: 0.05 },
                 dr_pct:    { weight: 2,  min: 0,    max: 0.05 },
@@ -2111,7 +2111,7 @@
                 obpm:      { weight: 0,  min: -3,   max: 8 },
                 dbpm:      { weight: 0,  min: -3,   max: 6 },
                 bpm:       { weight: 5,  min: -10,  max: 10 },
-                per:       { weight: 5,  min: 5,    max: 25 }
+                per:       { weight: 4,  min: 5,    max: 25 }
             },
             'Wing': {
                 ppg:       { weight: 11, min: 7,    max: 19 },
@@ -2142,7 +2142,7 @@
             },
             'Forward/Center': {
                 ppg:       { weight: 7,  min: 5,    max: 17 },
-                fg_pct:    { weight: 7,  min: 0.25, max: 0.60 },
+                fg_pct:    { weight: 4,  min: 0.25, max: 0.60 },
                 three_pct: { weight: 10, min: 0.20, max: 0.40 },
                 ft_pct:    { weight: 8,  min: 0.50, max: 0.80 },
                 apg:       { weight: 3,  min: 0,    max: 3 },
@@ -2152,11 +2152,11 @@
                 drbg:      { weight: 6,  min: 1,    max: 5 },
                 bpg:       { weight: 2,  min: 0,    max: 1.5 },
                 spg:       { weight: 1,  min: 0,    max: 1 },
-                efg:       { weight: 5,  min: 0.40, max: 0.7 },
+                efg:       { weight: 8,  min: 0.40, max: 0.7 },
                 plusminus: { weight: 0,  min: -50,  max: 150 },
                 or_pct:    { weight: 5,  min: 0,    max: 0.1 },
                 dr_pct:    { weight: 5,  min: 0,    max: 0.1 },
-                ws:        { weight: 5,  min: 0,    max: 4 },
+                ws:        { weight: 7,  min: 0,    max: 4 },
                 ortg:      { weight: 5,  min: 95,   max: 125 },
                 drtg:      { weight: 5,  min: 95,   max: 125 },
                 ows:       { weight: 0,  min: 0,    max: 6 },
@@ -4345,6 +4345,20 @@
         // CBBD STATS SYNC — update all model stats from the CBBD API
         // ═══════════════════════════════════════════════════════
 
+        // Fetch with a hard timeout — prevents batch from hanging when API rate-limits or stalls
+        async function fetchWithTimeout(url, options, ms = 7000) {
+            const ctrl = new AbortController();
+            const id = setTimeout(() => ctrl.abort(), ms);
+            try {
+                return await fetch(url, { ...options, signal: ctrl.signal });
+            } catch (e) {
+                if (e.name === 'AbortError') throw new Error(`Timeout after ${ms}ms`);
+                throw e;
+            } finally {
+                clearTimeout(id);
+            }
+        }
+
         async function syncStatsFromCBBD(forceRefresh = false) {
             const statusEl = document.getElementById('cbbdSyncStatus');
             if (!playerData || playerData.length === 0) {
@@ -4367,7 +4381,7 @@
             let teamsFromApi   = 0;
             let teamsFailed    = 0;
 
-            const BATCH_SIZE = 4;
+            const BATCH_SIZE = 2;
             for (let batchStart = 0; batchStart < teams.length; batchStart += BATCH_SIZE) {
                 const batch = teams.slice(batchStart, batchStart + BATCH_SIZE);
                 let batchApiCalls = 0;
@@ -4399,8 +4413,8 @@
                             const teamUrl   = `${CBBD_BASE}/stats/team/season?season=${season}&team=${encodeURIComponent(tryName)}`;
 
                             const [playerRes, teamRes] = await Promise.all([
-                                fetch(playerUrl, { headers: authHdr }),
-                                fetch(teamUrl,   { headers: authHdr })
+                                fetchWithTimeout(playerUrl, { headers: authHdr }),
+                                fetchWithTimeout(teamUrl,   { headers: authHdr })
                             ]);
 
                             if (!playerRes.ok) { console.warn(`CBBD: "${tryName}" → ${playerRes.status}`); continue; }
@@ -4528,10 +4542,6 @@
 
             if (missed > 0) console.warn('CBBD sync — unmatched players:', notFound);
             if (updated > 0) calculateScores();
-
-            // Hydrate any remaining team stats not already fetched in the parallel loop above.
-            // When all teams were fetched above this is a fast cache-only pass (no API calls).
-            await syncTeamStatsFromCBBD(forceRefresh);
         }
 
         // Maps sheet team names → CBBD API team names where they differ
