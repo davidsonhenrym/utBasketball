@@ -4381,14 +4381,15 @@
             let teamsFromApi   = 0;
             let teamsFailed    = 0;
 
-            const BATCH_SIZE = 2;
+            // Player stats only — team stats load lazily when matchup simulator is used.
+            // This cuts API calls in half (365 → 365 requests instead of 730).
+            const BATCH_SIZE = 5;
             for (let batchStart = 0; batchStart < teams.length; batchStart += BATCH_SIZE) {
                 const batch = teams.slice(batchStart, batchStart + BATCH_SIZE);
                 let batchApiCalls = 0;
 
                 await Promise.all(batch.map(async (team) => {
                     const playerKey = `cbbd_stats_v1_${team}_${season}`;
-                    const teamKey   = `cbbd_team_stats_v2_${team}_${season}`;
 
                     // Check localStorage cache first (unless force-refresh requested)
                     if (!forceRefresh) {
@@ -4396,13 +4397,11 @@
                         if (cached) {
                             cached.forEach(p => { cbbdPlayerMap[normalizePlayerName(p.name)] = p; });
                             teamsFromCache++;
-                            const teamCached = cbbdCacheGet(teamKey);
-                            if (teamCached) cbbdTeamStats[team] = teamCached;
                             return;
                         }
                     }
 
-                    // Cache miss — fetch player stats AND team stats in parallel
+                    // Cache miss — fetch player stats only
                     const alias      = TEAM_NAME_ALIASES[team];
                     const namesToTry = alias ? [team, alias] : [team];
                     try {
@@ -4410,31 +4409,15 @@
                         for (const tryName of namesToTry) {
                             const authHdr   = { 'Authorization': `Bearer ${CBBD_API_KEY}` };
                             const playerUrl = `${CBBD_BASE}/stats/player/season?season=${season}&team=${encodeURIComponent(tryName)}`;
-                            const teamUrl   = `${CBBD_BASE}/stats/team/season?season=${season}&team=${encodeURIComponent(tryName)}`;
-
-                            const [playerRes, teamRes] = await Promise.all([
-                                fetchWithTimeout(playerUrl, { headers: authHdr }),
-                                fetchWithTimeout(teamUrl,   { headers: authHdr })
-                            ]);
-
+                            const playerRes = await fetchWithTimeout(playerUrl, { headers: authHdr });
                             if (!playerRes.ok) { console.warn(`CBBD: "${tryName}" → ${playerRes.status}`); continue; }
                             const players = await playerRes.json();
                             if (!players || !players.length) continue;
-
                             players.forEach(p => { cbbdPlayerMap[normalizePlayerName(p.name)] = p; });
                             cbbdCacheSet(playerKey, players);
                             teamsFromApi++;
                             batchApiCalls++;
                             fetched = true;
-
-                            if (teamRes.ok) {
-                                const teamData = await teamRes.json();
-                                if (teamData && teamData.length) {
-                                    const entry = buildTeamStatsEntry(teamData[0]);
-                                    cbbdTeamStats[team] = entry;
-                                    cbbdCacheSet(teamKey, entry);
-                                }
-                            }
                             break;
                         }
                         if (!fetched) {
@@ -4450,7 +4433,6 @@
                         const stale = cbbdCacheGetStale(playerKey);
                         if (stale) {
                             stale.forEach(p => { cbbdPlayerMap[normalizePlayerName(p.name)] = p; });
-                            console.warn(`CBBD: using stale cache for "${team}" after error`);
                             teamsFromCache++;
                         } else { teamsFailed++; }
                     }
@@ -4461,7 +4443,7 @@
 
                 // Only rate-limit when we actually hit the API this batch
                 if (batchApiCalls > 0) {
-                    await new Promise(r => setTimeout(r, 300));
+                    await new Promise(r => setTimeout(r, 250));
                 }
             }
 
@@ -4852,7 +4834,34 @@
             return { A: scoreA, B: scoreB };
         }
 
-        function runMatchupSimulation() {
+        // Fetch team stats on demand for just the two matchup teams.
+        // Much faster than syncing all 365 teams — only 2 API calls instead of 365.
+        async function ensureTeamStats(teamName) {
+            if (cbbdTeamStats[teamName]) return; // already loaded
+            const season = parseInt(document.getElementById('shotSeasonSelect')?.value) || 2026;
+            const lsKey  = `cbbd_team_stats_v2_${teamName}_${season}`;
+            const cached = cbbdCacheGet(lsKey);
+            if (cached) { cbbdTeamStats[teamName] = cached; return; }
+            const alias      = TEAM_NAME_ALIASES[teamName];
+            const namesToTry = alias ? [teamName, alias] : [teamName];
+            for (const tryName of namesToTry) {
+                try {
+                    const url = `${CBBD_BASE}/stats/team/season?season=${season}&team=${encodeURIComponent(tryName)}`;
+                    const res = await fetchWithTimeout(url, { headers: { 'Authorization': `Bearer ${CBBD_API_KEY}` } });
+                    if (!res.ok) continue;
+                    const data = await res.json();
+                    if (!data || !data.length) continue;
+                    const entry = buildTeamStatsEntry(data[0]);
+                    cbbdTeamStats[teamName] = entry;
+                    cbbdCacheSet(lsKey, entry);
+                    return;
+                } catch (e) { console.warn(`ensureTeamStats "${tryName}":`, e.message); }
+            }
+            const stale = cbbdCacheGetStale(lsKey);
+            if (stale) cbbdTeamStats[teamName] = stale;
+        }
+
+        async function runMatchupSimulation() {
             const nameA = document.getElementById('matchupTeamA').value;
             const nameB = document.getElementById('matchupTeamB').value;
             if (!nameA || !nameB) { alert('Please select both teams.'); return; }
@@ -4861,6 +4870,12 @@
             const teamA = teamData.find(t => t.name === nameA);
             const teamB = teamData.find(t => t.name === nameB);
             if (!teamA || !teamB) return;
+
+            // Fetch team-level stats for both teams in parallel (lazy — only 2 calls)
+            const btn = document.getElementById('matchupRunBtn');
+            if (btn) btn.textContent = 'Loading…';
+            await Promise.all([ensureTeamStats(nameA), ensureTeamStats(nameB)]);
+            if (btn) btn.textContent = 'Run Simulation';
 
             const n = parseInt(document.getElementById('matchupSimCount').value) || 1000;
             const homeCourt = document.getElementById('matchupHomeCourt')?.value || 'neutral';
