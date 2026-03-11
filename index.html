@@ -4367,78 +4367,88 @@
             let teamsFromApi   = 0;
             let teamsFailed    = 0;
 
-            for (const team of teams) {
-                const playerKey = `cbbd_stats_v1_${team}_${season}`;
-                const teamKey   = `cbbd_team_stats_v2_${team}_${season}`;
+            const BATCH_SIZE = 4;
+            for (let batchStart = 0; batchStart < teams.length; batchStart += BATCH_SIZE) {
+                const batch = teams.slice(batchStart, batchStart + BATCH_SIZE);
+                let batchApiCalls = 0;
 
-                // Check localStorage cache first (unless force-refresh requested)
-                if (!forceRefresh) {
-                    const cached = cbbdCacheGet(playerKey);
-                    if (cached) {
-                        cached.forEach(p => { cbbdPlayerMap[normalizePlayerName(p.name)] = p; });
-                        teamsFromCache++;
-                        // Also hydrate team stats from cache — no API call, no delay
-                        const teamCached = cbbdCacheGet(teamKey);
-                        if (teamCached) cbbdTeamStats[team] = teamCached;
-                        continue;
-                    }
-                }
+                await Promise.all(batch.map(async (team) => {
+                    const playerKey = `cbbd_stats_v1_${team}_${season}`;
+                    const teamKey   = `cbbd_team_stats_v2_${team}_${season}`;
 
-                // Cache miss — fetch player stats AND team stats in parallel (one delay covers both)
-                const alias      = TEAM_NAME_ALIASES[team];
-                const namesToTry = alias ? [team, alias] : [team];
-                try {
-                    let fetched = false;
-                    for (const tryName of namesToTry) {
-                        const authHdr   = { 'Authorization': `Bearer ${CBBD_API_KEY}` };
-                        const playerUrl = `${CBBD_BASE}/stats/player/season?season=${season}&team=${encodeURIComponent(tryName)}`;
-                        const teamUrl   = `${CBBD_BASE}/stats/team/season?season=${season}&team=${encodeURIComponent(tryName)}`;
-
-                        // Fire both requests simultaneously — cuts per-team wait in half
-                        const [playerRes, teamRes] = await Promise.all([
-                            fetch(playerUrl, { headers: authHdr }),
-                            fetch(teamUrl,   { headers: authHdr })
-                        ]);
-
-                        if (!playerRes.ok) { console.warn(`CBBD: "${tryName}" → ${playerRes.status}`); continue; }
-                        const players = await playerRes.json();
-                        if (!players || !players.length) continue;
-
-                        players.forEach(p => { cbbdPlayerMap[normalizePlayerName(p.name)] = p; });
-                        cbbdCacheSet(playerKey, players);
-                        teamsFromApi++;
-                        fetched = true;
-
-                        // Process team stats from the parallel fetch
-                        if (teamRes.ok) {
-                            const teamData = await teamRes.json();
-                            if (teamData && teamData.length) {
-                                const entry = buildTeamStatsEntry(teamData[0]);
-                                cbbdTeamStats[team] = entry;
-                                cbbdCacheSet(teamKey, entry);
-                            }
+                    // Check localStorage cache first (unless force-refresh requested)
+                    if (!forceRefresh) {
+                        const cached = cbbdCacheGet(playerKey);
+                        if (cached) {
+                            cached.forEach(p => { cbbdPlayerMap[normalizePlayerName(p.name)] = p; });
+                            teamsFromCache++;
+                            const teamCached = cbbdCacheGet(teamKey);
+                            if (teamCached) cbbdTeamStats[team] = teamCached;
+                            return;
                         }
-                        break;
                     }
-                    if (!fetched) {
+
+                    // Cache miss — fetch player stats AND team stats in parallel
+                    const alias      = TEAM_NAME_ALIASES[team];
+                    const namesToTry = alias ? [team, alias] : [team];
+                    try {
+                        let fetched = false;
+                        for (const tryName of namesToTry) {
+                            const authHdr   = { 'Authorization': `Bearer ${CBBD_API_KEY}` };
+                            const playerUrl = `${CBBD_BASE}/stats/player/season?season=${season}&team=${encodeURIComponent(tryName)}`;
+                            const teamUrl   = `${CBBD_BASE}/stats/team/season?season=${season}&team=${encodeURIComponent(tryName)}`;
+
+                            const [playerRes, teamRes] = await Promise.all([
+                                fetch(playerUrl, { headers: authHdr }),
+                                fetch(teamUrl,   { headers: authHdr })
+                            ]);
+
+                            if (!playerRes.ok) { console.warn(`CBBD: "${tryName}" → ${playerRes.status}`); continue; }
+                            const players = await playerRes.json();
+                            if (!players || !players.length) continue;
+
+                            players.forEach(p => { cbbdPlayerMap[normalizePlayerName(p.name)] = p; });
+                            cbbdCacheSet(playerKey, players);
+                            teamsFromApi++;
+                            batchApiCalls++;
+                            fetched = true;
+
+                            if (teamRes.ok) {
+                                const teamData = await teamRes.json();
+                                if (teamData && teamData.length) {
+                                    const entry = buildTeamStatsEntry(teamData[0]);
+                                    cbbdTeamStats[team] = entry;
+                                    cbbdCacheSet(teamKey, entry);
+                                }
+                            }
+                            break;
+                        }
+                        if (!fetched) {
+                            const stale = cbbdCacheGetStale(playerKey);
+                            if (stale) {
+                                stale.forEach(p => { cbbdPlayerMap[normalizePlayerName(p.name)] = p; });
+                                console.warn(`CBBD: using stale cache for "${team}"`);
+                                teamsFromCache++;
+                            } else { teamsFailed++; }
+                        }
+                    } catch (err) {
+                        console.warn(`CBBD fetch error for "${team}":`, err);
                         const stale = cbbdCacheGetStale(playerKey);
                         if (stale) {
                             stale.forEach(p => { cbbdPlayerMap[normalizePlayerName(p.name)] = p; });
-                            console.warn(`CBBD: using stale cache for "${team}"`);
+                            console.warn(`CBBD: using stale cache for "${team}" after error`);
                             teamsFromCache++;
                         } else { teamsFailed++; }
                     }
-                } catch (err) {
-                    console.warn(`CBBD fetch error for "${team}":`, err);
-                    const stale = cbbdCacheGetStale(playerKey);
-                    if (stale) {
-                        stale.forEach(p => { cbbdPlayerMap[normalizePlayerName(p.name)] = p; });
-                        console.warn(`CBBD: using stale cache for "${team}" after error`);
-                        teamsFromCache++;
-                    } else { teamsFailed++; }
+                }));
+
+                const done = Math.min(batchStart + BATCH_SIZE, teams.length);
+                statusEl.textContent = `Loading… ${done}/${teams.length} teams (${teamsFromApi} API calls)`;
+
+                // Only rate-limit when we actually hit the API this batch
+                if (batchApiCalls > 0) {
+                    await new Promise(r => setTimeout(r, 300));
                 }
-                statusEl.textContent = `Loading… ${teamsFromCache + teamsFromApi + teamsFailed}/${teams.length} teams (${teamsFromApi} API calls)`;
-                await new Promise(r => setTimeout(r, 350)); // one delay covers both parallel fetches
             }
 
             // Map CBBD player objects onto playerData rows
