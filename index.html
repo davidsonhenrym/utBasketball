@@ -4387,7 +4387,7 @@
                     teamsFailed++;
                 }
                 statusEl.textContent = `Loading… ${teamsFromCache + teamsFromApi + teamsFailed}/${teams.length} teams (${teamsFromApi} API calls)`;
-                await new Promise(r => setTimeout(r, 120)); // gentle rate-limit
+                await new Promise(r => setTimeout(r, 600)); // rate-limit (CBBD throttles at ~429 if too fast)
             }
 
             // Map CBBD player objects onto playerData rows
@@ -4567,7 +4567,7 @@
                 } catch (err) {
                     console.warn(`CBBD team stats fetch error for "${team}":`, err);
                 }
-                await new Promise(r => setTimeout(r, 80)); // gentle rate-limit
+                await new Promise(r => setTimeout(r, 600)); // rate-limit (CBBD throttles at ~429 if too fast)
             }
             console.log(`Team stats synced: ${Object.keys(cbbdTeamStats).length} teams`);
         }
