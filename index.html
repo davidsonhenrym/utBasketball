@@ -1906,6 +1906,12 @@
                                         <option value="5000">5,000</option>
                                         <option value="10000">10,000</option>
                                     </select>
+                                    <label style="font-size:0.7rem;font-family:'IBM Plex Mono',monospace;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;">Location</label>
+                                    <select id="matchupHomeCourt" style="padding:8px 12px;background:var(--bg-tertiary);border:1px solid var(--border);border-radius:6px;color:var(--text-primary);font-family:'IBM Plex Mono',monospace;font-size:0.8rem;">
+                                        <option value="neutral">Neutral Site</option>
+                                        <option value="A">Team A — Home</option>
+                                        <option value="B">Team B — Home</option>
+                                    </select>
                                     <button onclick="runMatchupSimulation()" id="matchupRunBtn" style="padding:10px 28px;background:linear-gradient(135deg,var(--accent-primary),var(--accent-secondary));color:var(--bg-primary);border:none;border-radius:8px;font-weight:700;font-size:0.85rem;cursor:pointer;text-transform:uppercase;letter-spacing:0.05em;font-family:'Archivo',sans-serif;">Run Simulation</button>
                                 </div>
                             </div>
@@ -3992,6 +3998,16 @@
             } catch { return null; }
         }
 
+        // Returns stale cache data even if TTL has expired — used as API fallback.
+        // Preserves yesterday's data so the app stays functional when the API is down.
+        function cbbdCacheGetStale(key) {
+            try {
+                const raw = localStorage.getItem(key);
+                if (!raw) return null;
+                return JSON.parse(raw).data ?? null;
+            } catch { return null; }
+        }
+
         function cbbdCacheSet(key, data) {
             try { localStorage.setItem(key, JSON.stringify({ ts: Date.now(), data })); }
             catch (e) { console.warn('CBBD cache write skipped (storage full?):', e.message); }
@@ -4381,10 +4397,28 @@
                         fetched = true;
                         break;
                     }
-                    if (!fetched) teamsFailed++;
+                    if (!fetched) {
+                        // API returned no data — try stale cache before giving up
+                        const stale = cbbdCacheGetStale(`cbbd_stats_v1_${team}_${season}`);
+                        if (stale) {
+                            stale.forEach(p => { cbbdPlayerMap[normalizePlayerName(p.name)] = p; });
+                            console.warn(`CBBD: using stale cache for "${team}"`);
+                            teamsFromCache++;
+                        } else {
+                            teamsFailed++;
+                        }
+                    }
                 } catch (err) {
                     console.warn(`CBBD fetch error for "${team}":`, err);
-                    teamsFailed++;
+                    // Network/API failure — fall back to stale cache if available
+                    const stale = cbbdCacheGetStale(`cbbd_stats_v1_${team}_${season}`);
+                    if (stale) {
+                        stale.forEach(p => { cbbdPlayerMap[normalizePlayerName(p.name)] = p; });
+                        console.warn(`CBBD: using stale cache for "${team}" after error`);
+                        teamsFromCache++;
+                    } else {
+                        teamsFailed++;
+                    }
                 }
                 statusEl.textContent = `Loading… ${teamsFromCache + teamsFromApi + teamsFailed}/${teams.length} teams (${teamsFromApi} API calls)`;
                 await new Promise(r => setTimeout(r, 600)); // rate-limit (CBBD throttles at ~429 if too fast)
@@ -4511,7 +4545,12 @@
                         if (result && result.length) { data = result; break; }
                         console.warn(`CBBD team stats: empty response for "${tryName}"`);
                     }
-                    if (!data || !data.length) { console.warn(`CBBD team stats: no data found for "${team}"`); continue; }
+                    if (!data || !data.length) {
+                        const stale = cbbdCacheGetStale(lsKey);
+                        if (stale) { cbbdTeamStats[team] = stale; console.warn(`CBBD team stats: using stale cache for "${team}"`); }
+                        else { console.warn(`CBBD team stats: no data found for "${team}"`); }
+                        continue;
+                    }
 
                     const ts  = data[0];
                     const g   = Math.max(ts.games || 1, 1);
@@ -4566,6 +4605,12 @@
                     cbbdCacheSet(lsKey, entry);
                 } catch (err) {
                     console.warn(`CBBD team stats fetch error for "${team}":`, err);
+                    // Network/API failure — use stale cache so matchup simulator still works
+                    const stale = cbbdCacheGetStale(lsKey);
+                    if (stale) {
+                        cbbdTeamStats[team] = stale;
+                        console.warn(`CBBD team stats: using stale cache for "${team}"`);
+                    }
                 }
                 await new Promise(r => setTimeout(r, 600)); // rate-limit (CBBD throttles at ~429 if too fast)
             }
@@ -4716,17 +4761,27 @@
                 // Model score delta: composite shooting/rebounding/defense quality — cap ±4%
                 const scoreDiff   = (offAgg.avgScore  || 0) - (defAgg.avgScore  || 0);
                 const scoreFactor = Math.max(-0.04, Math.min(0.04, scoreDiff * 0.0008));
-                const playerAdj   = bpmFactor + scoreFactor; // combined ±8% max
+                // FT rate: offense getting to the line more than defense suppresses — cap ±3%
+                // Learned from LSU/UK: identical FG%, but FTA differential decided the game
+                const ftrDiff   = (offTs.freeThrowRate || 0) - (defTs.oppFTR || 0);
+                const ftrFactor = Math.max(-0.03, Math.min(0.03, ftrDiff * 0.25));
+                // TOV rate: penalize sloppy offense vs turnover-forcing defense — cap ±3%
+                // Learned from LSU/UK: 9 vs 5 turnovers generated 3 vs 9 pts off TOs
+                const tovDiff   = (offTs.tovRate || 0) - (defTs.oppTovRate || 0);
+                const tovFactor = Math.max(-0.03, Math.min(0.03, -tovDiff * 0.30));
+                const playerAdj = bpmFactor + scoreFactor + ftrFactor + tovFactor; // combined ±16% max
 
                 const projected = base * (1 + playerAdj);
-                console.log(`[Matchup] ${offName} vs ${defName} | base=${base.toFixed(1)} bpmAdj=${(bpmFactor*100).toFixed(1)}% qualityAdj=${(scoreFactor*100).toFixed(1)}% → projected=${projected.toFixed(1)}`);
+                console.log(`[Matchup] ${offName} vs ${defName} | base=${base.toFixed(1)} bpmAdj=${(bpmFactor*100).toFixed(1)}% qualityAdj=${(scoreFactor*100).toFixed(1)}% ftrAdj=${(ftrFactor*100).toFixed(1)}% tovAdj=${(tovFactor*100).toFixed(1)}% → projected=${projected.toFixed(1)}`);
                 return Math.max(35, projected);
             }
 
             // Fallback: player-aggregate model (used when team stats unavailable)
             let score = offAgg.ppg;
             if (offAgg.efg > 0) score *= (offAgg.efg / 0.50);
-            const defPressure = Math.min(0.10, (defAgg.spg + defAgg.bpg * 0.5) * 0.01);
+            // Steals generate live-ball TOs and transition buckets — weight 3x over blocks.
+            // Learned from LSU/UK: 5 steals vs 1 decided fast-break and pts-off-TO margins.
+            const defPressure = Math.min(0.10, defAgg.spg * 0.015 + defAgg.bpg * 0.005);
             score *= (1 - defPressure);
             if (offAgg.topg > 0) score *= Math.max(0.82, 1 - offAgg.topg * 0.015);
             if (offAgg.ortg > 80 && defAgg.drtg > 80) {
@@ -4736,6 +4791,11 @@
             // Each point of BPM gap shifts score ~0.8%, capped at ±15% total effect.
             const bpmDiff = (offAgg.bpm || 0) - (defAgg.bpm || 0);
             score *= (1 + Math.max(-0.15, Math.min(0.15, bpmDiff * 0.008)));
+            // FT% efficiency: teams shooting well from line score more per possession.
+            // Teams above NCAA avg (72%) get a modest boost; below get a reduction — cap ±2%.
+            if (offAgg.ftpct > 0) {
+                score *= (1 + Math.max(-0.02, Math.min(0.02, (offAgg.ftpct - 0.72) * 0.10)));
+            }
             // Regress 40% toward NCAA average (72 pts) to dampen raw-stat inflation
             // from players in weaker conferences — prevents unrealistic margins.
             const NCAA_AVG = 72;
@@ -4743,9 +4803,10 @@
             return Math.max(35, score);
         }
 
-        function simulateSingleGame(nameA, nameB, aggA, aggB) {
-            const expA = expectedTeamScore(nameA, nameB, aggA, aggB);
-            const expB = expectedTeamScore(nameB, nameA, aggB, aggA);
+        function simulateSingleGame(nameA, nameB, aggA, aggB, homeAdj = 0) {
+            // homeAdj: +3.5 = Team A at home, -3.5 = Team B at home, 0 = neutral
+            const expA = expectedTeamScore(nameA, nameB, aggA, aggB) + homeAdj;
+            const expB = expectedTeamScore(nameB, nameA, aggB, aggA) - homeAdj;
             // ~10-11 pt std dev — college basketball has high game-to-game variance;
             // using 9.5% created extreme win probs (e.g. 96%) for modest score gaps
             const stdA = Math.max(6, expA * 0.115);
@@ -4766,6 +4827,8 @@
             if (!teamA || !teamB) return;
 
             const n = parseInt(document.getElementById('matchupSimCount').value) || 1000;
+            const homeCourt = document.getElementById('matchupHomeCourt')?.value || 'neutral';
+            const homeAdj   = homeCourt === 'A' ? 3.5 : homeCourt === 'B' ? -3.5 : 0;
             const aggA = getMatchupTeamAggregates(teamA);
             const aggB = getMatchupTeamAggregates(teamB);
             const tsA  = cbbdTeamStats[nameA];
@@ -4775,7 +4838,7 @@
             const scoresA = [], scoresB = [], margins = [];
 
             for (let i = 0; i < n; i++) {
-                const { A, B } = simulateSingleGame(nameA, nameB, aggA, aggB);
+                const { A, B } = simulateSingleGame(nameA, nameB, aggA, aggB, homeAdj);
                 scoresA.push(A);
                 scoresB.push(B);
                 margins.push(A - B);
@@ -4787,10 +4850,10 @@
             const avgMargin = margins.reduce((s, v) => s + v, 0) / n;
             const usingTeamStats = !!(tsA && tsB);
 
-            renderMatchupResults({ teamA, teamB, aggA, aggB, tsA, tsB, winsA, winsB, n, avgA, avgB, avgMargin, scoresA, scoresB, usingTeamStats });
+            renderMatchupResults({ teamA, teamB, aggA, aggB, tsA, tsB, winsA, winsB, n, avgA, avgB, avgMargin, scoresA, scoresB, usingTeamStats, homeAdj, homeCourt });
         }
 
-        function renderMatchupResults({ teamA, teamB, aggA, aggB, tsA, tsB, winsA, winsB, n, avgA, avgB, avgMargin, scoresA, scoresB, usingTeamStats }) {
+        function renderMatchupResults({ teamA, teamB, aggA, aggB, tsA, tsB, winsA, winsB, n, avgA, avgB, avgMargin, scoresA, scoresB, usingTeamStats, homeAdj = 0, homeCourt = 'neutral' }) {
             document.getElementById('matchupEmpty').style.display = 'none';
             document.getElementById('matchupResults').style.display = 'block';
 
@@ -4809,9 +4872,11 @@
 
             const recA = tsA ? ` <span style="font-size:0.75rem;color:var(--text-secondary);">(${tsA.wins}-${tsA.losses})</span>` : '';
             const recB = tsB ? ` <span style="font-size:0.75rem;color:var(--text-secondary);">(${tsB.wins}-${tsB.losses})</span>` : '';
+            const homeLabel = homeCourt === 'A' ? `${teamA.name} at home (+3.5)` : homeCourt === 'B' ? `${teamB.name} at home (+3.5)` : 'Neutral site';
+            const homeNoteColor = homeCourt === 'neutral' ? 'var(--text-secondary)' : 'var(--accent-tertiary)';
             const modelNote = usingTeamStats
-                ? `<div style="font-size:0.6rem;color:var(--accent-primary);margin-top:4px;">&#10003; Team efficiency + player quality combined</div>`
-                : `<div style="font-size:0.6rem;color:var(--accent-tertiary);margin-top:4px;">&#9888; Using player aggregates (sync CBBD for team stats)</div>`;
+                ? `<div style="font-size:0.6rem;color:var(--accent-primary);margin-top:4px;">&#10003; Team efficiency + player quality combined</div><div style="font-size:0.6rem;color:${homeNoteColor};margin-top:2px;">&#127968; ${homeLabel}</div>`
+                : `<div style="font-size:0.6rem;color:var(--accent-tertiary);margin-top:4px;">&#9888; Using player aggregates (sync CBBD for team stats)</div><div style="font-size:0.6rem;color:${homeNoteColor};margin-top:2px;">&#127968; ${homeLabel}</div>`;
 
             // Build diagnostic formula breakdown
             let diagHTML = '';
@@ -4819,17 +4884,23 @@
                 const sharedPace = ((tsA.pace + tsB.pace) / 2).toFixed(1);
                 const baseA = tsA.offRating * (tsA.pace + tsB.pace) / 2 * tsB.defRating / 10000;
                 const baseB = tsB.offRating * (tsA.pace + tsB.pace) / 2 * tsA.defRating / 10000;
-                // Mirror the player-quality adjustment from expectedTeamScore
+                // Mirror all adjustments from expectedTeamScore
                 const bpmFA  = Math.max(-0.06, Math.min(0.06, ((aggA.bpm || 0) - (aggB.bpm || 0)) * 0.006));
                 const bpmFB  = Math.max(-0.06, Math.min(0.06, ((aggB.bpm || 0) - (aggA.bpm || 0)) * 0.006));
                 const sFA    = Math.max(-0.04, Math.min(0.04, ((aggA.avgScore || 0) - (aggB.avgScore || 0)) * 0.0008));
                 const sFB    = Math.max(-0.04, Math.min(0.04, ((aggB.avgScore || 0) - (aggA.avgScore || 0)) * 0.0008));
-                const projA  = (baseA * (1 + bpmFA + sFA)).toFixed(1);
-                const projB  = (baseB * (1 + bpmFB + sFB)).toFixed(1);
+                const ftrFA  = Math.max(-0.03, Math.min(0.03, ((tsA.freeThrowRate || 0) - (tsB.oppFTR || 0)) * 0.25));
+                const ftrFB  = Math.max(-0.03, Math.min(0.03, ((tsB.freeThrowRate || 0) - (tsA.oppFTR || 0)) * 0.25));
+                const tovFA  = Math.max(-0.03, Math.min(0.03, -((tsA.tovRate || 0) - (tsB.oppTovRate || 0)) * 0.30));
+                const tovFB  = Math.max(-0.03, Math.min(0.03, -((tsB.tovRate || 0) - (tsA.oppTovRate || 0)) * 0.30));
+                const projA  = (baseA * (1 + bpmFA + sFA + ftrFA + tovFA) + homeAdj).toFixed(1);
+                const projB  = (baseB * (1 + bpmFB + sFB + ftrFB + tovFB) - homeAdj).toFixed(1);
                 const fmtAdj = v => (v >= 0 ? '+' : '') + (v * 100).toFixed(1) + '%';
+                const homeRowA = homeAdj !== 0 ? `<div>Home court: <span style="color:${homeAdj > 0 ? 'var(--accent-primary)' : '#ff5050'};">${homeAdj > 0 ? '+' : ''}${homeAdj.toFixed(1)} pts</span></div>` : '';
+                const homeRowB = homeAdj !== 0 ? `<div>Home court: <span style="color:${homeAdj < 0 ? '#00d4ff' : '#ff5050'};">${(-homeAdj) > 0 ? '+' : ''}${(-homeAdj).toFixed(1)} pts</span></div>` : '';
                 diagHTML = `
                 <div style="margin:12px 0;padding:10px 16px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:8px;font-family:'IBM Plex Mono',monospace;font-size:0.62rem;color:var(--text-secondary);">
-                    <div style="color:var(--text-primary);font-weight:700;margin-bottom:8px;font-size:0.65rem;">MODEL INPUTS (team efficiency + player quality)</div>
+                    <div style="color:var(--text-primary);font-weight:700;margin-bottom:8px;font-size:0.65rem;">MODEL INPUTS (team efficiency + player quality + situational)</div>
                     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
                         <div>
                             <div style="color:var(--accent-primary);font-weight:700;margin-bottom:4px;">${teamA.name} scoring</div>
@@ -4839,6 +4910,9 @@
                             <div>Base: <span style="color:var(--text-primary);">${baseA.toFixed(1)} pts</span></div>
                             <div>BPM adj: <span style="color:${bpmFA >= 0 ? 'var(--accent-primary)' : '#ff5050'};">${fmtAdj(bpmFA)}</span></div>
                             <div>Quality adj: <span style="color:${sFA >= 0 ? 'var(--accent-primary)' : '#ff5050'};">${fmtAdj(sFA)}</span></div>
+                            <div>FT rate adj: <span style="color:${ftrFA >= 0 ? 'var(--accent-primary)' : '#ff5050'};">${fmtAdj(ftrFA)}</span></div>
+                            <div>TOV rate adj: <span style="color:${tovFA >= 0 ? 'var(--accent-primary)' : '#ff5050'};">${fmtAdj(tovFA)}</span></div>
+                            ${homeRowA}
                             <div style="margin-top:4px;color:var(--accent-primary);font-weight:700;">→ Projected: ${projA} pts</div>
                         </div>
                         <div>
@@ -4849,10 +4923,13 @@
                             <div>Base: <span style="color:var(--text-primary);">${baseB.toFixed(1)} pts</span></div>
                             <div>BPM adj: <span style="color:${bpmFB >= 0 ? '#00d4ff' : '#ff5050'};">${fmtAdj(bpmFB)}</span></div>
                             <div>Quality adj: <span style="color:${sFB >= 0 ? '#00d4ff' : '#ff5050'};">${fmtAdj(sFB)}</span></div>
+                            <div>FT rate adj: <span style="color:${ftrFB >= 0 ? '#00d4ff' : '#ff5050'};">${fmtAdj(ftrFB)}</span></div>
+                            <div>TOV rate adj: <span style="color:${tovFB >= 0 ? '#00d4ff' : '#ff5050'};">${fmtAdj(tovFB)}</span></div>
+                            ${homeRowB}
                             <div style="margin-top:4px;color:#00d4ff;font-weight:700;">→ Projected: ${projB} pts</div>
                         </div>
                     </div>
-                    <div style="margin-top:6px;opacity:0.7;">Base: (ORtg × pace × opp DRtg) ÷ 10000 · Player adj: BPM diff (±6%) + quality score diff (±4%)</div>
+                    <div style="margin-top:6px;opacity:0.7;">Base: (ORtg × pace × opp DRtg) ÷ 10000 · Adj: BPM(±6%) + quality(±4%) + FT rate(±3%) + TOV rate(±3%) + home court(±3.5 pts)</div>
                 </div>`;
             }
 
