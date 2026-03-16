@@ -1859,7 +1859,7 @@
                                     <div id="rosterConfBaseline" style="font-size:0.68rem;font-family:'IBM Plex Mono',monospace;color:var(--text-secondary);margin-top:4px;"></div>
                                     <div style="font-size:0.62rem;font-family:'IBM Plex Mono',monospace;color:var(--text-secondary);border-top:1px solid var(--border);padding-top:12px;margin-top:12px;line-height:2;text-align:left;">
                                         <div>32-game season model</div>
-                                        <div>Starters 65% &middot; Reserves 30% &middot; Depth 5%</div>
+                                        <div>Starters 65% &middot; Reserves 35%</div>
                                         <div>eFG% vs D1 avg &middot; pace steepness &middot; positional balance</div>
                                         <div id="rosterBaselineDesc">MAC baseline &asymp; score 55</div>
                                     </div>
@@ -1889,7 +1889,7 @@
                                 <div class="dc-tier-section" style="margin-top:18px;">
                                     <div class="dc-tier-header">
                                         <span class="dc-tier-label">Key Reserves</span>
-                                        <span class="dc-tier-badge reserve-badge">5 slots &middot; 30% weight</span>
+                                        <span class="dc-tier-badge reserve-badge">5 slots &middot; 35% weight</span>
                                     </div>
                                     <div class="dc-header-row">
                                         <div>Position</div><div>Player</div><div style="text-align:center;">Score</div><div style="text-align:right;">NIL Salary ($)</div><div></div>
@@ -1900,7 +1900,7 @@
                                 <div class="dc-tier-section" style="margin-top:18px;">
                                     <div class="dc-tier-header">
                                         <span class="dc-tier-label">Depth</span>
-                                        <span class="dc-tier-badge depth-badge">5 slots &middot; 5% weight</span>
+                                        <span class="dc-tier-badge depth-badge">5 slots &middot; 0% weight</span>
                                     </div>
                                     <div class="dc-header-row">
                                         <div>Position</div><div>Player</div><div style="text-align:center;">Score</div><div style="text-align:right;">NIL Salary ($)</div><div></div>
@@ -3884,8 +3884,7 @@
             const avg = arr => arr.length ? arr.reduce((s, v) => s + v, 0) / arr.length : 0;
             // Weighted team quality score
             let tqs = avg(tiers.starter) * 0.65
-                    + avg(tiers.reserve) * 0.30
-                    + avg(tiers.depth)   * 0.05;
+                    + avg(tiers.reserve) * 0.35;
 
             // Positional balance adjustment: a real team needs guards, wings, AND bigs.
             // Check which positional groups are represented in the starting lineup.
