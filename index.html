@@ -1840,16 +1840,27 @@
                                             <option value="MAC" data-mult="1.0">MAC (default)</option>
                                         </select>
                                     </div>
+                                    <div style="margin-top:10px;">
+                                        <label style="font-size:0.65rem;font-family:'IBM Plex Mono',monospace;color:var(--text-secondary);display:block;margin-bottom:5px;text-align:left;">PACE STYLE</label>
+                                        <select id="rosterPaceSelect" class="sw-conf-select" onchange="updateRosterSummary()" title="Pace affects win variance: up-tempo amplifies talent gaps; slow pace adds variance/luck.">
+                                            <option value="slow">Slow (&lt;65 poss/G) — more variance</option>
+                                            <option value="avg" selected>Average (65–70 poss/G)</option>
+                                            <option value="fast">Up-tempo (&gt;70 poss/G) — talent-driven</option>
+                                        </select>
+                                    </div>
                                     <div style="padding:8px 0 8px;">
                                         <div id="rosterWinsDisplay" class="roster-wins-number">&#8212;</div>
                                         <div style="font-size:0.65rem;font-family:'IBM Plex Mono',monospace;color:var(--text-secondary);margin-top:4px;">PROJECTED RECORD</div>
                                     </div>
                                     <div id="rosterWinPct" style="font-size:0.78rem;font-family:'IBM Plex Mono',monospace;color:var(--text-secondary);margin-bottom:4px;">Add starters to project wins</div>
                                     <div id="rosterTQS" style="font-size:0.72rem;font-family:'IBM Plex Mono',monospace;color:var(--accent-secondary);"></div>
+                                    <div id="rosterEfgNote" style="font-size:0.68rem;font-family:'IBM Plex Mono',monospace;color:var(--accent-primary);margin-top:3px;"></div>
+                                    <div id="rosterBalanceNote" style="font-size:0.68rem;font-family:'IBM Plex Mono',monospace;color:#ff9944;margin-top:3px;"></div>
                                     <div id="rosterConfBaseline" style="font-size:0.68rem;font-family:'IBM Plex Mono',monospace;color:var(--text-secondary);margin-top:4px;"></div>
                                     <div style="font-size:0.62rem;font-family:'IBM Plex Mono',monospace;color:var(--text-secondary);border-top:1px solid var(--border);padding-top:12px;margin-top:12px;line-height:2;text-align:left;">
                                         <div>32-game season model</div>
                                         <div>Starters 65% &middot; Reserves 30% &middot; Depth 5%</div>
+                                        <div>eFG% vs D1 avg &middot; pace steepness &middot; positional balance</div>
                                         <div id="rosterBaselineDesc">MAC baseline &asymp; score 55</div>
                                     </div>
                                 </div>
@@ -2186,87 +2197,106 @@
         };
 
         // Hardcoded position settings — the single source of truth for scoring
+        // Weights informed by basketball analytics research (Dean Oliver Four Factors,
+        // BPM validity studies, win-share calibration research):
+        //   • eFG% / ORtg / DRtg are strongest team-win predictors
+        //   • OBPM + DBPM are the best individual future-win predictors (replaced single BPM)
+        //   • WS/40 captures per-minute win production — critical for role players
+        //   • Turnovers (TOPG) are the #2 Four-Factor win driver after shooting efficiency
+        //   • BPG for bigs is the most position-specific defensive win contributor
         const POSITION_DEFAULTS = {
             'Guard': {
-                ppg:       { weight: 10, min: 5,    max: 17 },
-                fg_pct:    { weight: 6,  min: 0.25, max: 0.50 },
-                three_pct: { weight: 10, min: 0.20, max: 0.40 },
-                ft_pct:    { weight: 10, min: 0.50, max: 0.90 },
-                apg:       { weight: 6,  min: 0,    max: 6 },
-                topg:      { weight: 6,  min: 0,    max: 3 },
-                ato:       { weight: 3,  min: 0,    max: 4 },
-                orbg:      { weight: 3,  min: 0,    max: 2 },
-                drbg:      { weight: 3,  min: 0,    max: 4 },
-                bpg:       { weight: 0,  min: 0,    max: 0.5 },
-                spg:       { weight: 2,  min: 0,    max: 2.5 },
-                efg:       { weight: 13, min: 0.40, max: 0.65 },
-                plusminus: { weight: 0,  min: -50,  max: 150 },
-                or_pct:    { weight: 2,  min: 0,    max: 0.05 },
+                // Scoring / shooting — efficiency over volume
+                ppg:       { weight: 8,  min: 5,    max: 17 },   // vol matters but less than efficiency
+                fg_pct:    { weight: 4,  min: 0.25, max: 0.50 }, // eFG% supersedes FG%
+                three_pct: { weight: 10, min: 0.20, max: 0.40 }, // floor-spacing = win contribution
+                ft_pct:    { weight: 8,  min: 0.50, max: 0.90 }, // FT rate drives offensive efficiency
+                // Playmaking / ball security — #2 Four Factor
+                apg:       { weight: 8,  min: 0,    max: 6 },    // up: assists are win-producing for guards
+                topg:      { weight: 8,  min: 0,    max: 3 },    // up: turnovers most damaging at guard
+                ato:       { weight: 5,  min: 0,    max: 4 },    // up: ratio captures care with the ball
+                // Rebounding — guards contribute less here
+                orbg:      { weight: 1,  min: 0,    max: 2 },    // down: rarely crash boards
+                drbg:      { weight: 4,  min: 0,    max: 4 },    // slight up: all players should convert DReb
+                bpg:       { weight: 0,  min: 0,    max: 0.5 },  // irrelevant for guards
+                spg:       { weight: 4,  min: 0,    max: 2.5 },  // up: steals generate transition offense
+                // Advanced — highest predictive validity
+                efg:       { weight: 12, min: 0.40, max: 0.65 }, // #1 Four Factor stat
+                plusminus: { weight: 0,  min: -50,  max: 150 },  // too noisy
+                or_pct:    { weight: 1,  min: 0,    max: 0.05 },
                 dr_pct:    { weight: 2,  min: 0,    max: 0.05 },
                 ws:        { weight: 5,  min: 0,    max: 4 },
                 ortg:      { weight: 5,  min: 95,   max: 125 },
-                drtg:      { weight: 5,  min: 95,   max: 125 },
+                drtg:      { weight: 6,  min: 95,   max: 125 },  // up: defense is 50% of basketball
                 ows:       { weight: 0,  min: 0,    max: 5 },
                 dws:       { weight: 0,  min: 0,    max: 3 },
-                ws_40:     { weight: 0,  min: 0,    max: 0.25 },
-                obpm:      { weight: 0,  min: -3,   max: 8 },
-                dbpm:      { weight: 0,  min: -3,   max: 6 },
-                bpm:       { weight: 5,  min: -10,  max: 10 },
-                per:       { weight: 4,  min: 5,    max: 25 }
+                ws_40:     { weight: 6,  min: 0,    max: 0.25 }, // UP from 0: per-min win production is key
+                obpm:      { weight: 8,  min: -3,   max: 8 },    // UP from 0: best guard win predictor
+                dbpm:      { weight: 5,  min: -3,   max: 6 },    // UP from 0: defensive contribution
+                bpm:       { weight: 0,  min: -10,  max: 10 },   // replaced by obpm+dbpm for granularity
+                per:       { weight: 3,  min: 5,    max: 25 }    // down: BPM metrics more predictive
             },
             'Wing': {
-                ppg:       { weight: 11, min: 7,    max: 19 },
-                fg_pct:    { weight: 11, min: 0.25, max: 0.50 },
-                three_pct: { weight: 12, min: 0.20, max: 0.40 },
-                ft_pct:    { weight: 10, min: 0.50, max: 0.90 },
-                apg:       { weight: 10, min: 0,    max: 6 },
-                topg:      { weight: 10, min: 0,    max: 2 },
-                ato:       { weight: 7,  min: 0,    max: 4 },
-                orbg:      { weight: 4,  min: 0,    max: 2 },
+                // Scoring / shooting
+                ppg:       { weight: 10, min: 7,    max: 19 },
+                fg_pct:    { weight: 8,  min: 0.25, max: 0.50 }, // down: eFG% is better
+                three_pct: { weight: 11, min: 0.20, max: 0.40 }, // floor spacing critical for wings too
+                ft_pct:    { weight: 8,  min: 0.50, max: 0.90 },
+                // Playmaking — wings create less than guards
+                apg:       { weight: 7,  min: 0,    max: 6 },    // down from 10: guards create more
+                topg:      { weight: 8,  min: 0,    max: 2 },    // down slightly
+                ato:       { weight: 5,  min: 0,    max: 4 },    // down from 7
+                // Rebounding / defense — wings are connective tissue
+                orbg:      { weight: 3,  min: 0,    max: 2 },
                 drbg:      { weight: 7,  min: 1,    max: 4 },
-                bpg:       { weight: 1,  min: 0,    max: 0.5 },
-                spg:       { weight: 5,  min: 0,    max: 2.5 },
-                efg:       { weight: 9,  min: 0.40, max: 0.65 },
+                bpg:       { weight: 2,  min: 0,    max: 0.5 },  // up: wings should contest
+                spg:       { weight: 6,  min: 0,    max: 2.5 },  // up: steals are key for wing wins
+                // Advanced — wings had too many zeros here
+                efg:       { weight: 10, min: 0.40, max: 0.65 }, // up: key efficiency stat
                 plusminus: { weight: 0,  min: -50,  max: 150 },
                 or_pct:    { weight: 1,  min: 0,    max: 0.05 },
-                dr_pct:    { weight: 2,  min: 0,    max: 0.05 },
-                ws:        { weight: 0,  min: 0,    max: 8 },
-                ortg:      { weight: 0,  min: 95,   max: 125 },
-                drtg:      { weight: 0,  min: 90,   max: 115 },
+                dr_pct:    { weight: 3,  min: 0,    max: 0.05 }, // up
+                ws:        { weight: 5,  min: 0,    max: 8 },    // UP from 0: win shares matter
+                ortg:      { weight: 5,  min: 95,   max: 125 },  // UP from 0: offensive efficiency
+                drtg:      { weight: 7,  min: 90,   max: 115 },  // UP from 0: wings are key defenders
                 ows:       { weight: 0,  min: 0,    max: 5 },
                 dws:       { weight: 0,  min: 0,    max: 3 },
-                ws_40:     { weight: 0,  min: 0,    max: 0.25 },
-                obpm:      { weight: 0,  min: -3,   max: 8 },
-                dbpm:      { weight: 0,  min: -3,   max: 6 },
-                bpm:       { weight: 0,  min: -3,   max: 10 },
-                per:       { weight: 0,  min: 8,    max: 30 }
+                ws_40:     { weight: 5,  min: 0,    max: 0.25 }, // UP from 0: per-min win production
+                obpm:      { weight: 6,  min: -3,   max: 8 },    // UP from 0: offensive contribution
+                dbpm:      { weight: 6,  min: -3,   max: 6 },    // UP from 0: wings are key defenders
+                bpm:       { weight: 0,  min: -3,   max: 10 },   // replaced by obpm+dbpm
+                per:       { weight: 3,  min: 8,    max: 30 }    // UP from 0: efficiency baseline
             },
             'Forward/Center': {
+                // Scoring / shooting
                 ppg:       { weight: 7,  min: 5,    max: 17 },
-                fg_pct:    { weight: 4,  min: 0.25, max: 0.60 },
-                three_pct: { weight: 10, min: 0.20, max: 0.40 },
+                fg_pct:    { weight: 5,  min: 0.25, max: 0.60 }, // up: post efficiency matters
+                three_pct: { weight: 7,  min: 0.20, max: 0.40 }, // down: less critical for traditional bigs
                 ft_pct:    { weight: 8,  min: 0.50, max: 0.80 },
+                // Playmaking
                 apg:       { weight: 3,  min: 0,    max: 3 },
                 topg:      { weight: 5,  min: 0,    max: 3 },
                 ato:       { weight: 3,  min: 0,    max: 4 },
-                orbg:      { weight: 6,  min: 0,    max: 4 },
-                drbg:      { weight: 6,  min: 1,    max: 5 },
-                bpg:       { weight: 2,  min: 0,    max: 1.5 },
+                // Rebounding / rim protection — position-specific win drivers
+                orbg:      { weight: 7,  min: 0,    max: 4 },    // up: offensive boards win possessions
+                drbg:      { weight: 7,  min: 1,    max: 5 },    // up: finishing defensive possessions
+                bpg:       { weight: 6,  min: 0,    max: 1.5 },  // UP from 2: #1 big-man defensive win stat
                 spg:       { weight: 1,  min: 0,    max: 1 },
-                efg:       { weight: 8,  min: 0.40, max: 0.7 },
+                // Advanced
+                efg:       { weight: 9,  min: 0.40, max: 0.7 },  // up: interior efficiency drives wins
                 plusminus: { weight: 0,  min: -50,  max: 150 },
                 or_pct:    { weight: 5,  min: 0,    max: 0.1 },
                 dr_pct:    { weight: 5,  min: 0,    max: 0.1 },
-                ws:        { weight: 7,  min: 0,    max: 4 },
+                ws:        { weight: 8,  min: 0,    max: 4 },     // up: win shares calibrated to wins
                 ortg:      { weight: 5,  min: 95,   max: 125 },
-                drtg:      { weight: 5,  min: 95,   max: 125 },
+                drtg:      { weight: 7,  min: 95,   max: 125 },   // up: defensive rating matters
                 ows:       { weight: 0,  min: 0,    max: 6 },
                 dws:       { weight: 0,  min: 0,    max: 4 },
-                ws_40:     { weight: 0,  min: 0,    max: 0.30 },
-                obpm:      { weight: 0,  min: -3,   max: 10 },
-                dbpm:      { weight: 0,  min: -3,   max: 8 },
-                bpm:       { weight: 5,  min: -10,  max: 10 },
-                per:       { weight: 5,  min: 5,    max: 25 }
+                ws_40:     { weight: 5,  min: 0,    max: 0.30 },  // UP from 0: per-min win production
+                obpm:      { weight: 5,  min: -3,   max: 10 },    // UP from 0: offensive contribution
+                dbpm:      { weight: 5,  min: -3,   max: 8 },     // UP from 0: shot protection value
+                bpm:       { weight: 0,  min: -10,  max: 10 },    // replaced by obpm+dbpm
+                per:       { weight: 4,  min: 5,    max: 25 }
             }
         };
 
@@ -3853,15 +3883,87 @@
             if (tiers.starter.length === 0) return null;
             const avg = arr => arr.length ? arr.reduce((s, v) => s + v, 0) / arr.length : 0;
             // Weighted team quality score
-            const tqs = avg(tiers.starter) * 0.65
-                      + avg(tiers.reserve) * 0.30
-                      + avg(tiers.depth)   * 0.05;
+            let tqs = avg(tiers.starter) * 0.65
+                    + avg(tiers.reserve) * 0.30
+                    + avg(tiers.depth)   * 0.05;
+
+            // Positional balance adjustment: a real team needs guards, wings, AND bigs.
+            // Check which positional groups are represented in the starting lineup.
+            let balanceNote = '';
+            if (scoredData.length > 0) {
+                const normName = s => (s || '').toLowerCase()
+                    .replace(/\./g, '').replace(/[^a-z0-9 ]/g, '')
+                    .replace(/\s+(jr|sr|ii|iii|iv)\s*$/i, '').replace(/\s+/g, ' ').trim();
+                const starterNames = rosterSlots
+                    .filter(s => s.tier === 'starter')
+                    .map(s => getRosterSlotValues(s.id).name)
+                    .filter(n => n && n.trim());
+                const posGroups = new Set();
+                starterNames.forEach(name => {
+                    const n = normName(name);
+                    const ln = n.split(' ').slice(-1)[0];
+                    const fi = n.split(' ')[0]?.[0] || '';
+                    const match = scoredData.find(p => {
+                        const pn = normName(p.Player);
+                        return pn === n || (pn.split(' ').slice(-1)[0] === ln && pn.split(' ')[0]?.[0] === fi);
+                    });
+                    if (match?.position_category) posGroups.add(match.position_category);
+                });
+                // Apply -3 TQS per missing positional group (only when we have enough matched starters)
+                if (posGroups.size > 0 && starterNames.length >= 3) {
+                    const missing = 3 - posGroups.size;
+                    if (missing > 0) {
+                        tqs -= missing * 3;
+                        const missingGroups = ['Guard', 'Wing', 'Forward/Center'].filter(g => !posGroups.has(g));
+                        balanceNote = `Positional imbalance: missing ${missingGroups.join(', ')} (−${missing * 3} TQS)`;
+                    }
+                }
+            }
+
+            // eFG% adjustment: roster shooting efficiency vs D1 average (~0.505)
+            // eFG% is the #1 Four-Factor win predictor — above-average shooting earns TQS points.
+            let efgNote = '';
+            if (scoredData.length > 0) {
+                const normName = s => (s || '').toLowerCase()
+                    .replace(/\./g, '').replace(/[^a-z0-9 ]/g, '')
+                    .replace(/\s+(jr|sr|ii|iii|iv)\s*$/i, '').replace(/\s+/g, ' ').trim();
+                const allNames = rosterSlots
+                    .map(s => getRosterSlotValues(s.id).name)
+                    .filter(n => n && n.trim());
+                const efgVals = [];
+                allNames.forEach(name => {
+                    const n = normName(name);
+                    const ln = n.split(' ').slice(-1)[0];
+                    const fi = n.split(' ')[0]?.[0] || '';
+                    const match = scoredData.find(p => {
+                        const pn = normName(p.Player);
+                        return pn === n || (pn.split(' ').slice(-1)[0] === ln && pn.split(' ')[0]?.[0] === fi);
+                    });
+                    const efg = parseFloat(match?.['eFG%'] ?? match?.efg);
+                    if (!isNaN(efg) && efg > 0) efgVals.push(efg);
+                });
+                if (efgVals.length >= 3) {
+                    const avgEfg = efgVals.reduce((s, v) => s + v, 0) / efgVals.length;
+                    const d1Avg = 0.505; // D1 average eFG%
+                    const efgAdj = (avgEfg - d1Avg) * 80; // +1% eFG% ≈ +0.8 TQS
+                    tqs += efgAdj;
+                    const dir = efgAdj >= 0 ? '+' : '';
+                    efgNote = `Roster eFG% ${(avgEfg * 100).toFixed(1)}% vs D1 avg 50.5% (${dir}${efgAdj.toFixed(1)} TQS)`;
+                }
+            }
+
+            // Pace: more possessions amplify talent gaps (law of large numbers).
+            // Slow pace → flatter sigmoid (more luck/variance); fast pace → steeper (talent-driven).
+            const paceSel = document.getElementById('rosterPaceSelect');
+            const paceVal = paceSel ? paceSel.value : 'avg';
+            const steepness = paceVal === 'slow' ? 16 : paceVal === 'fast' ? 10 : 13;
+
             // Conference-relative baseline: MAC(1.0x)->55, SEC(10.21x)->70, low-majors(0.55x)->~51
             const sel = document.getElementById('rosterConfSelect');
             const confMult = sel ? (parseFloat(sel.options[sel.selectedIndex]?.dataset?.mult) || 1.0) : 1.0;
             const confName = sel ? (sel.value || 'MAC') : 'MAC';
             const baseline = 55 + 15 * Math.log(Math.max(confMult, 0.1)) / Math.log(10.21);
-            const winPct = 1 / (1 + Math.exp(-(tqs - baseline) / 13));
+            const winPct = 1 / (1 + Math.exp(-(tqs - baseline) / steepness));
             const wins   = Math.round(32 * winPct);
             return {
                 tqs:            tqs.toFixed(1),
@@ -3870,6 +3972,8 @@
                 winPctDisplay:  (winPct * 100).toFixed(1),
                 wins,
                 losses: 32 - wins,
+                balanceNote,
+                efgNote,
             };
         }
 
@@ -3892,6 +3996,8 @@
             setEl('rosterWinsDisplay',   el => { el.textContent = proj ? `${proj.wins}-${proj.losses}` : '—'; });
             setEl('rosterWinPct',        el => { el.textContent = proj ? `Win%: ${proj.winPctDisplay}%` : 'Add starters to project wins'; });
             setEl('rosterTQS',           el => { el.textContent = proj ? `Team Quality Score: ${proj.tqs}` : ''; });
+            setEl('rosterEfgNote',       el => { el.textContent = proj?.efgNote || ''; });
+            setEl('rosterBalanceNote',   el => { el.textContent = proj?.balanceNote || ''; });
             setEl('rosterConfBaseline',  el => { el.textContent = proj ? `${proj.confName} baseline: score ${proj.baseline}` : ''; });
             setEl('rosterBaselineDesc',  el => { el.textContent = proj ? `${proj.confName} baseline \u2248 score ${proj.baseline}` : 'MAC baseline \u2248 score 55'; });
 
@@ -3948,20 +4054,20 @@
             if (emptyMsg) emptyMsg.style.display = 'none';
             if (bodyEl)   bodyEl.style.display   = '';
 
-            // Key stats to track
+            // Key stats to track — ordered by win-contribution importance
             const stats = [
-                { key: 'ppg',       label: 'Scoring (PPG)',     field: 'PPG',     fmt: v => v.toFixed(1),        higher: true  },
-                { key: 'fg_pct',    label: 'FG%',               field: 'FG%',     fmt: v => (v*100).toFixed(1)+'%', higher: true  },
-                { key: 'three_pct', label: '3-Point%',          field: '3P%',     fmt: v => (v*100).toFixed(1)+'%', higher: true  },
-                { key: 'ft_pct',    label: 'FT%',               field: 'FT%',     fmt: v => (v*100).toFixed(1)+'%', higher: true  },
-                { key: 'apg',       label: 'Assists (APG)',     field: 'APG',     fmt: v => v.toFixed(1),        higher: true  },
-                { key: 'topg',      label: 'Turnovers (TOPG)',  field: 'TOPG',    fmt: v => v.toFixed(1),        higher: false },
-                { key: 'orbg',      label: 'Off. Rebounds',     field: 'ORB/G',   fmt: v => v.toFixed(1),        higher: true  },
-                { key: 'drbg',      label: 'Def. Rebounds',     field: 'DRB/G',   fmt: v => v.toFixed(1),        higher: true  },
-                { key: 'bpg',       label: 'Blocks (BPG)',      field: 'BPG',     fmt: v => v.toFixed(1),        higher: true  },
-                { key: 'spg',       label: 'Steals (SPG)',      field: 'SPG',     fmt: v => v.toFixed(1),        higher: true  },
-                { key: 'efg',       label: 'eFG%',              field: 'eFG%',    fmt: v => (v*100).toFixed(1)+'%', higher: true  },
-                { key: 'per',       label: 'PER',               field: 'PER',     fmt: v => v.toFixed(1),        higher: true  },
+                { key: 'efg',       label: 'eFG% (#1 Win Factor)',  field: 'eFG%',   fmt: v => (v*100).toFixed(1)+'%', higher: true  },
+                { key: 'ppg',       label: 'Scoring (PPG)',         field: 'PPG',    fmt: v => v.toFixed(1),           higher: true  },
+                { key: 'topg',      label: 'Turnovers (TOPG)',      field: 'TOPG',   fmt: v => v.toFixed(1),           higher: false },
+                { key: 'bpm',       label: 'BPM (Win Predictor)',   field: 'BPM',    fmt: v => v.toFixed(1),           higher: true  },
+                { key: 'ws_40',     label: 'WS/40 (Per-Min Value)', field: 'WS/40',  fmt: v => v.toFixed(3),           higher: true  },
+                { key: 'drbg',      label: 'Def. Rebounds',         field: 'DRB/G',  fmt: v => v.toFixed(1),           higher: true  },
+                { key: 'three_pct', label: '3-Point%',              field: '3P%',    fmt: v => (v*100).toFixed(1)+'%', higher: true  },
+                { key: 'ft_pct',    label: 'FT%',                   field: 'FT%',    fmt: v => (v*100).toFixed(1)+'%', higher: true  },
+                { key: 'apg',       label: 'Assists (APG)',         field: 'APG',    fmt: v => v.toFixed(1),           higher: true  },
+                { key: 'orbg',      label: 'Off. Rebounds',         field: 'ORB/G',  fmt: v => v.toFixed(1),           higher: true  },
+                { key: 'bpg',       label: 'Blocks (BPG)',          field: 'BPG',    fmt: v => v.toFixed(1),           higher: true  },
+                { key: 'spg',       label: 'Steals (SPG)',          field: 'SPG',    fmt: v => v.toFixed(1),           higher: true  },
             ];
 
             const meanArr = arr => arr.length ? arr.reduce((s,v)=>s+v,0)/arr.length : null;
@@ -4528,16 +4634,42 @@
                 }
             }
 
-            // Build lookup from the bulk response
-            (allPlayers || []).forEach(p => { cbbdPlayerMap[normalizePlayerName(p.name)] = p; });
+            // Build lookup from the bulk response.
+            // Use an array per name key to handle duplicate names across schools
+            // (e.g. two players named "Brandon Benjamin" at different programs).
+            const cbbdPlayerMultiMap = {};
+            (allPlayers || []).forEach(p => {
+                const key = normalizePlayerName(p.name);
+                if (!cbbdPlayerMultiMap[key]) cbbdPlayerMultiMap[key] = [];
+                cbbdPlayerMultiMap[key].push(p);
+                // Also store last-seen in the flat map for backward compat
+                cbbdPlayerMap[key] = p;
+            });
 
             // Map CBBD player objects onto playerData rows
             let updated = 0;
             const notFound = [];
 
             playerData.forEach(player => {
-                const key  = normalizePlayerName(player.Player);
-                const cbbd = cbbdPlayerMap[key];
+                const key       = normalizePlayerName(player.Player);
+                const candidates = cbbdPlayerMultiMap[key] || [];
+                let cbbd = null;
+                if (candidates.length === 1) {
+                    cbbd = candidates[0];
+                } else if (candidates.length > 1) {
+                    // Multiple players share this name — pick the one whose team matches
+                    const sheetTeam = (player.Team || player.School || '').toLowerCase().trim();
+                    cbbd = candidates.find(c => {
+                        const apiTeam = (c.team || c.school || '').toLowerCase().trim();
+                        return apiTeam && sheetTeam && (apiTeam.includes(sheetTeam) || sheetTeam.includes(apiTeam));
+                    }) || candidates[0]; // fall back to first if team can't disambiguate
+                    if (!candidates.find(c => {
+                        const apiTeam = (c.team || c.school || '').toLowerCase().trim();
+                        return apiTeam && sheetTeam && (apiTeam.includes(sheetTeam) || sheetTeam.includes(apiTeam));
+                    })) {
+                        console.warn(`CBBD: Duplicate name "${player.Player}" (${candidates.length} players) — team "${sheetTeam}" not matched, using first result (${(candidates[0].team || candidates[0].school || '?')})`);
+                    }
+                }
                 if (!cbbd) { notFound.push(player.Player); return; }
 
                 const g = Math.max(cbbd.games || 1, 1);
