@@ -2529,10 +2529,18 @@
 
         function normalizePlayerName(name) {
             if (!name) return '';
-            // Remove Jr., Sr., III, etc.
-            name = name.replace(/\s+(Jr\.?|Sr\.?|III|IV|II)$/i, '');
+            // Strip accents/diacritics (José → Jose, etc.)
+            name = name.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+            // Remove Jr., Sr., II, III, IV suffixes (with or without leading space)
+            name = name.replace(/\s*(Jr\.?|Sr\.?|III|IV|II)$/i, '');
             // Strip periods so "A.J." and "AJ" both match
             name = name.replace(/\./g, '');
+            // Normalize hyphens to spaces (Jean-Baptiste → Jean Baptiste)
+            name = name.replace(/-/g, ' ');
+            // Remove apostrophes (O'Brien → OBrien)
+            name = name.replace(/'/g, '');
+            // Collapse multiple spaces
+            name = name.replace(/\s+/g, ' ');
             // Convert to lowercase and trim
             return name.toLowerCase().trim();
         }
@@ -4084,10 +4092,9 @@
         const CBBD_BASE     = 'https://api.collegebasketballdata.com';
 
         // ── Persistent cache (localStorage) — avoids repeat API calls ─────────
-        // Stats and shot data are cached for CBBD_CACHE_TTL ms (default 24 h).
-        // Each unique team+season combination counts as one API call; once cached
-        // no further calls are made until the TTL expires.
-        const CBBD_CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours — season stats don't change hourly; reduces daily API calls
+        // Stats and shot data are cached for CBBD_CACHE_TTL ms.
+        // Regular season is over — stats are final, so cache for 30 days.
+        const CBBD_CACHE_TTL = 30 * 24 * 60 * 60 * 1000; // 30 days — regular season over, stats are final
 
         function cbbdCacheGet(key) {
             try {
@@ -4599,7 +4606,18 @@
                 `✓ ${updated}/${playerData.length} players updated (${seasonLabel})${sourceLabel}` +
                 (missed ? ` | ${missed} not matched: ${preview}` : '');
 
-            if (missed > 0) console.warn('CBBD sync — unmatched players:', notFound);
+            if (missed > 0) {
+                const apiKeys = Object.keys(cbbdPlayerMap);
+                console.group(`CBBD sync — ${missed} unmatched players`);
+                notFound.forEach(sheetName => {
+                    const normalized = normalizePlayerName(sheetName);
+                    // Find API entries whose normalized key starts with the same first word
+                    const firstName = normalized.split(' ')[0];
+                    const close = apiKeys.filter(k => k.startsWith(firstName)).slice(0, 5);
+                    console.warn(`Sheet: "${sheetName}"  →  key: "${normalized}"  |  API candidates: [${close.join(', ')}]`);
+                });
+                console.groupEnd();
+            }
             if (updated > 0) calculateScores();
         }
 
