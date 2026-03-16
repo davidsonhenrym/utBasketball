@@ -4508,12 +4508,13 @@
                         const authHdr   = { 'Authorization': `Bearer ${CBBD_API_KEY}` };
                         const playerUrl = `${CBBD_BASE}/stats/player/season?season=${season}&team=${encodeURIComponent(tryName)}`;
                         let playerRes;
-                        // Retry once on 429 with a longer back-off
-                        for (let attempt = 0; attempt < 2; attempt++) {
+                        // Retry up to 3× on 429 with exponential back-off (5s, 10s, 20s)
+                        for (let attempt = 0; attempt < 3; attempt++) {
                             playerRes = await fetchWithTimeout(playerUrl, { headers: authHdr });
                             if (playerRes.status !== 429) break;
-                            console.warn(`CBBD: 429 rate-limit for "${tryName}", backing off 3s…`);
-                            await new Promise(r => setTimeout(r, 3000));
+                            const wait = 5000 * Math.pow(2, attempt);
+                            console.warn(`CBBD: 429 rate-limit for "${tryName}", backing off ${wait / 1000}s…`);
+                            await new Promise(r => setTimeout(r, wait));
                         }
                         if (!playerRes.ok) { console.warn(`CBBD: "${tryName}" → ${playerRes.status}`); continue; }
                         const players = await playerRes.json();
@@ -4541,8 +4542,8 @@
                     } else { teamsFailed++; }
                 }
 
-                // Throttle: 400ms between every API call to stay under rate limit
-                await new Promise(r => setTimeout(r, 400));
+                // Throttle: 1.5s between every API call (~40 req/min) to avoid rate limiting
+                await new Promise(r => setTimeout(r, 1500));
             }
 
             // Map CBBD player objects onto playerData rows
