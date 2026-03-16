@@ -2231,8 +2231,8 @@
                 ows:       { weight: 0,  min: 0,    max: 5 },
                 dws:       { weight: 0,  min: 0,    max: 3 },
                 ws_40:     { weight: 6,  min: 0,    max: 0.25 }, // UP from 0: per-min win production is key
-                obpm:      { weight: 8,  min: -3,   max: 8 },    // UP from 0: best guard win predictor
-                dbpm:      { weight: 5,  min: -3,   max: 6 },    // UP from 0: defensive contribution
+                obpm:      { weight: 8,  min: -5,   max: 3 },    // UP from 0: best guard win predictor
+                dbpm:      { weight: 5,  min: -5,   max: 2 },    // UP from 0: defensive contribution
                 bpm:       { weight: 0,  min: -10,  max: 10 },   // replaced by obpm+dbpm for granularity
                 per:       { weight: 3,  min: 5,    max: 25 }    // down: BPM metrics more predictive
             },
@@ -2293,8 +2293,8 @@
                 ows:       { weight: 0,  min: 0,    max: 6 },
                 dws:       { weight: 0,  min: 0,    max: 4 },
                 ws_40:     { weight: 5,  min: 0,    max: 0.30 },  // UP from 0: per-min win production
-                obpm:      { weight: 3,  min: -3,   max: 10 },    // UP from 0: offensive contribution
-                dbpm:      { weight: 3,  min: -3,   max: 8 },     // UP from 0: shot protection value
+                obpm:      { weight: 3,  min: -5,   max: 3 },    // UP from 0: offensive contribution
+                dbpm:      { weight: 3,  min: -5,   max: 2 },     // UP from 0: shot protection value
                 bpm:       { weight: 0,  min: -10,  max: 10 },    // replaced by obpm+dbpm
                 per:       { weight: 2,  min: 5,    max: 25 }
             }
