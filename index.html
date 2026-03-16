@@ -4482,12 +4482,26 @@
             let teamsFromApi   = 0;
             let teamsFailed    = 0;
 
+            // Pre-count how many teams actually need an API call (not cached)
+            const teamsNeedingApi = forceRefresh
+                ? teams.length
+                : teams.filter(t => !cbbdCacheGet(`cbbd_stats_v1_${t}_${season}`)).length;
+            const etaMin = Math.ceil(teamsNeedingApi * 1.0 / 60);
+            statusEl.textContent = teamsNeedingApi === 0
+                ? `Loading from cache… (${teams.length} teams)`
+                : `Fetching ${teamsNeedingApi} teams from API (~${etaMin} min)…`;
+
             // Player stats — sequential requests to respect API rate limits (429 prevention).
             for (let i = 0; i < teams.length; i++) {
                 const team = teams[i];
                 const playerKey = `cbbd_stats_v1_${team}_${season}`;
 
-                statusEl.textContent = `Loading… ${i + 1}/${teams.length} teams (${teamsFromApi} API calls)`;
+                const remaining = teamsNeedingApi - teamsFromApi;
+                const etaRemain = Math.ceil(remaining * 1.0 / 60);
+                statusEl.textContent = teamsNeedingApi === 0
+                    ? `Loading from cache… ${i + 1}/${teams.length}`
+                    : `Fetching player stats… ${teamsFromApi}/${teamsNeedingApi} API calls` +
+                      (remaining > 2 ? ` (~${etaRemain} min left)` : '');
 
                 // Check localStorage cache first (unless force-refresh requested)
                 if (!forceRefresh) {
@@ -4542,8 +4556,8 @@
                     } else { teamsFailed++; }
                 }
 
-                // Throttle: 1.5s between every API call (~40 req/min) to avoid rate limiting
-                await new Promise(r => setTimeout(r, 1500));
+                // Throttle: 1s between every API call (~60 req/min) to avoid rate limiting
+                await new Promise(r => setTimeout(r, 1000));
             }
 
             // Map CBBD player objects onto playerData rows
