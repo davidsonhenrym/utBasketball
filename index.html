@@ -3605,14 +3605,14 @@
                     </td>
                     <td class="score-cell ${scoreClass}">${(player.total_score || 0).toFixed(1)}</td>
                     <td class="valuation-cell">$${player.valuation >= 1000000 ? (player.valuation / 1000000).toFixed(2) + 'M' : (player.valuation / 1000).toFixed(1) + 'K'}</td>
-                    <td>${(player.PPG || 0).toFixed(1)}</td>
-                    <td>${(player.APG || 0).toFixed(1)}</td>
-                    <td>${(player.RPG || 0).toFixed(1)}</td>
+                    <td>${(parseFloat(player.PPG) || 0).toFixed(1)}</td>
+                    <td>${(parseFloat(player.APG) || 0).toFixed(1)}</td>
+                    <td>${(parseFloat(player.RPG) || 0).toFixed(1)}</td>
                     <td>${tpa > 0 ? tpa.toFixed(1) : '—'}</td>
-                    <td>${(player.BPM || 0).toFixed(1)}</td>
-                    <td>${((player['eFG%'] || 0) * 100).toFixed(1)}%</td>
-                    <td>${player.ORtg ? player.ORtg.toFixed(1) : '—'}</td>
-                    <td style="color:${player.DRtg && player.DRtg < 100 ? 'var(--accent-primary)' : player.DRtg && player.DRtg > 110 ? 'var(--accent-tertiary)' : ''}">${player.DRtg ? player.DRtg.toFixed(1) : '—'}</td>
+                    <td>${(parseFloat(player.BPM) || 0).toFixed(1)}</td>
+                    <td>${((parseFloat(player['eFG%']) || 0) * 100).toFixed(1)}%</td>
+                    <td>${player.ORtg ? (parseFloat(player.ORtg) || 0).toFixed(1) : '—'}</td>
+                    <td style="color:${parseFloat(player.DRtg) < 100 ? 'var(--accent-primary)' : parseFloat(player.DRtg) > 110 ? 'var(--accent-tertiary)' : ''}">${player.DRtg ? (parseFloat(player.DRtg) || 0).toFixed(1) : '—'}</td>
                 `;
                 tbody.appendChild(row);
             });
@@ -3795,31 +3795,31 @@
                 Score: (player.total_score || 0).toFixed(2),
                 Valuation: (player.valuation || 0).toFixed(2),
                 'Conf Multiplier': (player.conference_multiplier || 1.0).toFixed(2),
-                PPG: (player.PPG || 0).toFixed(1),
-                'FG%': ((player['FG%'] || 0) * 100).toFixed(1),
-                '3P%': ((player['3P%'] || 0) * 100).toFixed(1),
-                'FT%': ((player['FT%'] || 0) * 100).toFixed(1),
-                APG: (player.APG || 0).toFixed(1),
-                TOPG: (player.TOPG || 0).toFixed(1),
-                'A/TO': (player['A/TO'] || 0).toFixed(2),
-                'ORB/G': (player['ORB/G'] || 0).toFixed(1),
-                'DRB/G': (player['DRB/G'] || 0).toFixed(1),
-                BPG: (player.BPG || 0).toFixed(1),
-                SPG: (player.SPG || 0).toFixed(1),
-                'eFG%': ((player['eFG%'] || 0) * 100).toFixed(1),
-                '+/-': (player['+/-'] || 0).toFixed(1),
-                'OR%': ((player['OR%'] || 0)).toFixed(1),
-                'DR%': ((player['DR%'] || 0)).toFixed(1),
-                WS: (player.WS || 0).toFixed(2),
-                ORtg: (player.ORtg || 0).toFixed(1),
-                DRtg: (player.DRtg || 0).toFixed(1),
-                OWS: (player.OWS || 0).toFixed(2),
-                DWS: (player.DWS || 0).toFixed(2),
-                'WS/40': (player['WS/40'] || 0).toFixed(3),
-                OBPM: (player.OBPM || 0).toFixed(1),
-                DBPM: (player.DBPM || 0).toFixed(1),
-                BPM: (player.BPM || 0).toFixed(1),
-                PER: (player.PER || 0).toFixed(1)
+                PPG: (parseFloat(player.PPG) || 0).toFixed(1),
+                'FG%': ((parseFloat(player['FG%']) || 0) * 100).toFixed(1),
+                '3P%': ((parseFloat(player['3P%']) || 0) * 100).toFixed(1),
+                'FT%': ((parseFloat(player['FT%']) || 0) * 100).toFixed(1),
+                APG: (parseFloat(player.APG) || 0).toFixed(1),
+                TOPG: (parseFloat(player.TOPG) || 0).toFixed(1),
+                'A/TO': (parseFloat(player['A/TO']) || 0).toFixed(2),
+                'ORB/G': (parseFloat(player['ORB/G']) || 0).toFixed(1),
+                'DRB/G': (parseFloat(player['DRB/G']) || 0).toFixed(1),
+                BPG: (parseFloat(player.BPG) || 0).toFixed(1),
+                SPG: (parseFloat(player.SPG) || 0).toFixed(1),
+                'eFG%': ((parseFloat(player['eFG%']) || 0) * 100).toFixed(1),
+                '+/-': (parseFloat(player['+/-']) || 0).toFixed(1),
+                'OR%': (parseFloat(player['OR%']) || 0).toFixed(1),
+                'DR%': (parseFloat(player['DR%']) || 0).toFixed(1),
+                WS: (parseFloat(player.WS) || 0).toFixed(2),
+                ORtg: (parseFloat(player.ORtg) || 0).toFixed(1),
+                DRtg: (parseFloat(player.DRtg) || 0).toFixed(1),
+                OWS: (parseFloat(player.OWS) || 0).toFixed(2),
+                DWS: (parseFloat(player.DWS) || 0).toFixed(2),
+                'WS/40': (parseFloat(player['WS/40']) || 0).toFixed(3),
+                OBPM: (parseFloat(player.OBPM) || 0).toFixed(1),
+                DBPM: (parseFloat(player.DBPM) || 0).toFixed(1),
+                BPM: (parseFloat(player.BPM) || 0).toFixed(1),
+                PER: (parseFloat(player.PER) || 0).toFixed(1)
             }));
 
             const ws = XLSX.utils.json_to_sheet(exportData);
@@ -3924,7 +3924,7 @@
             Object.entries(statMapping).forEach(([key, stat]) => {
                 const weight = config[key].weight;
                 const normalizedScore = player.component_scores[key] || 0;
-                const rawValue = stat.value || 0;
+                const rawValue = parseFloat(stat.value) || 0;
                 const formattedValue = stat.format(rawValue);
 
                 if (weight > 0) { // Only show stats with weight
