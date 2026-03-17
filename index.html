@@ -880,6 +880,70 @@
             background: rgba(0, 255, 136, 0.08) !important;
         }
 
+        .portal-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            background: rgba(255, 107, 53, 0.2);
+            color: var(--accent-tertiary);
+            border: 1px solid var(--accent-tertiary);
+            white-space: nowrap;
+        }
+
+        .portal-toggle-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-size: 0.68rem;
+            font-family: 'IBM Plex Mono', monospace;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            flex: 0;
+        }
+
+        .portal-toggle-btn:hover {
+            border-color: var(--accent-tertiary);
+            color: var(--accent-tertiary);
+            transform: none;
+            box-shadow: none;
+        }
+
+        .portal-toggle-btn.in-portal {
+            background: rgba(255, 107, 53, 0.15);
+            border-color: var(--accent-tertiary);
+            color: var(--accent-tertiary);
+            font-weight: 700;
+        }
+
+        .portal-links {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .portal-link {
+            font-size: 0.65rem;
+            font-family: 'IBM Plex Mono', monospace;
+            color: var(--accent-secondary);
+            text-decoration: none;
+            padding: 3px 7px;
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 4px;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .portal-link:hover {
+            background: rgba(0, 212, 255, 0.1);
+            border-color: var(--accent-secondary);
+        }
+
         @keyframes slideIn {
             from {
                 transform: translateX(400px);
@@ -1750,6 +1814,11 @@
                                 <option value="80">Min Score: 80+</option>
                                 <option value="90">Min Score: 90+</option>
                             </select>
+                            <select id="portalFilter">
+                                <option value="">All Players</option>
+                                <option value="portal">In Portal Only</option>
+                                <option value="not-portal">Not In Portal</option>
+                            </select>
                         </div>
 
                         <div class="results-container">
@@ -1762,6 +1831,7 @@
                                             <th class="sortable" data-sort="team">Team</th>
                                             <th class="sortable" data-sort="conference">Conference</th>
                                             <th class="sortable" data-sort="position">Position</th>
+                                            <th>Portal</th>
                                             <th class="sortable" data-sort="score">Score</th>
                                             <th class="sortable" data-sort="valuation">Valuation</th>
                                             <th class="sortable" data-sort="ppg">PPG</th>
@@ -2187,6 +2257,36 @@
         let currentTab = 'players';
         let currentPosition = 'Guard';
         let isCalculating = false; // Flag to prevent recursive calculation
+
+        // Transfer portal state — persisted to localStorage
+        let portalPlayers = JSON.parse(localStorage.getItem('mbb_portal_players') || '{}');
+
+        function getPlayerKey(player) {
+            return (player.Player + '|' + player.Team).toLowerCase();
+        }
+
+        function savePortalState() {
+            localStorage.setItem('mbb_portal_players', JSON.stringify(portalPlayers));
+        }
+
+        function togglePortal(key, event) {
+            if (event) { event.stopPropagation(); }
+            portalPlayers[key] = !portalPlayers[key];
+            if (!portalPlayers[key]) delete portalPlayers[key];
+            savePortalState();
+            const countEl = document.getElementById('portalCount');
+            if (countEl) countEl.textContent = Object.keys(portalPlayers).length;
+            applyFilters();
+        }
+
+        function buildPortalSearchURL(site, playerName, teamName) {
+            const q = encodeURIComponent(playerName + ' ' + teamName + ' transfer portal basketball');
+            if (site === 'on3') {
+                return 'https://www.on3.com/transfer-portal/sport/basketball/?search=' + encodeURIComponent(playerName);
+            } else {
+                return 'https://247sports.com/Article/2024-25-college-basketball-transfer-portal-tracker-232049091/?search=' + encodeURIComponent(playerName);
+            }
+        }
         let positionMapping = {}; // Stores actual positions from scraped data
 
         // Store configurations for each position (mutable, used by UI)
@@ -2207,32 +2307,32 @@
         const POSITION_DEFAULTS = {
             'Guard': {
                 // Scoring / shooting — efficiency over volume
-                ppg:       { weight: 8,  min: 5,    max: 15 },   // vol matters but less than efficiency
-                fg_pct:    { weight: 0,  min: 0.25, max: 0.50 }, // eFG% supersedes FG%
+                ppg:       { weight: 8,  min: 5,    max: 17 },   // vol matters but less than efficiency
+                fg_pct:    { weight: 4,  min: 0.25, max: 0.50 }, // eFG% supersedes FG%
                 three_pct: { weight: 10, min: 0.20, max: 0.40 }, // floor-spacing = win contribution
                 ft_pct:    { weight: 8,  min: 0.50, max: 0.90 }, // FT rate drives offensive efficiency
                 // Playmaking / ball security — #2 Four Factor
-                apg:       { weight: 6,  min: 0,    max: 5 },    // up: assists are win-producing for guards
-                topg:      { weight: 6,  min: 0,    max: 2.5 },    // up: turnovers most damaging at guard
-                ato:       { weight: 0,  min: 0,    max: 4 },    // up: ratio captures care with the ball
+                apg:       { weight: 8,  min: 0,    max: 6 },    // up: assists are win-producing for guards
+                topg:      { weight: 8,  min: 0,    max: 3 },    // up: turnovers most damaging at guard
+                ato:       { weight: 5,  min: 0,    max: 4 },    // up: ratio captures care with the ball
                 // Rebounding — guards contribute less here
-                orbg:      { weight: 2,  min: 0,    max: 2 },    // down: rarely crash boards
-                drbg:      { weight: 2,  min: 0,    max: 4 },    // slight up: all players should convert DReb
+                orbg:      { weight: 1,  min: 0,    max: 2 },    // down: rarely crash boards
+                drbg:      { weight: 4,  min: 0,    max: 4 },    // slight up: all players should convert DReb
                 bpg:       { weight: 0,  min: 0,    max: 0.5 },  // irrelevant for guards
-                spg:       { weight: 5,  min: 0,    max: 2.5 },  // up: steals generate transition offense
+                spg:       { weight: 4,  min: 0,    max: 2.5 },  // up: steals generate transition offense
                 // Advanced — highest predictive validity
                 efg:       { weight: 12, min: 0.40, max: 0.65 }, // #1 Four Factor stat
                 plusminus: { weight: 0,  min: -50,  max: 150 },  // too noisy
-                or_pct:    { weight: 2,  min: 0,    max: 0.05 },
+                or_pct:    { weight: 1,  min: 0,    max: 0.05 },
                 dr_pct:    { weight: 2,  min: 0,    max: 0.05 },
                 ws:        { weight: 5,  min: 0,    max: 4 },
                 ortg:      { weight: 5,  min: 95,   max: 125 },
-                drtg:      { weight: 5,  min: 95,   max: 125 },  // up: defense is 50% of basketball
+                drtg:      { weight: 6,  min: 95,   max: 125 },  // up: defense is 50% of basketball
                 ows:       { weight: 0,  min: 0,    max: 5 },
                 dws:       { weight: 0,  min: 0,    max: 3 },
                 ws_40:     { weight: 6,  min: 0,    max: 0.25 }, // UP from 0: per-min win production is key
-                obpm:      { weight: 8,  min: -5,   max: 3 },    // UP from 0: best guard win predictor
-                dbpm:      { weight: 5,  min: -5,   max: 2 },    // UP from 0: defensive contribution
+                obpm:      { weight: 8,  min: -3,   max: 8 },    // UP from 0: best guard win predictor
+                dbpm:      { weight: 5,  min: -3,   max: 6 },    // UP from 0: defensive contribution
                 bpm:       { weight: 0,  min: -10,  max: 10 },   // replaced by obpm+dbpm for granularity
                 per:       { weight: 3,  min: 5,    max: 25 }    // down: BPM metrics more predictive
             },
@@ -2269,18 +2369,18 @@
             },
             'Forward/Center': {
                 // Scoring / shooting
-                ppg:       { weight: 7,  min: 5,    max: 15 },
-                fg_pct:    { weight: 0,  min: 0.25, max: 0.60 }, // up: post efficiency matters
+                ppg:       { weight: 7,  min: 5,    max: 17 },
+                fg_pct:    { weight: 5,  min: 0.25, max: 0.60 }, // up: post efficiency matters
                 three_pct: { weight: 7,  min: 0.20, max: 0.40 }, // down: less critical for traditional bigs
                 ft_pct:    { weight: 8,  min: 0.50, max: 0.80 },
                 // Playmaking
                 apg:       { weight: 3,  min: 0,    max: 3 },
                 topg:      { weight: 5,  min: 0,    max: 3 },
-                ato:       { weight: 0,  min: 0,    max: 4 },
+                ato:       { weight: 3,  min: 0,    max: 4 },
                 // Rebounding / rim protection — position-specific win drivers
                 orbg:      { weight: 7,  min: 0,    max: 4 },    // up: offensive boards win possessions
                 drbg:      { weight: 7,  min: 1,    max: 5 },    // up: finishing defensive possessions
-                bpg:       { weight: 3,  min: 0,    max: 1.5 },  // UP from 2: #1 big-man defensive win stat
+                bpg:       { weight: 6,  min: 0,    max: 1.5 },  // UP from 2: #1 big-man defensive win stat
                 spg:       { weight: 1,  min: 0,    max: 1 },
                 // Advanced
                 efg:       { weight: 9,  min: 0.40, max: 0.7 },  // up: interior efficiency drives wins
@@ -2293,10 +2393,10 @@
                 ows:       { weight: 0,  min: 0,    max: 6 },
                 dws:       { weight: 0,  min: 0,    max: 4 },
                 ws_40:     { weight: 5,  min: 0,    max: 0.30 },  // UP from 0: per-min win production
-                obpm:      { weight: 3,  min: -5,   max: 3 },    // UP from 0: offensive contribution
-                dbpm:      { weight: 3,  min: -5,   max: 2 },     // UP from 0: shot protection value
+                obpm:      { weight: 5,  min: -3,   max: 10 },    // UP from 0: offensive contribution
+                dbpm:      { weight: 5,  min: -3,   max: 8 },     // UP from 0: shot protection value
                 bpm:       { weight: 0,  min: -10,  max: 10 },    // replaced by obpm+dbpm
-                per:       { weight: 2,  min: 5,    max: 25 }
+                per:       { weight: 4,  min: 5,    max: 25 }
             }
         };
 
@@ -3095,6 +3195,10 @@
                     <div class="stat-card-label">Total Valuation</div>
                     <div class="stat-card-value" style="font-size: 1.2rem;">$${(totalValuation / 1000000).toFixed(2)}M</div>
                 </div>
+                <div class="stat-card" style="cursor:pointer;" onclick="document.getElementById('portalFilter').value='portal'; applyFilters();">
+                    <div class="stat-card-label">In Transfer Portal</div>
+                    <div class="stat-card-value" id="portalCount" style="color: var(--accent-tertiary);">${Object.keys(portalPlayers).length}</div>
+                </div>
             `;
 
             // Populate conference filters
@@ -3171,6 +3275,7 @@
             document.getElementById('positionFilter').addEventListener('change', applyFilters);
             document.getElementById('teamFilter').addEventListener('change', applyFilters);
             document.getElementById('minScore').addEventListener('change', applyFilters);
+            document.getElementById('portalFilter').addEventListener('change', applyFilters);
             // Smart search is wired via oninput in HTML (debounceSmartSearch)
             
             document.getElementById('teamSearchInput').addEventListener('input', applyTeamFilters);
@@ -3339,6 +3444,13 @@
 
                 const tpa = get3PA(player);
 
+                const playerKey = getPlayerKey(player);
+                const inPortal = !!portalPlayers[playerKey];
+                const portalBtnClass = inPortal ? 'portal-toggle-btn in-portal' : 'portal-toggle-btn';
+                const portalBtnLabel = inPortal ? '⟳ In Portal' : '+ Portal';
+                const on3URL = buildPortalSearchURL('on3', player.Player, player.Team);
+                const s247URL = buildPortalSearchURL('247', player.Player, player.Team);
+
                 const row = document.createElement('tr');
                 row.className = 'animated clickable';
                 row.onclick = () => showPlayerDetails(player);
@@ -3348,6 +3460,13 @@
                     <td>${player.Team}</td>
                     <td style="font-size: 0.75rem;">${player.Conference || 'N/A'}</td>
                     <td><span class="position-badge ${posClass}">${player.position_category}</span></td>
+                    <td>
+                        <div class="portal-links">
+                            <button class="${portalBtnClass}" onclick="togglePortal('${playerKey.replace(/'/g, "\\'")}', event)">${portalBtnLabel}</button>
+                            <a class="portal-link" href="${on3URL}" target="_blank" onclick="event.stopPropagation()">ON3</a>
+                            <a class="portal-link" href="${s247URL}" target="_blank" onclick="event.stopPropagation()">247</a>
+                        </div>
+                    </td>
                     <td class="score-cell ${scoreClass}">${(player.total_score || 0).toFixed(1)}</td>
                     <td class="valuation-cell">$${player.valuation >= 1000000 ? (player.valuation / 1000000).toFixed(2) + 'M' : (player.valuation / 1000).toFixed(1) + 'K'}</td>
                     <td>${(player.PPG || 0).toFixed(1)}</td>
@@ -3461,6 +3580,7 @@
             const positionFilter = document.getElementById('positionFilter').value;
             const teamFilter = document.getElementById('teamFilter').value;
             const minScore = parseFloat(document.getElementById('minScore').value);
+            const portalFilterVal = document.getElementById('portalFilter').value;
 
             const AFFORDABLE_MAX = 85000;
             let eliteThreshold = 0;
@@ -3476,6 +3596,10 @@
                 const matchesPosition = !positionFilter || player.position_category === positionFilter;
                 const matchesTeam = !teamFilter || player.Team === teamFilter;
                 const matchesScore = player.total_score >= minScore;
+                const playerInPortal = !!portalPlayers[getPlayerKey(player)];
+                const matchesPortal = !portalFilterVal ||
+                    (portalFilterVal === 'portal' && playerInPortal) ||
+                    (portalFilterVal === 'not-portal' && !playerInPortal);
 
                 // Smart search filters
                 let matchesSmart = true;
@@ -3503,7 +3627,7 @@
                     if (s.valueFilter === 'elite'      && player.valuation < eliteThreshold)   matchesSmart = false;
                 }
 
-                return matchesSearch && matchesConference && matchesPosition && matchesTeam && matchesScore && matchesSmart;
+                return matchesSearch && matchesConference && matchesPosition && matchesTeam && matchesScore && matchesSmart && matchesPortal;
             });
 
             // If "top" quality requested, sort by score desc
