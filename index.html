@@ -1766,7 +1766,8 @@
                         <button onclick="loadFromGoogleSheet()" style="padding: 10px 20px;">Reload Data</button>
                         <button onclick="syncStatsFromCBBD()" style="padding: 10px 20px; background: linear-gradient(135deg, #00d4ff, #0088bb); flex: 0 1 auto;">Sync from CBBD API</button>
                         <button onclick="syncStatsFromCBBD(true)" class="secondary" style="padding: 10px 14px; font-size: 0.75rem;" title="Ignore cache and force fresh API calls">↺ Force Refresh</button>
-                        <button id="portalSyncBtn" onclick="syncPortal(true)" class="secondary" style="padding: 10px 14px; font-size: 0.75rem;" title="Re-fetch portal_snapshot_latest.json">↺ Sync Portal</button>
+                        <button id="portalSyncBtn" onclick="syncPortal(true)" class="secondary" style="padding: 10px 14px; font-size: 0.75rem;" title="Re-fetch portal data (auto on GitHub Pages)">↺ Sync Portal</button>
+                        <button onclick="document.getElementById('portalJsonInput').click()" class="secondary" style="padding: 10px 14px; font-size: 0.75rem;" title="Local fallback: manually pick portal_snapshot_latest.json">Manual JSON</button>
                         <input type="file" id="portalJsonInput" accept=".json" style="display:none" onchange="loadPortalSnapshot(this)">
                     </div>
                     <div id="portalSyncStatus" style="margin-top: 8px; font-family: 'IBM Plex Mono', monospace; font-size: 0.75rem; color: var(--text-secondary); min-height: 1.2em;"></div>
@@ -2400,8 +2401,7 @@
                 if (!manual) return; // Silently ignore on auto-load (file may not exist yet)
                 // Manual click: fall back to file picker
                 statusEl.style.color = '#ff9944';
-                statusEl.textContent = '⚠ Could not fetch snapshot — pick the file manually below';
-                document.getElementById('portalJsonInput').click();
+                statusEl.textContent = '⚠ Running locally — use "Manual JSON" to load a snapshot. On GitHub Pages this syncs automatically.';
             }
         }
 
