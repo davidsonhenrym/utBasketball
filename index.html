@@ -1766,7 +1766,10 @@
                         <button onclick="loadFromGoogleSheet()" style="padding: 10px 20px;">Reload Data</button>
                         <button onclick="syncStatsFromCBBD()" style="padding: 10px 20px; background: linear-gradient(135deg, #00d4ff, #0088bb); flex: 0 1 auto;">Sync from CBBD API</button>
                         <button onclick="syncStatsFromCBBD(true)" class="secondary" style="padding: 10px 14px; font-size: 0.75rem;" title="Ignore cache and force fresh API calls">↺ Force Refresh</button>
+                        <button onclick="document.getElementById('portalJsonInput').click()" style="padding: 10px 20px; background: linear-gradient(135deg, #ff6b35, #cc4400); flex: 0 1 auto;" title="Load portal_snapshot JSON from portal_scraper.py">Load Portal JSON</button>
+                        <input type="file" id="portalJsonInput" accept=".json" style="display:none" onchange="loadPortalSnapshot(this)">
                     </div>
+                    <div id="portalSyncStatus" style="margin-top: 8px; font-family: 'IBM Plex Mono', monospace; font-size: 0.75rem; color: var(--text-secondary); min-height: 1.2em;"></div>
                     <div id="cbbdSyncStatus" style="margin-top: 10px; font-family: 'IBM Plex Mono', monospace; font-size: 0.75rem; color: var(--text-secondary); min-height: 1.2em;"></div>
                 </div>
 
@@ -2287,6 +2290,92 @@
                 return 'https://247sports.com/Article/2024-25-college-basketball-transfer-portal-tracker-232049091/?search=' + encodeURIComponent(playerName);
             }
         }
+
+        // ── Portal Snapshot Loader ─────────────────────────────────────────────
+        // Reads a portal_snapshot_YYYY-MM-DD.json produced by portal_scraper.py
+        // and auto-marks any matched players as "in portal".
+
+        // Stored portal names when snapshot is loaded before player data is ready
+        let pendingPortalNames = null;
+
+        function normPortalName(s) {
+            return (s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                .replace(/\./g, '').replace(/'/g, '').replace(/-/g, ' ')
+                .replace(/\s*(Jr\.?|Sr\.?|III|IV|II)\s*$/i, '')
+                .replace(/\s+/g, ' ').toLowerCase().trim();
+        }
+
+        function applyPortalNames(portalNames) {
+            // portalNames: array of strings from the snapshot
+            const source = scoredData.length > 0 ? scoredData : playerData;
+            if (!source.length) { pendingPortalNames = portalNames; return 0; }
+
+            let matched = 0;
+            source.forEach(player => {
+                const pNorm = normPortalName(player.Player);
+                const pLast = pNorm.split(' ').slice(-1)[0];
+                const pFirst0 = pNorm.split(' ')[0]?.[0] || '';
+                const hit = portalNames.some(n => {
+                    const nNorm = normPortalName(n);
+                    if (nNorm === pNorm) return true;
+                    // Last name + first initial fuzzy match
+                    const nLast = nNorm.split(' ').slice(-1)[0];
+                    const nFirst0 = nNorm.split(' ')[0]?.[0] || '';
+                    return nLast === pLast && nFirst0 === pFirst0 && pLast.length > 2;
+                });
+                if (hit) {
+                    portalPlayers[getPlayerKey(player)] = true;
+                    matched++;
+                }
+            });
+            savePortalState();
+            return matched;
+        }
+
+        function loadPortalSnapshot(input) {
+            const file = input.files[0];
+            if (!file) return;
+            const statusEl = document.getElementById('portalSyncStatus');
+            statusEl.style.color = 'var(--text-secondary)';
+            statusEl.textContent = 'Reading portal snapshot…';
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const snap = JSON.parse(e.target.result);
+                    // Accept both the full snapshot and a plain array of names
+                    let names = [];
+                    if (Array.isArray(snap)) {
+                        names = snap.map(p => typeof p === 'string' ? p : (p.name || ''));
+                    } else if (snap.players) {
+                        names = snap.players.map(p => p.name || '');
+                    } else if (snap.watchlist_in_portal) {
+                        names = snap.watchlist_in_portal;
+                    }
+                    names = names.filter(Boolean);
+                    if (!names.length) throw new Error('No player names found in file');
+
+                    const matched = applyPortalNames(names);
+                    const date = snap.generated_at ? new Date(snap.generated_at).toLocaleDateString() : file.name;
+                    const total = snap.total || names.length;
+                    const countEl = document.getElementById('portalCount');
+                    if (countEl) countEl.textContent = Object.keys(portalPlayers).length;
+
+                    statusEl.style.color = matched > 0 ? 'var(--accent-tertiary)' : '#ff9944';
+                    statusEl.textContent = matched > 0
+                        ? `✓ ${matched} portal players marked from ${total} in snapshot (${date})`
+                        : `⚠ Snapshot loaded (${total} portal names) but 0 matched your roster — load your Google Sheet data first`;
+
+                    applyFilters();
+                } catch (err) {
+                    statusEl.style.color = '#ff5050';
+                    statusEl.textContent = `✗ ${err.message}`;
+                }
+                input.value = '';
+            };
+            reader.readAsText(file);
+        }
+        // ── End Portal Snapshot Loader ─────────────────────────────────────────
         let positionMapping = {}; // Stores actual positions from scraped data
 
         // Store configurations for each position (mutable, used by UI)
@@ -3259,6 +3348,17 @@
                 console.log('Team filter populated successfully');
             } catch(error) {
                 console.error('Error populating team filter:', error);
+            }
+
+            // Apply pending portal snapshot (loaded before player data was ready)
+            if (pendingPortalNames) {
+                const m = applyPortalNames(pendingPortalNames);
+                pendingPortalNames = null;
+                const statusEl = document.getElementById('portalSyncStatus');
+                if (statusEl && m > 0) {
+                    statusEl.style.color = 'var(--accent-tertiary)';
+                    statusEl.textContent = `✓ ${m} portal players auto-marked from previously loaded snapshot`;
+                }
             }
 
             // Apply any active filters (team/conference/etc.) rather than showing all data,
