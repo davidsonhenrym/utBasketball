@@ -1766,7 +1766,7 @@
                         <button onclick="loadFromGoogleSheet()" style="padding: 10px 20px;">Reload Data</button>
                         <button onclick="syncStatsFromCBBD()" style="padding: 10px 20px; background: linear-gradient(135deg, #00d4ff, #0088bb); flex: 0 1 auto;">Sync from CBBD API</button>
                         <button onclick="syncStatsFromCBBD(true)" class="secondary" style="padding: 10px 14px; font-size: 0.75rem;" title="Ignore cache and force fresh API calls">↺ Force Refresh</button>
-                        <button onclick="document.getElementById('portalJsonInput').click()" style="padding: 10px 20px; background: linear-gradient(135deg, #ff6b35, #cc4400); flex: 0 1 auto;" title="Load portal_snapshot JSON from portal_scraper.py">Load Portal JSON</button>
+                        <button id="portalSyncBtn" onclick="syncPortal(true)" class="secondary" style="padding: 10px 14px; font-size: 0.75rem;" title="Re-fetch portal_snapshot_latest.json">↺ Sync Portal</button>
                         <input type="file" id="portalJsonInput" accept=".json" style="display:none" onchange="loadPortalSnapshot(this)">
                     </div>
                     <div id="portalSyncStatus" style="margin-top: 8px; font-family: 'IBM Plex Mono', monospace; font-size: 0.75rem; color: var(--text-secondary); min-height: 1.2em;"></div>
@@ -2338,34 +2338,14 @@
             const statusEl = document.getElementById('portalSyncStatus');
             statusEl.style.color = 'var(--text-secondary)';
             statusEl.textContent = 'Reading portal snapshot…';
-
             const reader = new FileReader();
             reader.onload = (e) => {
                 try {
-                    const snap = JSON.parse(e.target.result);
-                    // Accept both the full snapshot and a plain array of names
-                    let names = [];
-                    if (Array.isArray(snap)) {
-                        names = snap.map(p => typeof p === 'string' ? p : (p.name || ''));
-                    } else if (snap.players) {
-                        names = snap.players.map(p => p.name || '');
-                    } else if (snap.watchlist_in_portal) {
-                        names = snap.watchlist_in_portal;
-                    }
-                    names = names.filter(Boolean);
-                    if (!names.length) throw new Error('No player names found in file');
-
-                    const matched = applyPortalNames(names);
-                    const date = snap.generated_at ? new Date(snap.generated_at).toLocaleDateString() : file.name;
-                    const total = snap.total || names.length;
-                    const countEl = document.getElementById('portalCount');
-                    if (countEl) countEl.textContent = Object.keys(portalPlayers).length;
-
+                    const { matched, total, date } = _parseSnapshotText(e.target.result, file.name);
                     statusEl.style.color = matched > 0 ? 'var(--accent-tertiary)' : '#ff9944';
                     statusEl.textContent = matched > 0
                         ? `✓ ${matched} portal players marked from ${total} in snapshot (${date})`
-                        : `⚠ Snapshot loaded (${total} portal names) but 0 matched your roster — load your Google Sheet data first`;
-
+                        : `⚠ Snapshot loaded (${total} portal names) but 0 matched — load Google Sheet data first`;
                     applyFilters();
                 } catch (err) {
                     statusEl.style.color = '#ff5050';
@@ -2375,6 +2355,62 @@
             };
             reader.readAsText(file);
         }
+        // ── Portal Auto-Sync ───────────────────────────────────────────────────
+        // GitHub Actions commits portal_snapshot_latest.json to the repo daily.
+        // The dashboard fetches it automatically — no coach interaction required.
+
+        function _parseSnapshotText(text, sourceName) {
+            const snap = JSON.parse(text);
+            let names = [];
+            if (Array.isArray(snap)) {
+                names = snap.map(p => typeof p === 'string' ? p : (p.name || ''));
+            } else if (snap.players) {
+                names = snap.players.map(p => p.name || '');
+            } else if (snap.watchlist_in_portal) {
+                names = snap.watchlist_in_portal;
+            }
+            names = names.filter(Boolean);
+            if (!names.length) throw new Error('No player names found in snapshot');
+            const matched = applyPortalNames(names);
+            const date  = snap.generated_at ? new Date(snap.generated_at).toLocaleDateString() : sourceName;
+            const total = snap.total || names.length;
+            const countEl = document.getElementById('portalCount');
+            if (countEl) countEl.textContent = Object.keys(portalPlayers).length;
+            return { matched, total, date };
+        }
+
+        // Fetch portal_snapshot_latest.json from the same origin (works on GitHub Pages)
+        async function syncPortal(manual = true) {
+            const statusEl = document.getElementById('portalSyncStatus');
+            if (manual) {
+                statusEl.style.color = 'var(--text-secondary)';
+                statusEl.textContent = 'Fetching portal data…';
+            }
+            try {
+                const res = await fetch('./portal_snapshot_latest.json?t=' + Date.now());
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const text = await res.text();
+                const { matched, total, date } = _parseSnapshotText(text, 'latest snapshot');
+                statusEl.style.color = matched > 0 ? 'var(--accent-tertiary)' : '#ff9944';
+                statusEl.textContent = matched > 0
+                    ? `✓ ${matched} portal players synced from ${total} in snapshot (${date})`
+                    : `⚠ Snapshot loaded (${total} names) but 0 matched — load Google Sheet data first`;
+                applyFilters();
+            } catch (err) {
+                if (!manual) return; // Silently ignore on auto-load (file may not exist yet)
+                // Manual click: fall back to file picker
+                statusEl.style.color = '#ff9944';
+                statusEl.textContent = '⚠ Could not fetch snapshot — pick the file manually below';
+                document.getElementById('portalJsonInput').click();
+            }
+        }
+
+        // Auto-fetch on page load — zero interaction for the coach
+        async function _autoLoadPortalOnStart() {
+            await syncPortal(false);
+        }
+        // ── End Portal Auto-Sync ───────────────────────────────────────────────
+
         // ── End Portal Snapshot Loader ─────────────────────────────────────────
         let positionMapping = {}; // Stores actual positions from scraped data
 
@@ -5950,6 +5986,9 @@
 
         // Auto-load data from Google Sheets
         loadFromGoogleSheet();
+
+        // Silently auto-sync portal snapshot if folder was previously set
+        _autoLoadPortalOnStart();
     </script>
 </body>
 </html>
