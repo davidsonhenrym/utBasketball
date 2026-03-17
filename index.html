@@ -2432,19 +2432,19 @@
         const POSITION_DEFAULTS = {
             'Guard': {
                 // Scoring / shooting — efficiency over volume
-                ppg:       { weight: 8,  min: 5,    max: 17 },   // vol matters but less than efficiency
-                fg_pct:    { weight: 4,  min: 0.25, max: 0.50 }, // eFG% supersedes FG%
+                ppg:       { weight: 8,  min: 5,    max: 15 },   // vol matters but less than efficiency
+                fg_pct:    { weight: 0,  min: 0.25, max: 0.50 }, // eFG% supersedes FG%
                 three_pct: { weight: 10, min: 0.20, max: 0.40 }, // floor-spacing = win contribution
                 ft_pct:    { weight: 8,  min: 0.50, max: 0.90 }, // FT rate drives offensive efficiency
                 // Playmaking / ball security — #2 Four Factor
-                apg:       { weight: 8,  min: 0,    max: 6 },    // up: assists are win-producing for guards
-                topg:      { weight: 8,  min: 0,    max: 3 },    // up: turnovers most damaging at guard
-                ato:       { weight: 5,  min: 0,    max: 4 },    // up: ratio captures care with the ball
+                apg:       { weight: 8,  min: 0,    max: 5 },    // up: assists are win-producing for guards
+                topg:      { weight: 7,  min: 0,    max: 2.5 },    // up: turnovers most damaging at guard
+                ato:       { weight: 0,  min: 0,    max: 4 },    // up: ratio captures care with the ball
                 // Rebounding — guards contribute less here
                 orbg:      { weight: 1,  min: 0,    max: 2 },    // down: rarely crash boards
-                drbg:      { weight: 4,  min: 0,    max: 4 },    // slight up: all players should convert DReb
+                drbg:      { weight: 3,  min: 0,    max: 4 },    // slight up: all players should convert DReb
                 bpg:       { weight: 0,  min: 0,    max: 0.5 },  // irrelevant for guards
-                spg:       { weight: 4,  min: 0,    max: 2.5 },  // up: steals generate transition offense
+                spg:       { weight: 2,  min: 0,    max: 2 },  // up: steals generate transition offense
                 // Advanced — highest predictive validity
                 efg:       { weight: 12, min: 0.40, max: 0.65 }, // #1 Four Factor stat
                 plusminus: { weight: 0,  min: -50,  max: 150 },  // too noisy
@@ -2487,39 +2487,39 @@
                 ows:       { weight: 0,  min: 0,    max: 5 },
                 dws:       { weight: 0,  min: 0,    max: 3 },
                 ws_40:     { weight: 5,  min: 0,    max: 0.25 }, // UP from 0: per-min win production
-                obpm:      { weight: 6,  min: -3,   max: 8 },    // UP from 0: offensive contribution
-                dbpm:      { weight: 6,  min: -3,   max: 6 },    // UP from 0: wings are key defenders
+                obpm:      { weight: 6,  min: -5,   max: 4 },    // UP from 0: offensive contribution
+                dbpm:      { weight: 6,  min: -5,   max: 4 },    // UP from 0: wings are key defenders
                 bpm:       { weight: 0,  min: -3,   max: 10 },   // replaced by obpm+dbpm
                 per:       { weight: 3,  min: 8,    max: 30 }    // UP from 0: efficiency baseline
             },
             'Forward/Center': {
                 // Scoring / shooting
-                ppg:       { weight: 7,  min: 5,    max: 17 },
-                fg_pct:    { weight: 5,  min: 0.25, max: 0.60 }, // up: post efficiency matters
+                ppg:       { weight: 7,  min: 5,    max: 15 },
+                fg_pct:    { weight: 0,  min: 0.25, max: 0.60 }, // up: post efficiency matters
                 three_pct: { weight: 7,  min: 0.20, max: 0.40 }, // down: less critical for traditional bigs
                 ft_pct:    { weight: 8,  min: 0.50, max: 0.80 },
                 // Playmaking
                 apg:       { weight: 3,  min: 0,    max: 3 },
-                topg:      { weight: 5,  min: 0,    max: 3 },
-                ato:       { weight: 3,  min: 0,    max: 4 },
+                topg:      { weight: 3,  min: 0,    max: 3 },
+                ato:       { weight: 0,  min: 0,    max: 4 },
                 // Rebounding / rim protection — position-specific win drivers
                 orbg:      { weight: 7,  min: 0,    max: 4 },    // up: offensive boards win possessions
                 drbg:      { weight: 7,  min: 1,    max: 5 },    // up: finishing defensive possessions
-                bpg:       { weight: 6,  min: 0,    max: 1.5 },  // UP from 2: #1 big-man defensive win stat
-                spg:       { weight: 1,  min: 0,    max: 1 },
+                bpg:       { weight: 4,  min: 0,    max: 1.5 },  // UP from 2: #1 big-man defensive win stat
+                spg:       { weight: 0,  min: 0,    max: 1 },
                 // Advanced
-                efg:       { weight: 9,  min: 0.40, max: 0.7 },  // up: interior efficiency drives wins
+                efg:       { weight: 12,  min: 0.40, max: 0.7 },  // up: interior efficiency drives wins
                 plusminus: { weight: 0,  min: -50,  max: 150 },
-                or_pct:    { weight: 5,  min: 0,    max: 0.1 },
-                dr_pct:    { weight: 5,  min: 0,    max: 0.1 },
+                or_pct:    { weight: 3,  min: 0,    max: 0.1 },
+                dr_pct:    { weight: 3,  min: 0,    max: 0.1 },
                 ws:        { weight: 8,  min: 0,    max: 4 },     // up: win shares calibrated to wins
-                ortg:      { weight: 5,  min: 95,   max: 125 },
-                drtg:      { weight: 7,  min: 95,   max: 125 },   // up: defensive rating matters
+                ortg:      { weight: 4,  min: 95,   max: 125 },
+                drtg:      { weight: 5,  min: 95,   max: 125 },   // up: defensive rating matters
                 ows:       { weight: 0,  min: 0,    max: 6 },
                 dws:       { weight: 0,  min: 0,    max: 4 },
                 ws_40:     { weight: 5,  min: 0,    max: 0.30 },  // UP from 0: per-min win production
-                obpm:      { weight: 5,  min: -3,   max: 10 },    // UP from 0: offensive contribution
-                dbpm:      { weight: 5,  min: -3,   max: 8 },     // UP from 0: shot protection value
+                obpm:      { weight: 5,  min: -5,   max: 4 },    // UP from 0: offensive contribution
+                dbpm:      { weight: 5,  min: -5,   max: 4 },     // UP from 0: shot protection value
                 bpm:       { weight: 0,  min: -10,  max: 10 },    // replaced by obpm+dbpm
                 per:       { weight: 4,  min: 5,    max: 25 }
             }
