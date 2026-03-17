@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-03-17T17:21:09.691370",
-  "total": 51,
+  "generated_at": "2026-03-17T20:32:01.935517",
+  "total": 61,
   "watchlist_in_portal": [],
   "players": [
     {
@@ -24,6 +24,94 @@
       "nil": "",
       "date": "",
       "url": "https://www.on3.com/nil/rankings/player/nil-valuations/"
+    },
+    {
+      "source": "247",
+      "name": "All Wright",
+      "from": "",
+      "to": "",
+      "pos": "SG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/all-wright-46156969/college-346153/"
+    },
+    {
+      "source": "247",
+      "name": "Jacob Hudson",
+      "from": "",
+      "to": "",
+      "pos": "CG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/jacob-hudson-46165702/college-356520/"
+    },
+    {
+      "source": "247",
+      "name": "Brycen Blaine",
+      "from": "",
+      "to": "",
+      "pos": "SG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/brycen-blaine-46165700/college-356498/"
+    },
+    {
+      "source": "247",
+      "name": "Evan Chatman",
+      "from": "",
+      "to": "",
+      "pos": "PF",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/evan-chatman-46153449/college-356492/"
+    },
+    {
+      "source": "247",
+      "name": "Tameron Ferguson",
+      "from": "",
+      "to": "",
+      "pos": "CG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/tameron-ferguson-46165697/college-356488/"
+    },
+    {
+      "source": "247",
+      "name": "Roddie Anderson III",
+      "from": "",
+      "to": "",
+      "pos": "CG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/roddie-anderson-iii-46140624/college-323275/"
+    },
+    {
+      "source": "247",
+      "name": "Jon Carroll",
+      "from": "",
+      "to": "",
+      "pos": "PF",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/jon-carroll-46165696/college-356486/"
+    },
+    {
+      "source": "247",
+      "name": "Ethan Duncan",
+      "from": "",
+      "to": "",
+      "pos": "PG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/ethan-duncan-46140147/college-356483/"
     },
     {
       "source": "247",
@@ -203,6 +291,17 @@
     },
     {
       "source": "247",
+      "name": "Jake Fiegen",
+      "from": "",
+      "to": "",
+      "pos": "SG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/jake-fiegen-46165699/college-356494/"
+    },
+    {
+      "source": "247",
       "name": "Michael James",
       "from": "",
       "to": "",
@@ -211,6 +310,17 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/michael-james-46164853/college-352144/"
+    },
+    {
+      "source": "247",
+      "name": "Rob Dockery",
+      "from": "",
+      "to": "",
+      "pos": "SF",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/rob-dockery-46128778/college-356489/"
     },
     {
       "source": "247",
