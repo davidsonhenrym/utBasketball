@@ -2438,10 +2438,10 @@
                 ft_pct:    { weight: 8,  min: 0.50, max: 0.90 }, // FT rate drives offensive efficiency
                 // Playmaking / ball security — #2 Four Factor
                 apg:       { weight: 8,  min: 0,    max: 5 },    // up: assists are win-producing for guards
-                topg:      { weight: 7,  min: 0,    max: 2.5 },    // up: turnovers most damaging at guard
+                topg:      { weight: 7,  min: 0,    max: 3.5 },    // up: turnovers most damaging at guard
                 ato:       { weight: 0,  min: 0,    max: 4 },    // up: ratio captures care with the ball
                 // Rebounding — guards contribute less here
-                orbg:      { weight: 1,  min: 0,    max: 2 },    // down: rarely crash boards
+                orbg:      { weight: 1,  min: 0,    max: 1 },    // down: rarely crash boards
                 drbg:      { weight: 3,  min: 0,    max: 4 },    // slight up: all players should convert DReb
                 bpg:       { weight: 0,  min: 0,    max: 0.5 },  // irrelevant for guards
                 spg:       { weight: 2,  min: 0,    max: 2 },  // up: steals generate transition offense
@@ -2469,7 +2469,7 @@
                 ft_pct:    { weight: 8,  min: 0.50, max: 0.90 },
                 // Playmaking — wings create less than guards
                 apg:       { weight: 7,  min: 0,    max: 6 },    // down from 10: guards create more
-                topg:      { weight: 8,  min: 0,    max: 2 },    // down slightly
+                topg:      { weight: 8,  min: 0,    max: 2.5 },    // down slightly
                 ato:       { weight: 5,  min: 0,    max: 4 },    // down from 7
                 // Rebounding / defense — wings are connective tissue
                 orbg:      { weight: 3,  min: 0,    max: 2 },
@@ -2499,8 +2499,8 @@
                 three_pct: { weight: 7,  min: 0.20, max: 0.38 }, // down: less critical for traditional bigs
                 ft_pct:    { weight: 8,  min: 0.50, max: 0.82 },
                 // Playmaking
-                apg:       { weight: 3,  min: 0,    max: 3 },
-                topg:      { weight: 3,  min: 0,    max: 3 },
+                apg:       { weight: 3,  min: 0,    max: 3.5 },
+                topg:      { weight: 3,  min: 0,    max: 2.5 },
                 ato:       { weight: 0,  min: 0,    max: 4 },
                 // Rebounding / rim protection — position-specific win drivers
                 orbg:      { weight: 7,  min: 0,    max: 3 },    // up: offensive boards win possessions
