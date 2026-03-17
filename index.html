@@ -2451,15 +2451,15 @@
                 or_pct:    { weight: 1,  min: 0,    max: 0.05 },
                 dr_pct:    { weight: 2,  min: 0,    max: 0.05 },
                 ws:        { weight: 5,  min: 0,    max: 4 },
-                ortg:      { weight: 5,  min: 95,   max: 125 },
-                drtg:      { weight: 6,  min: 95,   max: 125 },  // up: defense is 50% of basketball
+                ortg:      { weight: 5,  min: 100,   max: 118 },
+                drtg:      { weight: 6,  min: 100,   max: 125 },  // up: defense is 50% of basketball
                 ows:       { weight: 0,  min: 0,    max: 5 },
                 dws:       { weight: 0,  min: 0,    max: 3 },
-                ws_40:     { weight: 6,  min: 0,    max: 0.25 }, // UP from 0: per-min win production is key
-                obpm:      { weight: 8,  min: -3,   max: 8 },    // UP from 0: best guard win predictor
-                dbpm:      { weight: 5,  min: -3,   max: 6 },    // UP from 0: defensive contribution
+                ws_40:     { weight: 6,  min: 0,    max: 0.157 }, // UP from 0: per-min win production is key
+                obpm:      { weight: 8,  min: -1,   max: 6 },    // UP from 0: best guard win predictor
+                dbpm:      { weight: 5,  min: -3,   max: 4.5 },    // UP from 0: defensive contribution
                 bpm:       { weight: 0,  min: -10,  max: 10 },   // replaced by obpm+dbpm for granularity
-                per:       { weight: 3,  min: 5,    max: 25 }    // down: BPM metrics more predictive
+                per:       { weight: 3,  min: 15,    max: 25 }    // down: BPM metrics more predictive
             },
             'Wing': {
                 // Scoring / shooting
@@ -2513,14 +2513,14 @@
                 or_pct:    { weight: 3,  min: 0,    max: 0.1 },
                 dr_pct:    { weight: 3,  min: 0,    max: 0.1 },
                 ws:        { weight: 8,  min: 0,    max: 4 },     // up: win shares calibrated to wins
-                ortg:      { weight: 4,  min: 95,   max: 125 },
-                drtg:      { weight: 5,  min: 95,   max: 125 },   // up: defensive rating matters
+                ortg:      { weight: 4,  min: 100,   max: 118 },
+                drtg:      { weight: 5,  min: 100,   max: 125 },   // up: defensive rating matters
                 ows:       { weight: 0,  min: 0,    max: 6 },
                 dws:       { weight: 0,  min: 0,    max: 4 },
                 ws_40:     { weight: 5,  min: 0,    max: 0.30 },  // UP from 0: per-min win production
                 obpm:      { weight: 5,  min: -5,   max: 4 },    // UP from 0: offensive contribution
                 dbpm:      { weight: 5,  min: -5,   max: 4 },     // UP from 0: shot protection value
-                bpm:       { weight: 0,  min: -10,  max: 10 },    // replaced by obpm+dbpm
+                bpm:       { weight: 0,  min: -3,  max: 10 },    // replaced by obpm+dbpm
                 per:       { weight: 4,  min: 5,    max: 25 }
             }
         };
