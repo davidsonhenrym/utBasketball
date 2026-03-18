@@ -6744,6 +6744,30 @@
 
             const fmtVal = (v) => '$' + (v >= 1000000 ? (v/1000000).toFixed(2)+'M' : (v/1000).toFixed(1)+'K');
 
+            // Percentile helpers
+            const cmpData = scoredData.length ? scoredData : playerData;
+            function calcPct(rawVal, getter, hi) {
+                const n = parseFloat(rawVal);
+                if (isNaN(n)) return null;
+                const vals = cmpData.map(p => parseFloat(getter(p))).filter(v => !isNaN(v) && isFinite(v));
+                if (!vals.length) return null;
+                const below = vals.filter(v => hi ? v < n : v > n).length;
+                return Math.round((below / vals.length) * 100);
+            }
+            function pctColor(p) {
+                if (p === null) return 'var(--text-secondary)';
+                if (p >= 90) return 'var(--accent-primary)';
+                if (p >= 75) return 'var(--accent-secondary)';
+                if (p >= 50) return 'var(--text-primary)';
+                if (p >= 25) return 'var(--text-secondary)';
+                return 'var(--accent-tertiary)';
+            }
+            function pctBadge(p) {
+                if (p === null) return '';
+                const suffix = p === 11||p===12||p===13 ? 'th' : p%10===1?'st':p%10===2?'nd':p%10===3?'rd':'th';
+                return `<div style="font-size:0.6rem;font-family:'IBM Plex Mono',monospace;color:${pctColor(p)};font-weight:700;margin-top:2px;">${p}${suffix} pct</div>`;
+            }
+
             const headerHtml = `
                 <div style="display:grid;grid-template-columns:1fr 48px 1fr;gap:12px;margin-bottom:20px;align-items:center;">
                     <div style="text-align:center;padding:16px;background:var(--bg-tertiary);border-radius:8px;border:2px solid var(--accent-secondary);">
@@ -6751,6 +6775,7 @@
                         <div style="font-size:0.78rem;color:var(--text-secondary);margin-top:3px;">${p1.Team} · ${p1.position_category} · ${p1.Class||p1.Yr||''}</div>
                         <div style="font-size:1.6rem;font-weight:700;color:var(--accent-secondary);margin-top:8px;">${(p1.total_score||0).toFixed(1)}</div>
                         <div style="font-size:0.6rem;color:var(--text-secondary);font-family:'IBM Plex Mono',monospace;letter-spacing:0.06em;">SCORE</div>
+                        ${pctBadge(calcPct(p1.total_score, p=>p.total_score, true))}
                     </div>
                     <div style="text-align:center;font-weight:900;color:var(--text-secondary);font-size:1rem;font-family:'IBM Plex Mono',monospace;">VS</div>
                     <div style="text-align:center;padding:16px;background:var(--bg-tertiary);border-radius:8px;border:2px solid ${p2?'var(--accent-tertiary)':'var(--border)'};">
@@ -6759,30 +6784,42 @@
                             <div style="font-size:0.78rem;color:var(--text-secondary);margin-top:3px;">${p2.Team} · ${p2.position_category} · ${p2.Class||p2.Yr||''}</div>
                             <div style="font-size:1.6rem;font-weight:700;color:var(--accent-tertiary);margin-top:8px;">${(p2.total_score||0).toFixed(1)}</div>
                             <div style="font-size:0.6rem;color:var(--text-secondary);font-family:'IBM Plex Mono',monospace;letter-spacing:0.06em;">SCORE</div>
+                            ${pctBadge(calcPct(p2.total_score, p=>p.total_score, true))}
                         ` : `<div style="color:var(--text-secondary);padding:24px 0;font-family:'IBM Plex Mono',monospace;font-size:0.8rem;">Search above to select a player</div>`}
                     </div>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 80px 1fr;gap:8px;padding:5px 0 3px;margin-bottom:2px;">
+                    <div style="text-align:right;font-size:0.6rem;font-family:'IBM Plex Mono',monospace;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;">value · pct</div>
+                    <div></div>
+                    <div style="font-size:0.6rem;font-family:'IBM Plex Mono',monospace;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;">value · pct</div>
                 </div>
             `;
 
             if (!p2) { el.innerHTML = headerHtml; return; }
 
+            const tpa1 = get3PA(p1);
+            const tpa2 = get3PA(p2);
+
             const stats = [
-                { label:'PPG',     v1:p1.PPG,        v2:p2.PPG,        hi:true,  fmt:v=>(parseFloat(v)||0).toFixed(1) },
-                { label:'RPG',     v1:p1.RPG,        v2:p2.RPG,        hi:true,  fmt:v=>(parseFloat(v)||0).toFixed(1) },
-                { label:'APG',     v1:p1.APG,        v2:p2.APG,        hi:true,  fmt:v=>(parseFloat(v)||0).toFixed(1) },
-                { label:'BPG',     v1:p1.BPG,        v2:p2.BPG,        hi:true,  fmt:v=>(parseFloat(v)||0).toFixed(1) },
-                { label:'SPG',     v1:p1.SPG,        v2:p2.SPG,        hi:true,  fmt:v=>(parseFloat(v)||0).toFixed(1) },
-                { label:'FG%',     v1:p1['FG%'],     v2:p2['FG%'],     hi:true,  fmt:v=>((parseFloat(v)||0)*100).toFixed(1)+'%' },
-                { label:'3P%',     v1:p1['3P%'],     v2:p2['3P%'],     hi:true,  fmt:v=>((parseFloat(v)||0)*100).toFixed(1)+'%' },
-                { label:'FT%',     v1:p1['FT%'],     v2:p2['FT%'],     hi:true,  fmt:v=>((parseFloat(v)||0)*100).toFixed(1)+'%' },
-                { label:'eFG%',    v1:p1['eFG%'],    v2:p2['eFG%'],    hi:true,  fmt:v=>((parseFloat(v)||0)*100).toFixed(1)+'%' },
-                { label:'BPM',     v1:p1.BPM,        v2:p2.BPM,        hi:true,  fmt:v=>(parseFloat(v)||0).toFixed(1) },
-                { label:'ORtg',    v1:p1.ORtg,       v2:p2.ORtg,       hi:true,  fmt:v=>(parseFloat(v)||0).toFixed(1) },
-                { label:'DRtg',    v1:p1.DRtg,       v2:p2.DRtg,       hi:false, fmt:v=>(parseFloat(v)||0).toFixed(1) },
-                { label:'WS',      v1:p1.WS,         v2:p2.WS,         hi:true,  fmt:v=>(parseFloat(v)||0).toFixed(2) },
-                { label:'PER',     v1:p1.PER,        v2:p2.PER,        hi:true,  fmt:v=>(parseFloat(v)||0).toFixed(1) },
-                { label:'A/TO',    v1:p1['A/TO'],    v2:p2['A/TO'],    hi:true,  fmt:v=>(parseFloat(v)||0).toFixed(2) },
-                { label:'Valuation', v1:p1.valuation, v2:p2.valuation, hi:true,  fmt:v=>fmtVal(v) },
+                { label:'PPG',       v1:p1.PPG,        v2:p2.PPG,        hi:true,  fmt:v=>(parseFloat(v)||0).toFixed(1),                      get:p=>parseFloat(p.PPG)||0 },
+                { label:'RPG',       v1:p1.RPG,        v2:p2.RPG,        hi:true,  fmt:v=>(parseFloat(v)||0).toFixed(1),                      get:p=>parseFloat(p.RPG)||0 },
+                { label:'APG',       v1:p1.APG,        v2:p2.APG,        hi:true,  fmt:v=>(parseFloat(v)||0).toFixed(1),                      get:p=>parseFloat(p.APG)||0 },
+                { label:'BPG',       v1:p1.BPG,        v2:p2.BPG,        hi:true,  fmt:v=>(parseFloat(v)||0).toFixed(1),                      get:p=>parseFloat(p.BPG)||0 },
+                { label:'SPG',       v1:p1.SPG,        v2:p2.SPG,        hi:true,  fmt:v=>(parseFloat(v)||0).toFixed(1),                      get:p=>parseFloat(p.SPG)||0 },
+                { label:'FG%',       v1:p1['FG%'],     v2:p2['FG%'],     hi:true,  fmt:v=>((parseFloat(v)||0)*100).toFixed(1)+'%',            get:p=>parseFloat(p['FG%'])||0 },
+                { label:'3P%',       v1:p1['3P%'],     v2:p2['3P%'],     hi:true,
+                    fmt1: v => `${((parseFloat(v)||0)*100).toFixed(1)}%<br><span style="font-size:0.72em;color:var(--text-secondary);">${tpa1>0?tpa1.toFixed(1):'—'} att/g</span>`,
+                    fmt2: v => `${((parseFloat(v)||0)*100).toFixed(1)}%<br><span style="font-size:0.72em;color:var(--text-secondary);">${tpa2>0?tpa2.toFixed(1):'—'} att/g</span>`,
+                    get:p=>parseFloat(p['3P%'])||0 },
+                { label:'FT%',       v1:p1['FT%'],     v2:p2['FT%'],     hi:true,  fmt:v=>((parseFloat(v)||0)*100).toFixed(1)+'%',            get:p=>parseFloat(p['FT%'])||0 },
+                { label:'eFG%',      v1:p1['eFG%'],    v2:p2['eFG%'],    hi:true,  fmt:v=>((parseFloat(v)||0)*100).toFixed(1)+'%',            get:p=>parseFloat(p['eFG%'])||0 },
+                { label:'BPM',       v1:p1.BPM,        v2:p2.BPM,        hi:true,  fmt:v=>(parseFloat(v)||0).toFixed(1),                      get:p=>parseFloat(p.BPM)||0 },
+                { label:'ORtg',      v1:p1.ORtg,       v2:p2.ORtg,       hi:true,  fmt:v=>(parseFloat(v)||0).toFixed(1),                      get:p=>parseFloat(p.ORtg)||0 },
+                { label:'DRtg',      v1:p1.DRtg,       v2:p2.DRtg,       hi:false, fmt:v=>(parseFloat(v)||0).toFixed(1),                      get:p=>parseFloat(p.DRtg)||0 },
+                { label:'WS',        v1:p1.WS,         v2:p2.WS,         hi:true,  fmt:v=>(parseFloat(v)||0).toFixed(2),                      get:p=>parseFloat(p.WS)||0 },
+                { label:'PER',       v1:p1.PER,        v2:p2.PER,        hi:true,  fmt:v=>(parseFloat(v)||0).toFixed(1),                      get:p=>parseFloat(p.PER)||0 },
+                { label:'A/TO',      v1:p1['A/TO'],    v2:p2['A/TO'],    hi:true,  fmt:v=>(parseFloat(v)||0).toFixed(2),                      get:p=>parseFloat(p['A/TO'])||0 },
+                { label:'Valuation', v1:p1.valuation,  v2:p2.valuation,  hi:true,  fmt:v=>fmtVal(v),                                          get:p=>p.valuation||0 },
             ];
 
             const statsHtml = stats.map(s => {
@@ -6790,11 +6827,21 @@
                 const n2 = parseFloat(s.v2) || 0;
                 const p1Win = s.hi ? n1 > n2 : n1 < n2;
                 const p2Win = s.hi ? n2 > n1 : n2 < n1;
+                const pc1 = calcPct(s.v1, s.get, s.hi);
+                const pc2 = calcPct(s.v2, s.get, s.hi);
+                const val1Html = s.fmt1 ? s.fmt1(s.v1) : s.fmt(s.v1);
+                const val2Html = s.fmt2 ? s.fmt2(s.v2) : s.fmt(s.v2);
                 return `
-                    <div style="display:grid;grid-template-columns:1fr 64px 1fr;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid rgba(45,55,72,0.5);">
-                        <div style="text-align:right;font-weight:700;font-size:0.92rem;color:${p1Win?'var(--accent-secondary)':p2Win?'var(--text-secondary)':'var(--text-primary)'};">${s.fmt(s.v1)}</div>
+                    <div style="display:grid;grid-template-columns:1fr 80px 1fr;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid rgba(45,55,72,0.5);">
+                        <div style="text-align:right;">
+                            <div style="font-weight:700;font-size:0.92rem;color:${p1Win?'var(--accent-secondary)':p2Win?'var(--text-secondary)':'var(--text-primary)'};">${val1Html}</div>
+                            ${pctBadge(pc1)}
+                        </div>
                         <div style="text-align:center;font-size:0.65rem;font-family:'IBM Plex Mono',monospace;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;">${s.label}</div>
-                        <div style="font-weight:700;font-size:0.92rem;color:${p2Win?'var(--accent-tertiary)':p1Win?'var(--text-secondary)':'var(--text-primary)'};">${s.fmt(s.v2)}</div>
+                        <div>
+                            <div style="font-weight:700;font-size:0.92rem;color:${p2Win?'var(--accent-tertiary)':p1Win?'var(--text-secondary)':'var(--text-primary)'};">${val2Html}</div>
+                            ${pctBadge(pc2)}
+                        </div>
                     </div>
                 `;
             }).join('');
