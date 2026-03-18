@@ -2212,22 +2212,6 @@
                                 </div>
                             </div>
 
-                            <!-- Firebase Setup Banner -->
-                            <div id="pbSetupBanner" style="background:rgba(255,107,53,0.08);border:1px solid rgba(255,107,53,0.4);border-radius:10px;padding:20px;margin-bottom:20px;display:none;">
-                                <div style="font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#ff6b35;margin-bottom:8px;">Connect Shared Database</div>
-                                <div style="font-size:0.83rem;color:var(--text-secondary);margin-bottom:14px;line-height:1.6;">
-                                    To share the board with other coaches, connect a free Firebase Realtime Database.<br>
-                                    <strong style="color:var(--text-primary);">Setup:</strong> Go to <span style="color:#ff6b35;font-family:'IBM Plex Mono',monospace;">console.firebase.google.com</span> → New project → Build → Realtime Database → Create → Start in test mode → copy the URL (e.g. <span style="font-family:'IBM Plex Mono',monospace;color:var(--text-secondary);">https://your-project-default-rtdb.firebaseio.com</span>).
-                                </div>
-                                <div style="display:flex;gap:10px;align-items:center;">
-                                    <input type="text" id="pbFbUrlInput" placeholder="https://your-project-default-rtdb.firebaseio.com"
-                                        style="flex:1;padding:9px 12px;background:var(--bg-tertiary);border:1px solid var(--border);border-radius:6px;color:var(--text-primary);font-family:'IBM Plex Mono',monospace;font-size:0.82rem;outline:none;"
-                                        onkeydown="if(event.key==='Enter')pbSaveFirebaseUrl()">
-                                    <button onclick="pbSaveFirebaseUrl()" style="padding:9px 18px;background:#ff6b35;border:none;border-radius:6px;color:#fff;font-weight:700;font-size:0.82rem;cursor:pointer;white-space:nowrap;">Connect</button>
-                                    <button onclick="document.getElementById('pbSetupBanner').style.display='none'" style="padding:9px 14px;background:transparent;border:1px solid var(--border);border-radius:6px;color:var(--text-secondary);font-size:0.82rem;cursor:pointer;">Use Offline</button>
-                                </div>
-                            </div>
-
                             <!-- Add Player Form -->
                             <div style="background:var(--bg-secondary);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:24px;">
                                 <div style="font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--accent-primary);margin-bottom:16px;">Add Prospect — Any Player (Portal, JUCO, High School, etc.)</div>
@@ -6110,7 +6094,7 @@
 
         let pbLoggedIn = false;
         let pbCoachName = '';
-        let pbFirebaseUrl = localStorage.getItem('utmbb_fb_url') || '';
+        let pbFirebaseUrl = 'https://portal-database-e0a03-default-rtdb.firebaseio.com';
         let prospectPlayers = [];
         let pbDragSrc = null;
         let pbSyncInterval = null;
@@ -6146,26 +6130,9 @@
             closeProspectNotes();
         }
 
-        // --- Firebase setup ---
+        // --- Init board ---
         function pbInitBoard() {
-            if (pbFirebaseUrl) {
-                document.getElementById('pbSetupBanner').style.display = 'none';
-                pbLoad();
-                pbSyncInterval = setInterval(pbLoad, 30000);
-            } else {
-                document.getElementById('pbSetupBanner').style.display = 'block';
-                renderProspectBoard();
-            }
-        }
-
-        function pbSaveFirebaseUrl() {
-            const url = document.getElementById('pbFbUrlInput').value.trim().replace(/\/$/, '');
-            if (!url) return;
-            pbFirebaseUrl = url;
-            localStorage.setItem('utmbb_fb_url', url);
-            document.getElementById('pbSetupBanner').style.display = 'none';
             pbLoad();
-            if (pbSyncInterval) clearInterval(pbSyncInterval);
             pbSyncInterval = setInterval(pbLoad, 30000);
         }
 
