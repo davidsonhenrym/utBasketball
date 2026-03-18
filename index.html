@@ -2377,7 +2377,10 @@
     <div id="playerModal" class="modal">
         <div class="modal-content animated">
             <div class="modal-header">
-                <button class="modal-close" onclick="closePlayerModal()">×</button>
+                <div style="position:absolute;top:20px;right:20px;display:flex;gap:8px;align-items:center;">
+                    <button onclick="openCompareModal(currentModalPlayer)" style="padding:5px 14px;background:transparent;border:1px solid var(--accent-secondary);border-radius:5px;color:var(--accent-secondary);font-family:'IBM Plex Mono',monospace;font-size:0.72rem;cursor:pointer;letter-spacing:0.05em;text-transform:uppercase;white-space:nowrap;">⇄ Compare</button>
+                    <button style="background:var(--bg-primary);border:1px solid var(--border);color:var(--text-primary);width:35px;height:35px;border-radius:50%;font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;" onclick="closePlayerModal()">×</button>
+                </div>
                 <div class="modal-player-name" id="modalPlayerName"></div>
                 <div class="modal-player-info" id="modalPlayerInfo"></div>
             </div>
@@ -2416,6 +2419,31 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Player Comparison Modal -->
+    <div id="compareModal" class="modal">
+        <div class="modal-content animated" style="max-width:860px;border-color:var(--accent-secondary);box-shadow:0 10px 40px rgba(0,212,255,0.2);">
+            <div class="modal-header">
+                <div style="position:absolute;top:20px;right:20px;">
+                    <button style="background:var(--bg-primary);border:1px solid var(--border);color:var(--text-primary);width:35px;height:35px;border-radius:50%;font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center;" onclick="closeCompareModal()">×</button>
+                </div>
+                <div style="font-size:1.6rem;font-weight:900;color:var(--accent-secondary);text-transform:uppercase;letter-spacing:0.05em;">Player Comparison</div>
+            </div>
+            <div class="modal-body">
+                <!-- Search for player 2 -->
+                <div style="margin-bottom:20px;position:relative;">
+                    <div style="font-size:0.65rem;font-family:'IBM Plex Mono',monospace;color:var(--accent-secondary);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">Compare With</div>
+                    <input id="cmpSearch" type="text" placeholder="Search for a player to compare..."
+                        oninput="cmpSearchPlayers()"
+                        autocomplete="off"
+                        style="width:100%;padding:10px 14px;background:var(--bg-tertiary);border:1px solid var(--border);border-radius:6px;color:var(--text-primary);font-family:'IBM Plex Mono',monospace;font-size:0.85rem;outline:none;">
+                    <div id="cmpResults" style="display:none;position:absolute;left:0;right:0;top:100%;z-index:200;background:var(--bg-secondary);border:1px solid var(--border);border-radius:6px;max-height:220px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,0.6);margin-top:4px;"></div>
+                </div>
+                <!-- Side-by-side comparison content -->
+                <div id="cmpContent"></div>
             </div>
         </div>
     </div>
@@ -4049,7 +4077,10 @@
             XLSX.writeFile(wb, `player_evaluations_${new Date().toISOString().split('T')[0]}.xlsx`);
         }
 
+        let currentModalPlayer = null;
+
         function showPlayerDetails(player) {
+            currentModalPlayer = player;
             // Get the config used for this player's position (use live positionConfigs so user edits are reflected)
             const config = positionConfigs[player.position_category] || positionConfigs['Guard'];
             
@@ -6404,13 +6435,18 @@
                     const noteCount = Array.isArray(p.notes) ? p.notes.length : 0;
                     const tColor    = typeColors[p.type] || 'var(--text-secondary)';
                     const hasNotes  = noteCount > 0;
+                    const portalKey = ((p.name || '') + '|' + (p.school || '')).toLowerCase();
+                    const inPortal  = !!portalPlayers[portalKey];
                     return `
                     <div class="pb-row" draggable="${!search}" data-id="${p.id}" data-idx="${realIdx}" data-section="${sectionKey}"
                          style="display:grid;grid-template-columns:36px 34px 1fr 130px 155px 110px 36px;align-items:center;gap:12px;padding:13px 20px;border-bottom:1px solid var(--border);background:var(--bg-secondary);transition:background 0.15s;">
                         <div class="pb-drag-handle" style="color:var(--text-secondary);font-size:1.1rem;cursor:${search?'default':'grab'};text-align:center;user-select:none;opacity:${search?'0.3':'1'};" title="${search?'Clear search to reorder':'Drag to reorder'}">&#8661;</div>
                         <div style="font-family:'IBM Plex Mono',monospace;font-size:0.82rem;font-weight:700;color:${sectionColor};text-align:center;">#${realIdx+1}</div>
                         <div>
-                            <div style="font-weight:700;font-size:0.95rem;">${escHtml(p.name)}</div>
+                            <div style="display:flex;align-items:center;gap:7px;">
+                                <div style="font-weight:700;font-size:0.95rem;cursor:pointer;" onmouseover="this.style.color='var(--accent-secondary)'" onmouseout="this.style.color=''" onclick="pbShowPlayerStats(${p.id}, event)">${escHtml(p.name)}</div>
+                                ${inPortal ? '<span style="font-size:0.6rem;font-family:\'IBM Plex Mono\',monospace;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#00ff88;background:rgba(0,255,136,0.1);border:1px solid rgba(0,255,136,0.35);border-radius:4px;padding:2px 6px;white-space:nowrap;">⟳ Portal</span>' : ''}
+                            </div>
                             <div style="font-size:0.75rem;color:var(--text-secondary);font-family:'IBM Plex Mono',monospace;margin-top:2px;">
                                 ${p.pos ? '<span style="color:var(--accent-secondary);">' + escHtml(p.pos) + '</span>' + (p.school ? ' · ' : '') : ''}${escHtml(p.school)}
                                 ${p.type ? ' · <span style="color:' + tColor + ';">' + escHtml(p.type) + '</span>' : ''}
@@ -6598,6 +6634,183 @@
         document.addEventListener('click', function(e) {
             const inp = document.getElementById('pbApiSearch');
             const res = document.getElementById('pbApiResults');
+            if (res && inp && !inp.contains(e.target) && !res.contains(e.target)) {
+                res.style.display = 'none';
+            }
+        });
+
+        // ── Prospect Board: click player name to view stats ──────────────────────
+        function pbShowPlayerStats(prospectId, event) {
+            if (event) event.stopPropagation();
+            let prospect = null;
+            for (const sec of ['guards', 'wings', 'fours']) {
+                prospect = pbBoard[sec].find(p => p.id === prospectId);
+                if (prospect) break;
+            }
+            if (!prospect) return;
+            const found = scoredData.find(p => p.Player && p.Player.toLowerCase() === (prospect.name || '').toLowerCase());
+            if (found) {
+                showPlayerDetails(found);
+            } else {
+                // Simple info modal using the player detail modal with limited data
+                currentModalPlayer = null;
+                document.getElementById('modalPlayerName').textContent = prospect.name || '—';
+                document.getElementById('modalPlayerInfo').innerHTML = `
+                    <span>${prospect.school || 'Unknown School'}</span>
+                    <span>${prospect.pos || ''} ${prospect.type ? '· ' + prospect.type : ''}</span>
+                `;
+                document.getElementById('modalScoreSummary').innerHTML = `
+                    <div class="modal-score-card">
+                        <div class="modal-score-label">Type</div>
+                        <div class="modal-score-value" style="font-size:1.4rem;">${prospect.type || '—'}</div>
+                    </div>
+                    <div class="modal-score-card">
+                        <div class="modal-score-label">Offer / NIL</div>
+                        <div class="modal-score-value" style="font-size:1.4rem;">${prospect.pay || '—'}</div>
+                    </div>
+                    <div class="modal-score-card" style="grid-column:span 2;">
+                        <div class="modal-score-label" style="margin-bottom:6px;">Notes</div>
+                        <div style="font-size:0.82rem;font-family:'IBM Plex Mono',monospace;color:var(--text-secondary);">${Array.isArray(prospect.notes) && prospect.notes.length ? prospect.notes.map(n => '• ' + n.text).join('<br>') : 'No notes yet.'}</div>
+                    </div>
+                `;
+                document.getElementById('modalStatBreakdown').innerHTML = '<div style="padding:20px 0;color:var(--text-secondary);font-family:\'IBM Plex Mono\',monospace;font-size:0.82rem;">This player is not in the ranked list — no stat data available.</div>';
+                const scOverlay = document.getElementById('shotChartOverlay');
+                if (scOverlay) { scOverlay.style.display = 'flex'; scOverlay.textContent = 'No shot data available.'; }
+                document.getElementById('shotChartStats').innerHTML = '';
+                document.getElementById('shotChartLegend').innerHTML = '';
+                document.getElementById('playerModal').classList.add('active');
+            }
+        }
+
+        // ── Player Comparison ─────────────────────────────────────────────────────
+        let cmpPlayer1 = null;
+        let cmpPlayer2 = null;
+
+        function openCompareModal(player) {
+            if (!player) return;
+            cmpPlayer1 = player;
+            cmpPlayer2 = null;
+            document.getElementById('cmpSearch').value = '';
+            document.getElementById('cmpResults').style.display = 'none';
+            renderComparison();
+            document.getElementById('compareModal').classList.add('active');
+            closePlayerModal();
+        }
+
+        function closeCompareModal() {
+            document.getElementById('compareModal').classList.remove('active');
+        }
+
+        function cmpSearchPlayers() {
+            const q = document.getElementById('cmpSearch').value.trim().toLowerCase();
+            const resultsEl = document.getElementById('cmpResults');
+            if (!q) { resultsEl.style.display = 'none'; return; }
+            const data = scoredData.length ? scoredData : playerData;
+            const matches = data.filter(p =>
+                (p.Player || '').toLowerCase().includes(q) ||
+                (p.Team || '').toLowerCase().includes(q)
+            ).slice(0, 10);
+            if (!matches.length) { resultsEl.style.display = 'none'; return; }
+            resultsEl._cmpMatches = matches;
+            resultsEl.innerHTML = matches.map((p, i) => `
+                <div onclick="cmpSelectPlayer2(${i})"
+                     style="padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;"
+                     onmouseover="this.style.background='rgba(0,212,255,0.07)'"
+                     onmouseout="this.style.background=''">
+                    <div>
+                        <span style="font-weight:700;">${p.Player}</span>
+                        <span style="color:var(--text-secondary);font-size:0.8rem;margin-left:8px;">${p.Team}</span>
+                        <span style="color:var(--accent-secondary);font-size:0.75rem;margin-left:6px;">${p.position_category}</span>
+                    </div>
+                    <div style="font-family:'IBM Plex Mono',monospace;font-size:0.8rem;color:var(--accent-primary);">${(p.total_score||0).toFixed(1)}</div>
+                </div>
+            `).join('');
+            resultsEl.style.display = '';
+        }
+
+        function cmpSelectPlayer2(idx) {
+            const matches = document.getElementById('cmpResults')._cmpMatches;
+            cmpPlayer2 = matches[idx];
+            document.getElementById('cmpSearch').value = cmpPlayer2.Player;
+            document.getElementById('cmpResults').style.display = 'none';
+            renderComparison();
+        }
+
+        function renderComparison() {
+            const el = document.getElementById('cmpContent');
+            const p1 = cmpPlayer1;
+            const p2 = cmpPlayer2;
+            if (!p1) { el.innerHTML = ''; return; }
+
+            const fmtVal = (v) => '$' + (v >= 1000000 ? (v/1000000).toFixed(2)+'M' : (v/1000).toFixed(1)+'K');
+
+            const headerHtml = `
+                <div style="display:grid;grid-template-columns:1fr 48px 1fr;gap:12px;margin-bottom:20px;align-items:center;">
+                    <div style="text-align:center;padding:16px;background:var(--bg-tertiary);border-radius:8px;border:2px solid var(--accent-secondary);">
+                        <div style="font-size:1.15rem;font-weight:700;">${p1.Player}</div>
+                        <div style="font-size:0.78rem;color:var(--text-secondary);margin-top:3px;">${p1.Team} · ${p1.position_category} · ${p1.Class||p1.Yr||''}</div>
+                        <div style="font-size:1.6rem;font-weight:700;color:var(--accent-secondary);margin-top:8px;">${(p1.total_score||0).toFixed(1)}</div>
+                        <div style="font-size:0.6rem;color:var(--text-secondary);font-family:'IBM Plex Mono',monospace;letter-spacing:0.06em;">SCORE</div>
+                    </div>
+                    <div style="text-align:center;font-weight:900;color:var(--text-secondary);font-size:1rem;font-family:'IBM Plex Mono',monospace;">VS</div>
+                    <div style="text-align:center;padding:16px;background:var(--bg-tertiary);border-radius:8px;border:2px solid ${p2?'var(--accent-tertiary)':'var(--border)'};">
+                        ${p2 ? `
+                            <div style="font-size:1.15rem;font-weight:700;">${p2.Player}</div>
+                            <div style="font-size:0.78rem;color:var(--text-secondary);margin-top:3px;">${p2.Team} · ${p2.position_category} · ${p2.Class||p2.Yr||''}</div>
+                            <div style="font-size:1.6rem;font-weight:700;color:var(--accent-tertiary);margin-top:8px;">${(p2.total_score||0).toFixed(1)}</div>
+                            <div style="font-size:0.6rem;color:var(--text-secondary);font-family:'IBM Plex Mono',monospace;letter-spacing:0.06em;">SCORE</div>
+                        ` : `<div style="color:var(--text-secondary);padding:24px 0;font-family:'IBM Plex Mono',monospace;font-size:0.8rem;">Search above to select a player</div>`}
+                    </div>
+                </div>
+            `;
+
+            if (!p2) { el.innerHTML = headerHtml; return; }
+
+            const stats = [
+                { label:'PPG',     v1:p1.PPG,        v2:p2.PPG,        hi:true,  fmt:v=>(parseFloat(v)||0).toFixed(1) },
+                { label:'RPG',     v1:p1.RPG,        v2:p2.RPG,        hi:true,  fmt:v=>(parseFloat(v)||0).toFixed(1) },
+                { label:'APG',     v1:p1.APG,        v2:p2.APG,        hi:true,  fmt:v=>(parseFloat(v)||0).toFixed(1) },
+                { label:'BPG',     v1:p1.BPG,        v2:p2.BPG,        hi:true,  fmt:v=>(parseFloat(v)||0).toFixed(1) },
+                { label:'SPG',     v1:p1.SPG,        v2:p2.SPG,        hi:true,  fmt:v=>(parseFloat(v)||0).toFixed(1) },
+                { label:'FG%',     v1:p1['FG%'],     v2:p2['FG%'],     hi:true,  fmt:v=>((parseFloat(v)||0)*100).toFixed(1)+'%' },
+                { label:'3P%',     v1:p1['3P%'],     v2:p2['3P%'],     hi:true,  fmt:v=>((parseFloat(v)||0)*100).toFixed(1)+'%' },
+                { label:'FT%',     v1:p1['FT%'],     v2:p2['FT%'],     hi:true,  fmt:v=>((parseFloat(v)||0)*100).toFixed(1)+'%' },
+                { label:'eFG%',    v1:p1['eFG%'],    v2:p2['eFG%'],    hi:true,  fmt:v=>((parseFloat(v)||0)*100).toFixed(1)+'%' },
+                { label:'BPM',     v1:p1.BPM,        v2:p2.BPM,        hi:true,  fmt:v=>(parseFloat(v)||0).toFixed(1) },
+                { label:'ORtg',    v1:p1.ORtg,       v2:p2.ORtg,       hi:true,  fmt:v=>(parseFloat(v)||0).toFixed(1) },
+                { label:'DRtg',    v1:p1.DRtg,       v2:p2.DRtg,       hi:false, fmt:v=>(parseFloat(v)||0).toFixed(1) },
+                { label:'WS',      v1:p1.WS,         v2:p2.WS,         hi:true,  fmt:v=>(parseFloat(v)||0).toFixed(2) },
+                { label:'PER',     v1:p1.PER,        v2:p2.PER,        hi:true,  fmt:v=>(parseFloat(v)||0).toFixed(1) },
+                { label:'A/TO',    v1:p1['A/TO'],    v2:p2['A/TO'],    hi:true,  fmt:v=>(parseFloat(v)||0).toFixed(2) },
+                { label:'Valuation', v1:p1.valuation, v2:p2.valuation, hi:true,  fmt:v=>fmtVal(v) },
+            ];
+
+            const statsHtml = stats.map(s => {
+                const n1 = parseFloat(s.v1) || 0;
+                const n2 = parseFloat(s.v2) || 0;
+                const p1Win = s.hi ? n1 > n2 : n1 < n2;
+                const p2Win = s.hi ? n2 > n1 : n2 < n1;
+                return `
+                    <div style="display:grid;grid-template-columns:1fr 64px 1fr;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid rgba(45,55,72,0.5);">
+                        <div style="text-align:right;font-weight:700;font-size:0.92rem;color:${p1Win?'var(--accent-secondary)':p2Win?'var(--text-secondary)':'var(--text-primary)'};">${s.fmt(s.v1)}</div>
+                        <div style="text-align:center;font-size:0.65rem;font-family:'IBM Plex Mono',monospace;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;">${s.label}</div>
+                        <div style="font-weight:700;font-size:0.92rem;color:${p2Win?'var(--accent-tertiary)':p1Win?'var(--text-secondary)':'var(--text-primary)'};">${s.fmt(s.v2)}</div>
+                    </div>
+                `;
+            }).join('');
+
+            el.innerHTML = headerHtml + `<div style="background:var(--bg-tertiary);border-radius:8px;border:1px solid var(--border);padding:4px 20px;">${statsHtml}</div>`;
+        }
+
+        // Close compare modal on backdrop click
+        document.getElementById('compareModal').addEventListener('click', function(e) {
+            if (e.target === this) closeCompareModal();
+        });
+
+        // Close compare search dropdown on outside click
+        document.addEventListener('click', function(e) {
+            const inp = document.getElementById('cmpSearch');
+            const res = document.getElementById('cmpResults');
             if (res && inp && !inp.contains(e.target) && !res.contains(e.target)) {
                 res.style.display = 'none';
             }
