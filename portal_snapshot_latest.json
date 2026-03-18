@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-03-18T13:15:11.056491",
-  "total": 68,
+  "generated_at": "2026-03-18T20:28:29.083590",
+  "total": 86,
   "watchlist_in_portal": [],
   "players": [
     {
@@ -24,6 +24,204 @@
       "nil": "",
       "date": "",
       "url": "https://www.on3.com/nil/rankings/player/nil-valuations/"
+    },
+    {
+      "source": "247",
+      "name": "Alfred Worrell",
+      "from": "",
+      "to": "",
+      "pos": "SG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/alfred-worrell-46157080/college-356580/"
+    },
+    {
+      "source": "247",
+      "name": "Camp Wagner",
+      "from": "",
+      "to": "",
+      "pos": "SG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/camp-wagner-46165719/college-356575/"
+    },
+    {
+      "source": "247",
+      "name": "Emmett Adair",
+      "from": "",
+      "to": "",
+      "pos": "PF",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/emmett-adair-46165717/college-356570/"
+    },
+    {
+      "source": "247",
+      "name": "Edwin Suarez",
+      "from": "",
+      "to": "",
+      "pos": "SF",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/edwin-suarez-46165716/college-356568/"
+    },
+    {
+      "source": "247",
+      "name": "Christian Humphrey-Rembert",
+      "from": "",
+      "to": "",
+      "pos": "PF",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/christian-humphrey-rembert-46125423/college-356565/"
+    },
+    {
+      "source": "247",
+      "name": "Ross Candelino",
+      "from": "",
+      "to": "",
+      "pos": "SG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/ross-candelino-46137401/college-324602/"
+    },
+    {
+      "source": "247",
+      "name": "Jacob Meyer",
+      "from": "",
+      "to": "",
+      "pos": "PG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/jacob-meyer-46139593/college-356559/"
+    },
+    {
+      "source": "247",
+      "name": "Elijah Elliott",
+      "from": "",
+      "to": "",
+      "pos": "CG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/elijah-elliott-46135335/college-356558/"
+    },
+    {
+      "source": "247",
+      "name": "Pedro Santos",
+      "from": "",
+      "to": "",
+      "pos": "SG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/pedro-santos-46165713/college-356554/"
+    },
+    {
+      "source": "247",
+      "name": "Afan Trnka",
+      "from": "",
+      "to": "",
+      "pos": "CG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/afan-trnka-46165712/college-356552/"
+    },
+    {
+      "source": "247",
+      "name": "Justyn Fernandez",
+      "from": "",
+      "to": "",
+      "pos": "SF",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/justyn-fernandez-46117057/college-356549/"
+    },
+    {
+      "source": "247",
+      "name": "Mike Evbagharu",
+      "from": "",
+      "to": "",
+      "pos": "SG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/mike-evbagharu-46165710/college-356545/"
+    },
+    {
+      "source": "247",
+      "name": "Tre McKinnon",
+      "from": "",
+      "to": "",
+      "pos": "SG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/tre-mckinnon-46142798/college-356541/"
+    },
+    {
+      "source": "247",
+      "name": "Melian Martinez",
+      "from": "",
+      "to": "",
+      "pos": "C",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/melian-martinez-46098244/college-356540/"
+    },
+    {
+      "source": "247",
+      "name": "Malachi Brown",
+      "from": "",
+      "to": "",
+      "pos": "PG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/malachi-brown-46149493/college-315862/"
+    },
+    {
+      "source": "247",
+      "name": "Chase Cormier",
+      "from": "",
+      "to": "",
+      "pos": "CG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/chase-cormier-46102913/college-356538/"
+    },
+    {
+      "source": "247",
+      "name": "Ty Price",
+      "from": "",
+      "to": "",
+      "pos": "PG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/ty-price-46138457/college-356537/"
+    },
+    {
+      "source": "247",
+      "name": "Chol Machot",
+      "from": "",
+      "to": "",
+      "pos": "C",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/chol-machot-46144325/college-356536/"
     },
     {
       "source": "247",
