@@ -2214,43 +2214,90 @@
 
                             <!-- Add Player Form -->
                             <div style="background:var(--bg-secondary);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:24px;">
-                                <div style="font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--accent-primary);margin-bottom:16px;">Add Prospect — Any Player (Portal, JUCO, High School, etc.)</div>
-                                <div style="display:grid;grid-template-columns:1fr 90px 130px 1fr 140px 110px auto;gap:12px;align-items:end;">
-                                    <div>
-                                        <label style="display:block;font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-secondary);margin-bottom:5px;">Player Name</label>
-                                        <input type="text" id="pbName" placeholder="e.g. John Smith" style="width:100%;padding:9px 12px;background:var(--bg-tertiary);border:1px solid var(--border);border-radius:6px;color:var(--text-primary);font-family:'IBM Plex Mono',monospace;font-size:0.85rem;outline:none;">
+                                <!-- Mode Toggle -->
+                                <div style="display:flex;gap:0;margin-bottom:16px;border:1px solid var(--border);border-radius:6px;overflow:hidden;width:fit-content;">
+                                    <button id="pbModeBtn_search" onclick="pbSetMode('search')" style="padding:7px 18px;background:var(--accent-primary);border:none;color:#000;font-family:'IBM Plex Mono',monospace;font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;cursor:pointer;">Search Ranked List</button>
+                                    <button id="pbModeBtn_custom" onclick="pbSetMode('custom')" style="padding:7px 18px;background:transparent;border:none;color:var(--text-secondary);font-family:'IBM Plex Mono',monospace;font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;cursor:pointer;">Custom Player</button>
+                                </div>
+
+                                <!-- Search from ranked list -->
+                                <div id="pbSearchSection">
+                                    <div style="position:relative;">
+                                        <input type="text" id="pbApiSearch" placeholder="Search by player name or school..." oninput="pbSearchApiPlayers()" autocomplete="off"
+                                            style="width:100%;padding:9px 12px;background:var(--bg-tertiary);border:1px solid var(--border);border-radius:6px;color:var(--text-primary);font-family:'IBM Plex Mono',monospace;font-size:0.85rem;outline:none;box-sizing:border-box;">
+                                        <div id="pbApiResults" style="display:none;position:absolute;top:100%;left:0;right:0;background:var(--bg-secondary);border:1px solid var(--border);border-top:none;border-radius:0 0 8px 8px;z-index:500;max-height:280px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,0.4);"></div>
                                     </div>
-                                    <div>
-                                        <label style="display:block;font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-secondary);margin-bottom:5px;">Pos</label>
-                                        <input type="text" id="pbPosition" placeholder="PG, SF..." style="width:100%;padding:9px 12px;background:var(--bg-tertiary);border:1px solid var(--border);border-radius:6px;color:var(--text-primary);font-family:'IBM Plex Mono',monospace;font-size:0.85rem;outline:none;">
+                                    <div id="pbApiNoData" style="display:none;margin-top:10px;font-size:0.8rem;color:var(--text-secondary);font-family:'IBM Plex Mono',monospace;">No ranked list loaded — load your player data on the Rankings tab first.</div>
+                                    <!-- Confirm & add panel (shown after selecting a player) -->
+                                    <div id="pbApiAddPanel" style="display:none;margin-top:14px;padding:14px;background:var(--bg-tertiary);border:1px solid var(--border);border-radius:8px;">
+                                        <div id="pbApiSelectedInfo" style="margin-bottom:12px;"></div>
+                                        <div style="display:grid;grid-template-columns:110px 1fr 160px auto;gap:10px;align-items:end;">
+                                            <div>
+                                                <label style="display:block;font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-secondary);margin-bottom:5px;">Board</label>
+                                                <select id="pbApiSection" style="width:100%;padding:9px 12px;background:var(--bg-secondary);border:1px solid var(--border);border-radius:6px;color:var(--text-primary);font-family:'IBM Plex Mono',monospace;font-size:0.82rem;outline:none;">
+                                                    <option value="guards">Guards</option>
+                                                    <option value="wings">Wings</option>
+                                                    <option value="fours">4's / PF</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label style="display:block;font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-secondary);margin-bottom:5px;">Type</label>
+                                                <select id="pbApiType" style="width:100%;padding:9px 12px;background:var(--bg-secondary);border:1px solid var(--border);border-radius:6px;color:var(--text-primary);font-family:'IBM Plex Mono',monospace;font-size:0.82rem;outline:none;">
+                                                    <option value="Transfer Portal">Transfer Portal</option>
+                                                    <option value="JUCO">JUCO</option>
+                                                    <option value="High School">High School</option>
+                                                    <option value="Grad Transfer">Grad Transfer</option>
+                                                    <option value="Other">Other</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label style="display:block;font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-secondary);margin-bottom:5px;">Offer / NIL</label>
+                                                <input type="text" id="pbApiPay" placeholder="e.g. $150,000" style="width:100%;padding:9px 12px;background:var(--bg-secondary);border:1px solid var(--border);border-radius:6px;color:var(--text-primary);font-family:'IBM Plex Mono',monospace;font-size:0.85rem;outline:none;" onkeydown="if(event.key==='Enter')pbAddApiPlayer()">
+                                            </div>
+                                            <button onclick="pbAddApiPlayer()" style="padding:9px 20px;background:var(--accent-primary);border:none;border-radius:6px;color:#000;font-weight:700;font-size:0.85rem;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;white-space:nowrap;">+ Add</button>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <label style="display:block;font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-secondary);margin-bottom:5px;">Type</label>
-                                        <select id="pbType" style="width:100%;padding:9px 12px;background:var(--bg-tertiary);border:1px solid var(--border);border-radius:6px;color:var(--text-primary);font-family:'IBM Plex Mono',monospace;font-size:0.82rem;outline:none;">
-                                            <option value="Transfer Portal">Transfer Portal</option>
-                                            <option value="JUCO">JUCO</option>
-                                            <option value="High School">High School</option>
-                                            <option value="Grad Transfer">Grad Transfer</option>
-                                            <option value="Other">Other</option>
-                                        </select>
+                                </div>
+
+                                <!-- Custom player entry -->
+                                <div id="pbCustomSection" style="display:none;">
+                                    <div style="display:grid;grid-template-columns:1fr 90px 130px 1fr 140px 110px auto;gap:12px;align-items:end;">
+                                        <div>
+                                            <label style="display:block;font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-secondary);margin-bottom:5px;">Player Name</label>
+                                            <input type="text" id="pbName" placeholder="e.g. John Smith" style="width:100%;padding:9px 12px;background:var(--bg-tertiary);border:1px solid var(--border);border-radius:6px;color:var(--text-primary);font-family:'IBM Plex Mono',monospace;font-size:0.85rem;outline:none;">
+                                        </div>
+                                        <div>
+                                            <label style="display:block;font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-secondary);margin-bottom:5px;">Pos</label>
+                                            <input type="text" id="pbPosition" placeholder="PG, SF..." style="width:100%;padding:9px 12px;background:var(--bg-tertiary);border:1px solid var(--border);border-radius:6px;color:var(--text-primary);font-family:'IBM Plex Mono',monospace;font-size:0.85rem;outline:none;">
+                                        </div>
+                                        <div>
+                                            <label style="display:block;font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-secondary);margin-bottom:5px;">Type</label>
+                                            <select id="pbType" style="width:100%;padding:9px 12px;background:var(--bg-tertiary);border:1px solid var(--border);border-radius:6px;color:var(--text-primary);font-family:'IBM Plex Mono',monospace;font-size:0.82rem;outline:none;">
+                                                <option value="Transfer Portal">Transfer Portal</option>
+                                                <option value="JUCO">JUCO</option>
+                                                <option value="High School">High School</option>
+                                                <option value="Grad Transfer">Grad Transfer</option>
+                                                <option value="Other">Other</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label style="display:block;font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-secondary);margin-bottom:5px;">School / Program</label>
+                                            <input type="text" id="pbSchool" placeholder="e.g. Ohio State, Sinclair CC" style="width:100%;padding:9px 12px;background:var(--bg-tertiary);border:1px solid var(--border);border-radius:6px;color:var(--text-primary);font-family:'IBM Plex Mono',monospace;font-size:0.85rem;outline:none;">
+                                        </div>
+                                        <div>
+                                            <label style="display:block;font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-secondary);margin-bottom:5px;">Offer / NIL</label>
+                                            <input type="text" id="pbPay" placeholder="e.g. $150,000" style="width:100%;padding:9px 12px;background:var(--bg-tertiary);border:1px solid var(--border);border-radius:6px;color:var(--text-primary);font-family:'IBM Plex Mono',monospace;font-size:0.85rem;outline:none;" onkeydown="if(event.key==='Enter')addProspect()">
+                                        </div>
+                                        <div>
+                                            <label style="display:block;font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-secondary);margin-bottom:5px;">Board</label>
+                                            <select id="pbSection" style="width:100%;padding:9px 12px;background:var(--bg-tertiary);border:1px solid var(--border);border-radius:6px;color:var(--text-primary);font-family:'IBM Plex Mono',monospace;font-size:0.82rem;outline:none;">
+                                                <option value="guards">Guards</option>
+                                                <option value="wings">Wings</option>
+                                                <option value="fours">4's / PF</option>
+                                            </select>
+                                        </div>
+                                        <button onclick="addProspect()" style="padding:9px 20px;background:var(--accent-primary);border:none;border-radius:6px;color:#000;font-weight:700;font-size:0.85rem;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;white-space:nowrap;">+ Add</button>
                                     </div>
-                                    <div>
-                                        <label style="display:block;font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-secondary);margin-bottom:5px;">School / Program</label>
-                                        <input type="text" id="pbSchool" placeholder="e.g. Ohio State, Sinclair CC" style="width:100%;padding:9px 12px;background:var(--bg-tertiary);border:1px solid var(--border);border-radius:6px;color:var(--text-primary);font-family:'IBM Plex Mono',monospace;font-size:0.85rem;outline:none;">
-                                    </div>
-                                    <div>
-                                        <label style="display:block;font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-secondary);margin-bottom:5px;">Offer / NIL</label>
-                                        <input type="text" id="pbPay" placeholder="e.g. $150,000" style="width:100%;padding:9px 12px;background:var(--bg-tertiary);border:1px solid var(--border);border-radius:6px;color:var(--text-primary);font-family:'IBM Plex Mono',monospace;font-size:0.85rem;outline:none;" onkeydown="if(event.key==='Enter')addProspect()">
-                                    </div>
-                                    <div>
-                                        <label style="display:block;font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-secondary);margin-bottom:5px;">Board</label>
-                                        <select id="pbSection" style="width:100%;padding:9px 12px;background:var(--bg-tertiary);border:1px solid var(--border);border-radius:6px;color:var(--text-primary);font-family:'IBM Plex Mono',monospace;font-size:0.82rem;outline:none;">
-                                            <option value="guards">Guards</option>
-                                            <option value="wings">Wings</option>
-                                            <option value="fours">4's / PF</option>
-                                        </select>
-                                    </div>
-                                    <button onclick="addProspect()" style="padding:9px 20px;background:var(--accent-primary);border:none;border-radius:6px;color:#000;font-weight:700;font-size:0.85rem;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;white-space:nowrap;">+ Add</button>
                                 </div>
                             </div>
 
@@ -6431,6 +6478,130 @@
             if (!str) return '';
             return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
         }
+
+        // --- Add from ranked list ---
+        let pbApiSelectedPlayer = null;
+
+        function pbSetMode(mode) {
+            const isSearch = mode === 'search';
+            document.getElementById('pbSearchSection').style.display = isSearch ? '' : 'none';
+            document.getElementById('pbCustomSection').style.display = isSearch ? 'none' : '';
+            document.getElementById('pbModeBtn_search').style.background = isSearch ? 'var(--accent-primary)' : 'transparent';
+            document.getElementById('pbModeBtn_search').style.color = isSearch ? '#000' : 'var(--text-secondary)';
+            document.getElementById('pbModeBtn_custom').style.background = isSearch ? 'transparent' : 'var(--accent-primary)';
+            document.getElementById('pbModeBtn_custom').style.color = isSearch ? 'var(--text-secondary)' : '#000';
+        }
+
+        function pbSearchApiPlayers() {
+            const q = document.getElementById('pbApiSearch').value.trim().toLowerCase();
+            const resultsEl = document.getElementById('pbApiResults');
+            const noDataEl = document.getElementById('pbApiNoData');
+            const source = (typeof scoredData !== 'undefined' && scoredData.length > 0) ? scoredData : playerData;
+
+            if (!source || source.length === 0) {
+                noDataEl.style.display = '';
+                resultsEl.style.display = 'none';
+                return;
+            }
+            noDataEl.style.display = 'none';
+
+            if (!q) {
+                resultsEl.style.display = 'none';
+                return;
+            }
+
+            const matches = source.filter(p => {
+                const name = (p.Player || '').toLowerCase();
+                const team = (p.Team || '').toLowerCase();
+                return name.includes(q) || team.includes(q);
+            }).slice(0, 10);
+
+            if (matches.length === 0) {
+                resultsEl.innerHTML = '<div style="padding:12px 14px;color:var(--text-secondary);font-family:\'IBM Plex Mono\',monospace;font-size:0.82rem;">No players found.</div>';
+                resultsEl.style.display = '';
+                return;
+            }
+
+            resultsEl.innerHTML = matches.map((p, i) => {
+                const score = p.total_score ? parseFloat(p.total_score).toFixed(1) : null;
+                const pos = p.Pos || p.position_category || '';
+                const cls = p.Class || p.Yr || '';
+                return `<div onclick="pbSelectApiPlayer(${i})"
+                    style="padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px;"
+                    onmouseover="this.style.background='rgba(0,255,136,0.06)'" onmouseout="this.style.background=''">
+                    <div>
+                        <span style="font-weight:700;font-size:0.88rem;color:var(--text-primary);">${escHtml(p.Player)}</span>
+                        <span style="font-size:0.75rem;color:var(--text-secondary);font-family:'IBM Plex Mono',monospace;margin-left:8px;">${escHtml(p.Team || '')}${cls ? ' · ' + escHtml(cls) : ''}</span>
+                    </div>
+                    <div style="display:flex;gap:8px;align-items:center;flex-shrink:0;">
+                        ${pos ? '<span style="font-size:0.72rem;font-weight:700;color:var(--accent-secondary);">' + escHtml(pos) + '</span>' : ''}
+                        ${score ? '<span style="font-size:0.75rem;font-family:\'IBM Plex Mono\',monospace;color:var(--accent-primary);">' + score + '</span>' : ''}
+                    </div>
+                </div>`;
+            }).join('');
+
+            resultsEl._pbMatches = matches;
+            resultsEl.style.display = '';
+        }
+
+        function pbSelectApiPlayer(idx) {
+            const resultsEl = document.getElementById('pbApiResults');
+            const matches = resultsEl._pbMatches || [];
+            const p = matches[idx];
+            if (!p) return;
+
+            pbApiSelectedPlayer = p;
+            resultsEl.style.display = 'none';
+            document.getElementById('pbApiSearch').value = p.Player + (p.Team ? ' — ' + p.Team : '');
+
+            // Auto-select section based on position category
+            const posMap = { 'Guard': 'guards', 'Wing': 'wings', 'Forward': 'fours' };
+            const section = posMap[p.position_category] || 'guards';
+            document.getElementById('pbApiSection').value = section;
+
+            const pos = p.Pos || p.position_category || '';
+            const score = p.total_score ? parseFloat(p.total_score).toFixed(1) : null;
+            document.getElementById('pbApiSelectedInfo').innerHTML =
+                `<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                    <span style="font-weight:700;font-size:0.95rem;color:var(--text-primary);">${escHtml(p.Player)}</span>
+                    <span style="font-size:0.8rem;color:var(--text-secondary);font-family:'IBM Plex Mono',monospace;">${escHtml(p.Team || '')}</span>
+                    ${pos ? '<span style="font-size:0.75rem;font-weight:700;color:var(--accent-secondary);">' + escHtml(pos) + '</span>' : ''}
+                    ${score ? '<span style="font-size:0.78rem;font-family:\'IBM Plex Mono\',monospace;color:var(--accent-primary);">Score: ' + score + '</span>' : ''}
+                    <button onclick="pbClearApiSelection()" style="padding:2px 8px;background:transparent;border:1px solid var(--border);border-radius:4px;color:var(--text-secondary);font-size:0.72rem;cursor:pointer;">&#10005; Clear</button>
+                </div>`;
+            document.getElementById('pbApiAddPanel').style.display = '';
+            document.getElementById('pbApiPay').focus();
+        }
+
+        function pbClearApiSelection() {
+            pbApiSelectedPlayer = null;
+            document.getElementById('pbApiSearch').value = '';
+            document.getElementById('pbApiAddPanel').style.display = 'none';
+            document.getElementById('pbApiResults').style.display = 'none';
+            document.getElementById('pbApiSearch').focus();
+        }
+
+        function pbAddApiPlayer() {
+            if (!pbApiSelectedPlayer) return;
+            const p = pbApiSelectedPlayer;
+            const section = document.getElementById('pbApiSection').value;
+            const type = document.getElementById('pbApiType').value;
+            const pay = document.getElementById('pbApiPay').value.trim();
+            const pos = p.Pos || p.position_category || '';
+            pbBoard[section].push({ id: Date.now(), name: p.Player || '', pos, type, school: p.Team || '', pay, notes: [] });
+            pbSave();
+            pbClearApiSelection();
+            document.getElementById('pbApiPay').value = '';
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            const inp = document.getElementById('pbApiSearch');
+            const res = document.getElementById('pbApiResults');
+            if (res && inp && !inp.contains(e.target) && !res.contains(e.target)) {
+                res.style.display = 'none';
+            }
+        });
 
         // ── End Prospect Board ────────────────────────────────────────────────────
 
