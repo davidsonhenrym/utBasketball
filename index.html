@@ -1782,6 +1782,7 @@
                         <button class="tab" onclick="switchTab('teams')">Team Valuations</button>
                         <button class="tab" onclick="switchTab('roster')">Roster Builder</button>
                         <button class="tab" onclick="switchTab('matchup')">Matchup Simulator</button>
+                        <button class="tab" onclick="switchTab('prospect')">Prospect Board</button>
                     </div>
 
                     <div id="playersTab" class="tab-content active">
@@ -2166,6 +2167,130 @@
 
                     </div>
 
+                    <!-- Prospect Board Tab -->
+                    <div id="prospectTab" class="tab-content">
+
+                        <!-- Login Overlay -->
+                        <div id="prospectLoginOverlay" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:400px;gap:24px;">
+                            <div style="text-align:center;">
+                                <div style="font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.15em;color:var(--accent-primary);margin-bottom:8px;">Restricted Access</div>
+                                <div style="font-size:1.8rem;font-weight:900;color:var(--text-primary);">Prospect Board</div>
+                                <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:6px;font-family:'IBM Plex Mono',monospace;">Coaches only — enter credentials to continue</div>
+                            </div>
+                            <div style="background:var(--bg-secondary);border:1px solid var(--border);border-radius:12px;padding:32px;width:100%;max-width:380px;display:flex;flex-direction:column;gap:16px;">
+                                <div>
+                                    <label style="display:block;font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-secondary);margin-bottom:6px;">Your Name</label>
+                                    <input type="text" id="prospectName" placeholder="e.g. Coach Jones" style="width:100%;padding:10px 14px;background:var(--bg-tertiary);border:1px solid var(--border);border-radius:6px;color:var(--text-primary);font-family:'IBM Plex Mono',monospace;font-size:0.9rem;outline:none;">
+                                </div>
+                                <div>
+                                    <label style="display:block;font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-secondary);margin-bottom:6px;">Username</label>
+                                    <input type="text" id="prospectUser" placeholder="username" style="width:100%;padding:10px 14px;background:var(--bg-tertiary);border:1px solid var(--border);border-radius:6px;color:var(--text-primary);font-family:'IBM Plex Mono',monospace;font-size:0.9rem;outline:none;">
+                                </div>
+                                <div>
+                                    <label style="display:block;font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-secondary);margin-bottom:6px;">Password</label>
+                                    <input type="password" id="prospectPass" placeholder="password" style="width:100%;padding:10px 14px;background:var(--bg-tertiary);border:1px solid var(--border);border-radius:6px;color:var(--text-primary);font-family:'IBM Plex Mono',monospace;font-size:0.9rem;outline:none;" onkeydown="if(event.key==='Enter')prospectLogin()">
+                                </div>
+                                <div id="prospectLoginError" style="color:#ff4d4d;font-size:0.8rem;font-family:'IBM Plex Mono',monospace;display:none;">Invalid credentials or missing name.</div>
+                                <button onclick="prospectLogin()" style="padding:12px;background:var(--accent-primary);border:none;border-radius:6px;color:#000;font-weight:700;font-size:0.9rem;text-transform:uppercase;letter-spacing:0.08em;cursor:pointer;">Sign In</button>
+                            </div>
+                        </div>
+
+                        <!-- Board Content (hidden until logged in) -->
+                        <div id="prospectBoardContent" style="display:none;">
+
+                            <!-- Header -->
+                            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+                                <div>
+                                    <div style="font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--accent-primary);margin-bottom:4px;">Coaches Board</div>
+                                    <div style="font-size:1.4rem;font-weight:900;">Prospect Rankings</div>
+                                </div>
+                                <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+                                    <div id="pbCoachDisplay" style="font-size:0.8rem;font-family:'IBM Plex Mono',monospace;color:var(--text-secondary);"></div>
+                                    <div id="pbSyncStatus" style="font-size:0.75rem;font-family:'IBM Plex Mono',monospace;color:var(--text-secondary);"></div>
+                                    <button onclick="pbLoad()" title="Refresh" style="padding:6px 12px;background:transparent;border:1px solid var(--border);border-radius:6px;color:var(--text-secondary);font-size:0.78rem;font-weight:600;cursor:pointer;">&#8635; Refresh</button>
+                                    <button onclick="prospectLogout()" style="padding:8px 16px;background:transparent;border:1px solid var(--border);border-radius:6px;color:var(--text-secondary);font-size:0.8rem;font-weight:600;cursor:pointer;text-transform:uppercase;letter-spacing:0.05em;">Sign Out</button>
+                                </div>
+                            </div>
+
+                            <!-- Firebase Setup Banner -->
+                            <div id="pbSetupBanner" style="background:rgba(255,107,53,0.08);border:1px solid rgba(255,107,53,0.4);border-radius:10px;padding:20px;margin-bottom:20px;display:none;">
+                                <div style="font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#ff6b35;margin-bottom:8px;">Connect Shared Database</div>
+                                <div style="font-size:0.83rem;color:var(--text-secondary);margin-bottom:14px;line-height:1.6;">
+                                    To share the board with other coaches, connect a free Firebase Realtime Database.<br>
+                                    <strong style="color:var(--text-primary);">Setup:</strong> Go to <span style="color:#ff6b35;font-family:'IBM Plex Mono',monospace;">console.firebase.google.com</span> → New project → Build → Realtime Database → Create → Start in test mode → copy the URL (e.g. <span style="font-family:'IBM Plex Mono',monospace;color:var(--text-secondary);">https://your-project-default-rtdb.firebaseio.com</span>).
+                                </div>
+                                <div style="display:flex;gap:10px;align-items:center;">
+                                    <input type="text" id="pbFbUrlInput" placeholder="https://your-project-default-rtdb.firebaseio.com"
+                                        style="flex:1;padding:9px 12px;background:var(--bg-tertiary);border:1px solid var(--border);border-radius:6px;color:var(--text-primary);font-family:'IBM Plex Mono',monospace;font-size:0.82rem;outline:none;"
+                                        onkeydown="if(event.key==='Enter')pbSaveFirebaseUrl()">
+                                    <button onclick="pbSaveFirebaseUrl()" style="padding:9px 18px;background:#ff6b35;border:none;border-radius:6px;color:#fff;font-weight:700;font-size:0.82rem;cursor:pointer;white-space:nowrap;">Connect</button>
+                                    <button onclick="document.getElementById('pbSetupBanner').style.display='none'" style="padding:9px 14px;background:transparent;border:1px solid var(--border);border-radius:6px;color:var(--text-secondary);font-size:0.82rem;cursor:pointer;">Use Offline</button>
+                                </div>
+                            </div>
+
+                            <!-- Add Player Form -->
+                            <div style="background:var(--bg-secondary);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:24px;">
+                                <div style="font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--accent-primary);margin-bottom:16px;">Add Prospect — Any Player (Portal, JUCO, High School, etc.)</div>
+                                <div style="display:grid;grid-template-columns:1fr 100px 140px 1fr 150px auto;gap:12px;align-items:end;flex-wrap:wrap;">
+                                    <div>
+                                        <label style="display:block;font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-secondary);margin-bottom:5px;">Player Name</label>
+                                        <input type="text" id="pbName" placeholder="e.g. John Smith" style="width:100%;padding:9px 12px;background:var(--bg-tertiary);border:1px solid var(--border);border-radius:6px;color:var(--text-primary);font-family:'IBM Plex Mono',monospace;font-size:0.85rem;outline:none;">
+                                    </div>
+                                    <div>
+                                        <label style="display:block;font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-secondary);margin-bottom:5px;">Pos</label>
+                                        <input type="text" id="pbPosition" placeholder="PG, SF..." style="width:100%;padding:9px 12px;background:var(--bg-tertiary);border:1px solid var(--border);border-radius:6px;color:var(--text-primary);font-family:'IBM Plex Mono',monospace;font-size:0.85rem;outline:none;">
+                                    </div>
+                                    <div>
+                                        <label style="display:block;font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-secondary);margin-bottom:5px;">Type</label>
+                                        <select id="pbType" style="width:100%;padding:9px 12px;background:var(--bg-tertiary);border:1px solid var(--border);border-radius:6px;color:var(--text-primary);font-family:'IBM Plex Mono',monospace;font-size:0.82rem;outline:none;">
+                                            <option value="Transfer Portal">Transfer Portal</option>
+                                            <option value="JUCO">JUCO</option>
+                                            <option value="High School">High School</option>
+                                            <option value="Grad Transfer">Grad Transfer</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label style="display:block;font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-secondary);margin-bottom:5px;">School / Program</label>
+                                        <input type="text" id="pbSchool" placeholder="e.g. Ohio State, Sinclair CC" style="width:100%;padding:9px 12px;background:var(--bg-tertiary);border:1px solid var(--border);border-radius:6px;color:var(--text-primary);font-family:'IBM Plex Mono',monospace;font-size:0.85rem;outline:none;">
+                                    </div>
+                                    <div>
+                                        <label style="display:block;font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-secondary);margin-bottom:5px;">Offer / NIL</label>
+                                        <input type="text" id="pbPay" placeholder="e.g. $150,000" style="width:100%;padding:9px 12px;background:var(--bg-tertiary);border:1px solid var(--border);border-radius:6px;color:var(--text-primary);font-family:'IBM Plex Mono',monospace;font-size:0.85rem;outline:none;" onkeydown="if(event.key==='Enter')addProspect()">
+                                    </div>
+                                    <button onclick="addProspect()" style="padding:9px 20px;background:var(--accent-primary);border:none;border-radius:6px;color:#000;font-weight:700;font-size:0.85rem;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;white-space:nowrap;">+ Add</button>
+                                </div>
+                            </div>
+
+                            <!-- Board List -->
+                            <div style="background:var(--bg-secondary);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+                                <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+                                    <div style="font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--accent-primary);">Board — Drag to Reorder</div>
+                                    <div id="prospectCount" style="font-size:0.75rem;font-family:'IBM Plex Mono',monospace;color:var(--text-secondary);">0 prospects</div>
+                                </div>
+                                <div id="prospectList" style="min-height:120px;"></div>
+                            </div>
+                        </div>
+
+                    </div><!-- /#prospectTab -->
+
+                    <!-- Notes Modal -->
+                    <div id="pbNotesModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9000;align-items:center;justify-content:center;">
+                        <div style="background:var(--bg-secondary);border:1px solid var(--border);border-radius:14px;width:100%;max-width:560px;max-height:80vh;display:flex;flex-direction:column;margin:20px;">
+                            <div style="padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+                                <div id="pbNotesTitle" style="font-weight:700;font-size:1rem;"></div>
+                                <button onclick="closeProspectNotes()" style="background:transparent;border:none;color:var(--text-secondary);font-size:1.4rem;cursor:pointer;line-height:1;">&#10005;</button>
+                            </div>
+                            <div id="pbNotesThread" style="flex:1;overflow-y:auto;padding:16px 24px;display:flex;flex-direction:column;gap:0;"></div>
+                            <div style="padding:16px 24px;border-top:1px solid var(--border);display:flex;gap:10px;">
+                                <textarea id="pbNoteInput" placeholder="Add a note..." rows="2"
+                                    style="flex:1;padding:10px 12px;background:var(--bg-tertiary);border:1px solid var(--border);border-radius:6px;color:var(--text-primary);font-family:'IBM Plex Mono',monospace;font-size:0.85rem;outline:none;resize:none;line-height:1.4;"
+                                    onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();submitProspectNote();}"></textarea>
+                                <button onclick="submitProspectNote()" style="padding:10px 18px;background:var(--accent-primary);border:none;border-radius:6px;color:#000;font-weight:700;font-size:0.82rem;cursor:pointer;align-self:flex-end;">Post</button>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -2446,7 +2571,7 @@
                 bpg:       { weight: 0,  min: 0,    max: 0.5 },  // irrelevant for guards
                 spg:       { weight: 2,  min: 0,    max: 2 },  // up: steals generate transition offense
                 // Advanced — highest predictive validity
-                efg:       { weight: 12, min: 0.40, max: 0.65 }, // #1 Four Factor stat
+                efg:       { weight: 12, min: 0.40, max: 0.62 }, // #1 Four Factor stat
                 plusminus: { weight: 0,  min: -50,  max: 150 },  // too noisy
                 or_pct:    { weight: 1,  min: 0,    max: 0.05 },
                 dr_pct:    { weight: 2,  min: 0,    max: 0.05 },
@@ -2469,7 +2594,7 @@
                 ft_pct:    { weight: 8,  min: 0.50, max: 0.90 },
                 // Playmaking — wings create less than guards
                 apg:       { weight: 7,  min: 0,    max: 6 },    // down from 10: guards create more
-                topg:      { weight: 8,  min: 0,    max: 2.5 },    // down slightly
+                topg:      { weight: 8,  min: 0,    max: 3.5 },    // down slightly
                 ato:       { weight: 5,  min: 0,    max: 4 },    // down from 7
                 // Rebounding / defense — wings are connective tissue
                 orbg:      { weight: 3,  min: 0,    max: 2 },
@@ -2477,7 +2602,7 @@
                 bpg:       { weight: 2,  min: 0,    max: 0.5 },  // up: wings should contest
                 spg:       { weight: 6,  min: 0,    max: 2.5 },  // up: steals are key for wing wins
                 // Advanced — wings had too many zeros here
-                efg:       { weight: 10, min: 0.40, max: 0.55 }, // up: key efficiency stat
+                efg:       { weight: 10, min: 0.40, max: 0.65 }, // up: key efficiency stat
                 plusminus: { weight: 0,  min: -50,  max: 150 },
                 or_pct:    { weight: 1,  min: 0,    max: 0.05 },
                 dr_pct:    { weight: 3,  min: 0,    max: 0.05 }, // up
@@ -2497,18 +2622,18 @@
                 ppg:       { weight: 7,  min: 5,    max: 15 },
                 fg_pct:    { weight: 0,  min: 0.25, max: 0.60 }, // up: post efficiency matters
                 three_pct: { weight: 7,  min: 0.20, max: 0.38 }, // down: less critical for traditional bigs
-                ft_pct:    { weight: 8,  min: 0.50, max: 0.82 },
+                ft_pct:    { weight: 8,  min: 0.50, max: 0.85 },
                 // Playmaking
-                apg:       { weight: 3,  min: 0,    max: 3.5 },
+                apg:       { weight: 3,  min: 0,    max: 3 },
                 topg:      { weight: 3,  min: 0,    max: 2.5 },
                 ato:       { weight: 0,  min: 0,    max: 4 },
                 // Rebounding / rim protection — position-specific win drivers
-                orbg:      { weight: 7,  min: 0,    max: 3 },    // up: offensive boards win possessions
+                orbg:      { weight: 7,  min: 0,    max: 4 },    // up: offensive boards win possessions
                 drbg:      { weight: 7,  min: 1,    max: 5 },    // up: finishing defensive possessions
                 bpg:       { weight: 4,  min: 0,    max: 1.5 },  // UP from 2: #1 big-man defensive win stat
                 spg:       { weight: 0,  min: 0,    max: 1 },
                 // Advanced
-                efg:       { weight: 12,  min: 0.45, max: 0.65 },  // up: interior efficiency drives wins
+                efg:       { weight: 12,  min: 0.40, max: 0.65 },  // up: interior efficiency drives wins
                 plusminus: { weight: 0,  min: -50,  max: 150 },
                 or_pct:    { weight: 3,  min: 0,    max: 0.11 },
                 dr_pct:    { weight: 3,  min: 0,    max: 0.15 },
@@ -3474,6 +3599,9 @@
                 document.querySelector('.tab:nth-child(4)').classList.add('active');
                 document.getElementById('matchupTab').classList.add('active');
                 populateMatchupTeamSelects();
+            } else if (tab === 'prospect') {
+                document.querySelector('.tab:nth-child(5)').classList.add('active');
+                document.getElementById('prospectTab').classList.add('active');
             }
         }
 
@@ -5977,6 +6105,276 @@
             }).join('');
         }
         // ── End Game Slate ────────────────────────────────────────────────────────
+
+        // ── Prospect Board ────────────────────────────────────────────────────────
+
+        let pbLoggedIn = false;
+        let pbCoachName = '';
+        let pbFirebaseUrl = localStorage.getItem('utmbb_fb_url') || '';
+        let prospectPlayers = [];
+        let pbDragSrc = null;
+        let pbSyncInterval = null;
+        let pbOpenNotesId = null;
+
+        // --- Login / Logout ---
+        function prospectLogin() {
+            const user = document.getElementById('prospectUser').value.trim();
+            const pass = document.getElementById('prospectPass').value;
+            const name = document.getElementById('prospectName').value.trim();
+            if (user === 'utmbb' && pass === 'portal' && name) {
+                pbLoggedIn = true;
+                pbCoachName = name;
+                document.getElementById('prospectLoginOverlay').style.display = 'none';
+                document.getElementById('prospectBoardContent').style.display = 'block';
+                document.getElementById('pbCoachDisplay').textContent = 'Signed in as ' + name;
+                pbInitBoard();
+            } else {
+                document.getElementById('prospectLoginError').style.display = 'block';
+            }
+        }
+
+        function prospectLogout() {
+            pbLoggedIn = false;
+            pbCoachName = '';
+            if (pbSyncInterval) { clearInterval(pbSyncInterval); pbSyncInterval = null; }
+            document.getElementById('prospectLoginOverlay').style.display = 'flex';
+            document.getElementById('prospectBoardContent').style.display = 'none';
+            document.getElementById('prospectUser').value = '';
+            document.getElementById('prospectPass').value = '';
+            document.getElementById('prospectName').value = '';
+            document.getElementById('prospectLoginError').style.display = 'none';
+            closeProspectNotes();
+        }
+
+        // --- Firebase setup ---
+        function pbInitBoard() {
+            if (pbFirebaseUrl) {
+                document.getElementById('pbSetupBanner').style.display = 'none';
+                pbLoad();
+                pbSyncInterval = setInterval(pbLoad, 30000);
+            } else {
+                document.getElementById('pbSetupBanner').style.display = 'block';
+                renderProspectBoard();
+            }
+        }
+
+        function pbSaveFirebaseUrl() {
+            const url = document.getElementById('pbFbUrlInput').value.trim().replace(/\/$/, '');
+            if (!url) return;
+            pbFirebaseUrl = url;
+            localStorage.setItem('utmbb_fb_url', url);
+            document.getElementById('pbSetupBanner').style.display = 'none';
+            pbLoad();
+            if (pbSyncInterval) clearInterval(pbSyncInterval);
+            pbSyncInterval = setInterval(pbLoad, 30000);
+        }
+
+        // --- Firebase read/write ---
+        async function pbLoad() {
+            if (!pbFirebaseUrl) return;
+            try {
+                document.getElementById('pbSyncStatus').textContent = 'Syncing...';
+                const res = await fetch(pbFirebaseUrl + '/utmbb/prospects.json');
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                const data = await res.json();
+                prospectPlayers = Array.isArray(data) ? data : [];
+                const t = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+                document.getElementById('pbSyncStatus').textContent = 'Synced ' + t;
+                // Refresh open notes modal if it's open
+                if (pbOpenNotesId) {
+                    const p = prospectPlayers.find(p => p.id === pbOpenNotesId);
+                    if (p) renderNotesThread(p);
+                }
+                renderProspectBoard();
+            } catch(e) {
+                document.getElementById('pbSyncStatus').textContent = 'Sync error — check Firebase URL';
+            }
+        }
+
+        async function pbSave() {
+            renderProspectBoard();
+            if (!pbFirebaseUrl) return;
+            try {
+                const res = await fetch(pbFirebaseUrl + '/utmbb/prospects.json', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(prospectPlayers)
+                });
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                const t = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+                document.getElementById('pbSyncStatus').textContent = 'Saved ' + t;
+            } catch(e) {
+                document.getElementById('pbSyncStatus').textContent = 'Save error — changes may not have synced';
+            }
+        }
+
+        // --- Prospect CRUD ---
+        function addProspect() {
+            const name   = document.getElementById('pbName').value.trim();
+            const pos    = document.getElementById('pbPosition').value.trim();
+            const type   = document.getElementById('pbType').value;
+            const school = document.getElementById('pbSchool').value.trim();
+            const pay    = document.getElementById('pbPay').value.trim();
+            if (!name) { document.getElementById('pbName').focus(); return; }
+            prospectPlayers.push({ id: Date.now(), name, pos, type, school, pay, notes: [] });
+            pbSave();
+            document.getElementById('pbName').value = '';
+            document.getElementById('pbPosition').value = '';
+            document.getElementById('pbSchool').value = '';
+            document.getElementById('pbPay').value = '';
+        }
+
+        function removeProspect(id) {
+            if (!confirm('Remove this prospect from the board?')) return;
+            prospectPlayers = prospectPlayers.filter(p => p.id !== id);
+            pbSave();
+        }
+
+        function updateProspectPay(id, val) {
+            const p = prospectPlayers.find(p => p.id === id);
+            if (p) { p.pay = val; pbSave(); }
+        }
+
+        // --- Notes ---
+        function openProspectNotes(id) {
+            pbOpenNotesId = id;
+            const p = prospectPlayers.find(p => p.id === id);
+            if (!p) return;
+            document.getElementById('pbNotesTitle').textContent = p.name + ' — Notes';
+            renderNotesThread(p);
+            document.getElementById('pbNotesModal').style.display = 'flex';
+            setTimeout(() => document.getElementById('pbNoteInput').focus(), 100);
+        }
+
+        function closeProspectNotes() {
+            document.getElementById('pbNotesModal').style.display = 'none';
+            pbOpenNotesId = null;
+            document.getElementById('pbNoteInput').value = '';
+        }
+
+        function renderNotesThread(p) {
+            const notes = Array.isArray(p.notes) ? p.notes : [];
+            const thread = document.getElementById('pbNotesThread');
+            if (notes.length === 0) {
+                thread.innerHTML = '<div style="color:var(--text-secondary);font-family:\'IBM Plex Mono\',monospace;font-size:0.82rem;text-align:center;padding:30px 0;">No notes yet. Add the first one below.</div>';
+                return;
+            }
+            thread.innerHTML = notes.map(n => `
+                <div style="background:var(--bg-tertiary);border-radius:8px;padding:12px 14px;margin-bottom:10px;">
+                    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;gap:10px;">
+                        <span style="font-size:0.78rem;font-weight:700;color:var(--accent-primary);white-space:nowrap;">${escHtml(n.coach)}</span>
+                        <span style="font-size:0.7rem;font-family:'IBM Plex Mono',monospace;color:var(--text-secondary);white-space:nowrap;">${new Date(n.ts).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) + ' ' + new Date(n.ts).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span>
+                    </div>
+                    <div style="font-size:0.88rem;line-height:1.55;white-space:pre-wrap;color:var(--text-primary);">${escHtml(n.text)}</div>
+                </div>
+            `).join('');
+            thread.scrollTop = thread.scrollHeight;
+        }
+
+        function submitProspectNote() {
+            const text = document.getElementById('pbNoteInput').value.trim();
+            if (!text || !pbOpenNotesId) return;
+            const p = prospectPlayers.find(p => p.id === pbOpenNotesId);
+            if (!p) return;
+            if (!Array.isArray(p.notes)) p.notes = [];
+            p.notes.push({ coach: pbCoachName, text, ts: Date.now() });
+            pbSave();
+            renderNotesThread(p);
+            document.getElementById('pbNoteInput').value = '';
+        }
+
+        // --- Render board ---
+        function renderProspectBoard() {
+            const list  = document.getElementById('prospectList');
+            const count = document.getElementById('prospectCount');
+            if (!list) return;
+            count.textContent = prospectPlayers.length + ' prospect' + (prospectPlayers.length !== 1 ? 's' : '');
+
+            if (prospectPlayers.length === 0) {
+                list.innerHTML = '<div style="padding:60px;text-align:center;color:var(--text-secondary);font-family:\'IBM Plex Mono\',monospace;font-size:0.85rem;">No prospects added yet. Use the form above to add any player — portal, JUCO, high school, etc.</div>';
+                return;
+            }
+
+            const typeColors = {
+                'Transfer Portal': '#00d4ff',
+                'JUCO':            '#ff6b35',
+                'High School':     '#00ff88',
+                'Grad Transfer':   '#c084fc',
+                'Other':           '#8b92a8'
+            };
+
+            list.innerHTML = prospectPlayers.map((p, i) => {
+                const noteCount = Array.isArray(p.notes) ? p.notes.length : 0;
+                const tColor = typeColors[p.type] || 'var(--text-secondary)';
+                const hasNotes = noteCount > 0;
+                return `
+                <div class="pb-row" draggable="true" data-id="${p.id}" data-idx="${i}"
+                     style="display:grid;grid-template-columns:36px 34px 1fr 130px 155px 110px 36px;align-items:center;gap:12px;padding:13px 20px;border-bottom:1px solid var(--border);background:var(--bg-secondary);transition:background 0.15s;">
+                    <div class="pb-drag-handle" style="color:var(--text-secondary);font-size:1.1rem;cursor:grab;text-align:center;user-select:none;" title="Drag to reorder">&#8661;</div>
+                    <div style="font-family:'IBM Plex Mono',monospace;font-size:0.82rem;font-weight:700;color:var(--accent-primary);text-align:center;">#${i+1}</div>
+                    <div>
+                        <div style="font-weight:700;font-size:0.95rem;">${escHtml(p.name)}</div>
+                        <div style="font-size:0.75rem;color:var(--text-secondary);font-family:'IBM Plex Mono',monospace;margin-top:2px;">
+                            ${p.pos ? '<span style="color:var(--accent-secondary);">' + escHtml(p.pos) + '</span>' + (p.school ? ' · ' : '') : ''}${escHtml(p.school)}
+                            ${p.type ? ' · <span style="color:' + tColor + ';">' + escHtml(p.type) + '</span>' : ''}
+                        </div>
+                    </div>
+                    <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:${tColor};">${escHtml(p.type) || '—'}</div>
+                    <div>
+                        <input type="text" value="${escHtml(p.pay)}" placeholder="Offer / NIL"
+                            onchange="updateProspectPay(${p.id}, this.value)"
+                            style="width:100%;padding:6px 10px;background:var(--bg-tertiary);border:1px solid var(--border);border-radius:5px;color:var(--accent-primary);font-family:'IBM Plex Mono',monospace;font-size:0.82rem;outline:none;font-weight:600;">
+                    </div>
+                    <button onclick="openProspectNotes(${p.id})"
+                        style="padding:5px 10px;background:${hasNotes?'rgba(0,255,136,0.08)':'var(--bg-tertiary)'};border:1px solid ${hasNotes?'var(--accent-primary)':'var(--border)'};border-radius:5px;color:${hasNotes?'var(--accent-primary)':'var(--text-secondary)'};font-size:0.75rem;font-family:'IBM Plex Mono',monospace;cursor:pointer;white-space:nowrap;text-align:center;">
+                        ${hasNotes ? noteCount + ' note' + (noteCount!==1?'s':'') : '+ Note'}
+                    </button>
+                    <button onclick="removeProspect(${p.id})" title="Remove"
+                        style="background:transparent;border:1px solid var(--border);border-radius:5px;color:var(--text-secondary);font-size:0.9rem;cursor:pointer;padding:4px 8px;line-height:1;">&#10005;</button>
+                </div>`;
+            }).join('');
+
+            // Drag-and-drop
+            list.querySelectorAll('.pb-row').forEach(row => {
+                row.addEventListener('dragstart', e => {
+                    pbDragSrc = row;
+                    e.dataTransfer.effectAllowed = 'move';
+                    setTimeout(() => { row.style.opacity = '0.4'; }, 0);
+                });
+                row.addEventListener('dragend', () => {
+                    row.style.opacity = '';
+                    list.querySelectorAll('.pb-row').forEach(r => r.style.background = '');
+                });
+                row.addEventListener('dragover', e => {
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = 'move';
+                    if (row !== pbDragSrc) row.style.background = 'rgba(0,255,136,0.06)';
+                });
+                row.addEventListener('dragleave', () => { row.style.background = ''; });
+                row.addEventListener('drop', e => {
+                    e.preventDefault();
+                    if (pbDragSrc && pbDragSrc !== row) {
+                        const fromIdx = parseInt(pbDragSrc.dataset.idx);
+                        const toIdx   = parseInt(row.dataset.idx);
+                        const moved = prospectPlayers.splice(fromIdx, 1)[0];
+                        prospectPlayers.splice(toIdx, 0, moved);
+                        pbSave();
+                    }
+                });
+            });
+        }
+
+        // Close notes modal on backdrop click
+        document.getElementById('pbNotesModal').addEventListener('click', function(e) {
+            if (e.target === this) closeProspectNotes();
+        });
+
+        function escHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        }
+
+        // ── End Prospect Board ────────────────────────────────────────────────────
 
         // Initialize on page load — weights/min/max are editable during the session
         // but always reset to POSITION_DEFAULTS on refresh/reopen
