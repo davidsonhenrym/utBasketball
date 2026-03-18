@@ -2215,7 +2215,7 @@
                             <!-- Add Player Form -->
                             <div style="background:var(--bg-secondary);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:24px;">
                                 <div style="font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--accent-primary);margin-bottom:16px;">Add Prospect — Any Player (Portal, JUCO, High School, etc.)</div>
-                                <div style="display:grid;grid-template-columns:1fr 100px 140px 1fr 150px auto;gap:12px;align-items:end;flex-wrap:wrap;">
+                                <div style="display:grid;grid-template-columns:1fr 90px 130px 1fr 140px 110px auto;gap:12px;align-items:end;">
                                     <div>
                                         <label style="display:block;font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-secondary);margin-bottom:5px;">Player Name</label>
                                         <input type="text" id="pbName" placeholder="e.g. John Smith" style="width:100%;padding:9px 12px;background:var(--bg-tertiary);border:1px solid var(--border);border-radius:6px;color:var(--text-primary);font-family:'IBM Plex Mono',monospace;font-size:0.85rem;outline:none;">
@@ -2242,17 +2242,63 @@
                                         <label style="display:block;font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-secondary);margin-bottom:5px;">Offer / NIL</label>
                                         <input type="text" id="pbPay" placeholder="e.g. $150,000" style="width:100%;padding:9px 12px;background:var(--bg-tertiary);border:1px solid var(--border);border-radius:6px;color:var(--text-primary);font-family:'IBM Plex Mono',monospace;font-size:0.85rem;outline:none;" onkeydown="if(event.key==='Enter')addProspect()">
                                     </div>
+                                    <div>
+                                        <label style="display:block;font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-secondary);margin-bottom:5px;">Board</label>
+                                        <select id="pbSection" style="width:100%;padding:9px 12px;background:var(--bg-tertiary);border:1px solid var(--border);border-radius:6px;color:var(--text-primary);font-family:'IBM Plex Mono',monospace;font-size:0.82rem;outline:none;">
+                                            <option value="guards">Guards</option>
+                                            <option value="wings">Wings</option>
+                                            <option value="fours">4's / PF</option>
+                                        </select>
+                                    </div>
                                     <button onclick="addProspect()" style="padding:9px 20px;background:var(--accent-primary);border:none;border-radius:6px;color:#000;font-weight:700;font-size:0.85rem;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;white-space:nowrap;">+ Add</button>
                                 </div>
                             </div>
 
-                            <!-- Board List -->
-                            <div style="background:var(--bg-secondary);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
-                                <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
-                                    <div style="font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--accent-primary);">Board — Drag to Reorder</div>
-                                    <div id="prospectCount" style="font-size:0.75rem;font-family:'IBM Plex Mono',monospace;color:var(--text-secondary);">0 prospects</div>
+                            <!-- Search Bar -->
+                            <div style="margin-bottom:20px;">
+                                <input type="text" id="pbSearch" placeholder="&#128269; Search prospects by name, school, or position..." oninput="renderProspectBoard()" style="width:100%;padding:10px 14px;background:var(--bg-secondary);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-family:'IBM Plex Mono',monospace;font-size:0.85rem;outline:none;box-sizing:border-box;">
+                            </div>
+
+                            <!-- Guards Section -->
+                            <div style="margin-bottom:20px;">
+                                <div style="background:var(--bg-secondary);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+                                    <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+                                        <div>
+                                            <div style="font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#00d4ff;">Guards</div>
+                                            <div style="font-size:0.7rem;color:var(--text-secondary);font-family:'IBM Plex Mono',monospace;margin-top:2px;">Targeting 2 — drag to rank</div>
+                                        </div>
+                                        <div id="guardsCount" style="font-size:0.75rem;font-family:'IBM Plex Mono',monospace;color:var(--text-secondary);">0 prospects</div>
+                                    </div>
+                                    <div id="guardsList" style="min-height:80px;"></div>
                                 </div>
-                                <div id="prospectList" style="min-height:120px;"></div>
+                            </div>
+
+                            <!-- Wings Section -->
+                            <div style="margin-bottom:20px;">
+                                <div style="background:var(--bg-secondary);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+                                    <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+                                        <div>
+                                            <div style="font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#ff6b35;">Wings</div>
+                                            <div style="font-size:0.7rem;color:var(--text-secondary);font-family:'IBM Plex Mono',monospace;margin-top:2px;">Drag to rank</div>
+                                        </div>
+                                        <div id="wingsCount" style="font-size:0.75rem;font-family:'IBM Plex Mono',monospace;color:var(--text-secondary);">0 prospects</div>
+                                    </div>
+                                    <div id="wingsList" style="min-height:80px;"></div>
+                                </div>
+                            </div>
+
+                            <!-- 4's Section -->
+                            <div style="margin-bottom:20px;">
+                                <div style="background:var(--bg-secondary);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+                                    <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+                                        <div>
+                                            <div style="font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#c084fc;">4's / Power Forwards</div>
+                                            <div style="font-size:0.7rem;color:var(--text-secondary);font-family:'IBM Plex Mono',monospace;margin-top:2px;">Drag to rank</div>
+                                        </div>
+                                        <div id="foursCount" style="font-size:0.75rem;font-family:'IBM Plex Mono',monospace;color:var(--text-secondary);">0 prospects</div>
+                                    </div>
+                                    <div id="foursList" style="min-height:80px;"></div>
+                                </div>
                             </div>
                         </div>
 
@@ -6095,10 +6141,20 @@
         let pbLoggedIn = false;
         let pbCoachName = '';
         let pbFirebaseUrl = 'https://portal-database-e0a03-default-rtdb.firebaseio.com';
-        let prospectPlayers = [];
+        let pbBoard = { guards: [], wings: [], fours: [] };
         let pbDragSrc = null;
+        let pbDragSection = null;
         let pbSyncInterval = null;
         let pbOpenNotesId = null;
+
+        // Helper: find player across all sections
+        function pbFindPlayer(id) {
+            for (const sec of ['guards', 'wings', 'fours']) {
+                const p = pbBoard[sec].find(p => p.id === id);
+                if (p) return { player: p, section: sec };
+            }
+            return null;
+        }
 
         // --- Login / Logout ---
         function prospectLogin() {
@@ -6141,20 +6197,28 @@
             if (!pbFirebaseUrl) return;
             try {
                 document.getElementById('pbSyncStatus').textContent = 'Syncing...';
-                const res = await fetch(pbFirebaseUrl + '/utmbb/prospects.json');
+                const res = await fetch(pbFirebaseUrl + '/utmbb/board.json');
                 if (!res.ok) throw new Error('HTTP ' + res.status);
                 const data = await res.json();
-                prospectPlayers = Array.isArray(data) ? data : [];
+                if (data && typeof data === 'object' && !Array.isArray(data)) {
+                    pbBoard = {
+                        guards: Array.isArray(data.guards) ? data.guards : [],
+                        wings:  Array.isArray(data.wings)  ? data.wings  : [],
+                        fours:  Array.isArray(data.fours)  ? data.fours  : []
+                    };
+                } else {
+                    pbBoard = { guards: [], wings: [], fours: [] };
+                }
                 const t = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
                 document.getElementById('pbSyncStatus').textContent = 'Synced ' + t;
-                // Refresh open notes modal if it's open
                 if (pbOpenNotesId) {
-                    const p = prospectPlayers.find(p => p.id === pbOpenNotesId);
-                    if (p) renderNotesThread(p);
+                    const found = pbFindPlayer(pbOpenNotesId);
+                    if (found) renderNotesThread(found.player);
                 }
                 renderProspectBoard();
             } catch(e) {
-                document.getElementById('pbSyncStatus').textContent = 'Sync error — check Firebase URL';
+                document.getElementById('pbSyncStatus').textContent = 'Sync error: ' + e.message;
+                console.error('pbLoad error:', e);
             }
         }
 
@@ -6162,10 +6226,10 @@
             renderProspectBoard();
             if (!pbFirebaseUrl) return;
             try {
-                const res = await fetch(pbFirebaseUrl + '/utmbb/prospects.json', {
+                const res = await fetch(pbFirebaseUrl + '/utmbb/board.json', {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(prospectPlayers)
+                    body: JSON.stringify(pbBoard)
                 });
                 if (!res.ok) throw new Error('HTTP ' + res.status);
                 const t = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
@@ -6177,13 +6241,14 @@
 
         // --- Prospect CRUD ---
         function addProspect() {
-            const name   = document.getElementById('pbName').value.trim();
-            const pos    = document.getElementById('pbPosition').value.trim();
-            const type   = document.getElementById('pbType').value;
-            const school = document.getElementById('pbSchool').value.trim();
-            const pay    = document.getElementById('pbPay').value.trim();
+            const name    = document.getElementById('pbName').value.trim();
+            const pos     = document.getElementById('pbPosition').value.trim();
+            const type    = document.getElementById('pbType').value;
+            const school  = document.getElementById('pbSchool').value.trim();
+            const pay     = document.getElementById('pbPay').value.trim();
+            const section = document.getElementById('pbSection').value;
             if (!name) { document.getElementById('pbName').focus(); return; }
-            prospectPlayers.push({ id: Date.now(), name, pos, type, school, pay, notes: [] });
+            pbBoard[section].push({ id: Date.now(), name, pos, type, school, pay, notes: [] });
             pbSave();
             document.getElementById('pbName').value = '';
             document.getElementById('pbPosition').value = '';
@@ -6193,22 +6258,24 @@
 
         function removeProspect(id) {
             if (!confirm('Remove this prospect from the board?')) return;
-            prospectPlayers = prospectPlayers.filter(p => p.id !== id);
+            for (const sec of ['guards', 'wings', 'fours']) {
+                pbBoard[sec] = pbBoard[sec].filter(p => p.id !== id);
+            }
             pbSave();
         }
 
         function updateProspectPay(id, val) {
-            const p = prospectPlayers.find(p => p.id === id);
-            if (p) { p.pay = val; pbSave(); }
+            const found = pbFindPlayer(id);
+            if (found) { found.player.pay = val; pbSave(); }
         }
 
         // --- Notes ---
         function openProspectNotes(id) {
             pbOpenNotesId = id;
-            const p = prospectPlayers.find(p => p.id === id);
-            if (!p) return;
-            document.getElementById('pbNotesTitle').textContent = p.name + ' — Notes';
-            renderNotesThread(p);
+            const found = pbFindPlayer(id);
+            if (!found) return;
+            document.getElementById('pbNotesTitle').textContent = found.player.name + ' — Notes';
+            renderNotesThread(found.player);
             document.getElementById('pbNotesModal').style.display = 'flex';
             setTimeout(() => document.getElementById('pbNoteInput').focus(), 100);
         }
@@ -6241,26 +6308,18 @@
         function submitProspectNote() {
             const text = document.getElementById('pbNoteInput').value.trim();
             if (!text || !pbOpenNotesId) return;
-            const p = prospectPlayers.find(p => p.id === pbOpenNotesId);
-            if (!p) return;
-            if (!Array.isArray(p.notes)) p.notes = [];
-            p.notes.push({ coach: pbCoachName, text, ts: Date.now() });
+            const found = pbFindPlayer(pbOpenNotesId);
+            if (!found) return;
+            if (!Array.isArray(found.player.notes)) found.player.notes = [];
+            found.player.notes.push({ coach: pbCoachName, text, ts: Date.now() });
             pbSave();
-            renderNotesThread(p);
+            renderNotesThread(found.player);
             document.getElementById('pbNoteInput').value = '';
         }
 
         // --- Render board ---
         function renderProspectBoard() {
-            const list  = document.getElementById('prospectList');
-            const count = document.getElementById('prospectCount');
-            if (!list) return;
-            count.textContent = prospectPlayers.length + ' prospect' + (prospectPlayers.length !== 1 ? 's' : '');
-
-            if (prospectPlayers.length === 0) {
-                list.innerHTML = '<div style="padding:60px;text-align:center;color:var(--text-secondary);font-family:\'IBM Plex Mono\',monospace;font-size:0.85rem;">No prospects added yet. Use the form above to add any player — portal, JUCO, high school, etc.</div>';
-                return;
-            }
+            const search = (document.getElementById('pbSearch') || {value:''}).value.toLowerCase().trim();
 
             const typeColors = {
                 'Transfer Portal': '#00d4ff',
@@ -6270,65 +6329,97 @@
                 'Other':           '#8b92a8'
             };
 
-            list.innerHTML = prospectPlayers.map((p, i) => {
-                const noteCount = Array.isArray(p.notes) ? p.notes.length : 0;
-                const tColor = typeColors[p.type] || 'var(--text-secondary)';
-                const hasNotes = noteCount > 0;
-                return `
-                <div class="pb-row" draggable="true" data-id="${p.id}" data-idx="${i}"
-                     style="display:grid;grid-template-columns:36px 34px 1fr 130px 155px 110px 36px;align-items:center;gap:12px;padding:13px 20px;border-bottom:1px solid var(--border);background:var(--bg-secondary);transition:background 0.15s;">
-                    <div class="pb-drag-handle" style="color:var(--text-secondary);font-size:1.1rem;cursor:grab;text-align:center;user-select:none;" title="Drag to reorder">&#8661;</div>
-                    <div style="font-family:'IBM Plex Mono',monospace;font-size:0.82rem;font-weight:700;color:var(--accent-primary);text-align:center;">#${i+1}</div>
-                    <div>
-                        <div style="font-weight:700;font-size:0.95rem;">${escHtml(p.name)}</div>
-                        <div style="font-size:0.75rem;color:var(--text-secondary);font-family:'IBM Plex Mono',monospace;margin-top:2px;">
-                            ${p.pos ? '<span style="color:var(--accent-secondary);">' + escHtml(p.pos) + '</span>' + (p.school ? ' · ' : '') : ''}${escHtml(p.school)}
-                            ${p.type ? ' · <span style="color:' + tColor + ';">' + escHtml(p.type) + '</span>' : ''}
-                        </div>
-                    </div>
-                    <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:${tColor};">${escHtml(p.type) || '—'}</div>
-                    <div>
-                        <input type="text" value="${escHtml(p.pay)}" placeholder="Offer / NIL"
-                            onchange="updateProspectPay(${p.id}, this.value)"
-                            style="width:100%;padding:6px 10px;background:var(--bg-tertiary);border:1px solid var(--border);border-radius:5px;color:var(--accent-primary);font-family:'IBM Plex Mono',monospace;font-size:0.82rem;outline:none;font-weight:600;">
-                    </div>
-                    <button onclick="openProspectNotes(${p.id})"
-                        style="padding:5px 10px;background:${hasNotes?'rgba(0,255,136,0.08)':'var(--bg-tertiary)'};border:1px solid ${hasNotes?'var(--accent-primary)':'var(--border)'};border-radius:5px;color:${hasNotes?'var(--accent-primary)':'var(--text-secondary)'};font-size:0.75rem;font-family:'IBM Plex Mono',monospace;cursor:pointer;white-space:nowrap;text-align:center;">
-                        ${hasNotes ? noteCount + ' note' + (noteCount!==1?'s':'') : '+ Note'}
-                    </button>
-                    <button onclick="removeProspect(${p.id})" title="Remove"
-                        style="background:transparent;border:1px solid var(--border);border-radius:5px;color:var(--text-secondary);font-size:0.9rem;cursor:pointer;padding:4px 8px;line-height:1;">&#10005;</button>
-                </div>`;
-            }).join('');
+            function renderSection(sectionKey, listId, countId, sectionColor) {
+                const list    = document.getElementById(listId);
+                const countEl = document.getElementById(countId);
+                if (!list) return;
 
-            // Drag-and-drop
-            list.querySelectorAll('.pb-row').forEach(row => {
-                row.addEventListener('dragstart', e => {
-                    pbDragSrc = row;
-                    e.dataTransfer.effectAllowed = 'move';
-                    setTimeout(() => { row.style.opacity = '0.4'; }, 0);
-                });
-                row.addEventListener('dragend', () => {
-                    row.style.opacity = '';
-                    list.querySelectorAll('.pb-row').forEach(r => r.style.background = '');
-                });
-                row.addEventListener('dragover', e => {
-                    e.preventDefault();
-                    e.dataTransfer.dropEffect = 'move';
-                    if (row !== pbDragSrc) row.style.background = 'rgba(0,255,136,0.06)';
-                });
-                row.addEventListener('dragleave', () => { row.style.background = ''; });
-                row.addEventListener('drop', e => {
-                    e.preventDefault();
-                    if (pbDragSrc && pbDragSrc !== row) {
-                        const fromIdx = parseInt(pbDragSrc.dataset.idx);
-                        const toIdx   = parseInt(row.dataset.idx);
-                        const moved = prospectPlayers.splice(fromIdx, 1)[0];
-                        prospectPlayers.splice(toIdx, 0, moved);
-                        pbSave();
-                    }
-                });
-            });
+                const players  = pbBoard[sectionKey] || [];
+                const filtered = search
+                    ? players.filter(p =>
+                        (p.name   || '').toLowerCase().includes(search) ||
+                        (p.school || '').toLowerCase().includes(search) ||
+                        (p.pos    || '').toLowerCase().includes(search))
+                    : players;
+
+                countEl.textContent = players.length + ' prospect' + (players.length !== 1 ? 's' : '');
+
+                if (filtered.length === 0) {
+                    const msg = search
+                        ? 'No prospects match your search.'
+                        : 'No prospects yet — add one using the form above.';
+                    list.innerHTML = '<div style="padding:30px;text-align:center;color:var(--text-secondary);font-family:\'IBM Plex Mono\',monospace;font-size:0.82rem;">' + msg + '</div>';
+                    return;
+                }
+
+                list.innerHTML = filtered.map(p => {
+                    const realIdx   = players.indexOf(p);
+                    const noteCount = Array.isArray(p.notes) ? p.notes.length : 0;
+                    const tColor    = typeColors[p.type] || 'var(--text-secondary)';
+                    const hasNotes  = noteCount > 0;
+                    return `
+                    <div class="pb-row" draggable="${!search}" data-id="${p.id}" data-idx="${realIdx}" data-section="${sectionKey}"
+                         style="display:grid;grid-template-columns:36px 34px 1fr 130px 155px 110px 36px;align-items:center;gap:12px;padding:13px 20px;border-bottom:1px solid var(--border);background:var(--bg-secondary);transition:background 0.15s;">
+                        <div class="pb-drag-handle" style="color:var(--text-secondary);font-size:1.1rem;cursor:${search?'default':'grab'};text-align:center;user-select:none;opacity:${search?'0.3':'1'};" title="${search?'Clear search to reorder':'Drag to reorder'}">&#8661;</div>
+                        <div style="font-family:'IBM Plex Mono',monospace;font-size:0.82rem;font-weight:700;color:${sectionColor};text-align:center;">#${realIdx+1}</div>
+                        <div>
+                            <div style="font-weight:700;font-size:0.95rem;">${escHtml(p.name)}</div>
+                            <div style="font-size:0.75rem;color:var(--text-secondary);font-family:'IBM Plex Mono',monospace;margin-top:2px;">
+                                ${p.pos ? '<span style="color:var(--accent-secondary);">' + escHtml(p.pos) + '</span>' + (p.school ? ' · ' : '') : ''}${escHtml(p.school)}
+                                ${p.type ? ' · <span style="color:' + tColor + ';">' + escHtml(p.type) + '</span>' : ''}
+                            </div>
+                        </div>
+                        <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:${tColor};">${escHtml(p.type) || '—'}</div>
+                        <div>
+                            <input type="text" value="${escHtml(p.pay)}" placeholder="Offer / NIL"
+                                onchange="updateProspectPay(${p.id}, this.value)"
+                                style="width:100%;padding:6px 10px;background:var(--bg-tertiary);border:1px solid var(--border);border-radius:5px;color:var(--accent-primary);font-family:'IBM Plex Mono',monospace;font-size:0.82rem;outline:none;font-weight:600;">
+                        </div>
+                        <button onclick="openProspectNotes(${p.id})"
+                            style="padding:5px 10px;background:${hasNotes?'rgba(0,255,136,0.08)':'var(--bg-tertiary)'};border:1px solid ${hasNotes?'var(--accent-primary)':'var(--border)'};border-radius:5px;color:${hasNotes?'var(--accent-primary)':'var(--text-secondary)'};font-size:0.75rem;font-family:'IBM Plex Mono',monospace;cursor:pointer;white-space:nowrap;text-align:center;">
+                            ${hasNotes ? noteCount + ' note' + (noteCount!==1?'s':'') : '+ Note'}
+                        </button>
+                        <button onclick="removeProspect(${p.id})" title="Remove"
+                            style="background:transparent;border:1px solid var(--border);border-radius:5px;color:var(--text-secondary);font-size:0.9rem;cursor:pointer;padding:4px 8px;line-height:1;">&#10005;</button>
+                    </div>`;
+                }).join('');
+
+                // Drag-and-drop (disabled while searching)
+                if (!search) {
+                    list.querySelectorAll('.pb-row').forEach(row => {
+                        row.addEventListener('dragstart', e => {
+                            pbDragSrc = row;
+                            pbDragSection = sectionKey;
+                            e.dataTransfer.effectAllowed = 'move';
+                            setTimeout(() => { row.style.opacity = '0.4'; }, 0);
+                        });
+                        row.addEventListener('dragend', () => {
+                            row.style.opacity = '';
+                            list.querySelectorAll('.pb-row').forEach(r => r.style.background = '');
+                        });
+                        row.addEventListener('dragover', e => {
+                            e.preventDefault();
+                            e.dataTransfer.dropEffect = 'move';
+                            if (row !== pbDragSrc) row.style.background = 'rgba(0,255,136,0.06)';
+                        });
+                        row.addEventListener('dragleave', () => { row.style.background = ''; });
+                        row.addEventListener('drop', e => {
+                            e.preventDefault();
+                            if (pbDragSrc && pbDragSrc !== row && pbDragSection === sectionKey) {
+                                const fromIdx = parseInt(pbDragSrc.dataset.idx);
+                                const toIdx   = parseInt(row.dataset.idx);
+                                const moved = pbBoard[sectionKey].splice(fromIdx, 1)[0];
+                                pbBoard[sectionKey].splice(toIdx, 0, moved);
+                                pbSave();
+                            }
+                        });
+                    });
+                }
+            }
+
+            renderSection('guards', 'guardsList', 'guardsCount', '#00d4ff');
+            renderSection('wings',  'wingsList',  'wingsCount',  '#ff6b35');
+            renderSection('fours',  'foursList',  'foursCount',  '#c084fc');
         }
 
         // Close notes modal on backdrop click
