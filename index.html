@@ -5065,8 +5065,9 @@
             drawCourt(ctx, canvas.width, canvas.height);
 
             try {
-                const cacheKey    = `${teamName}_${season}`;
-                const lsKey       = `cbbd_shots_v1_${teamName}_${season}`;
+                const resolvedTeamName = TEAM_NAME_ALIASES[teamName] || teamName;
+                const cacheKey    = `${resolvedTeamName}_${season}`;
+                const lsKey       = `cbbd_shots_v1_${resolvedTeamName}_${season}`;
                 let   compactShots;   // [{name, cx, cy, made, range}] — one entry per shot
 
                 if (teamShotsCache[cacheKey]) {
@@ -5082,7 +5083,7 @@
                         overlay.textContent = `Using cached data (${age})…`;
                     } else {
                         // Cache miss — must hit the API
-                        const url = `${CBBD_BASE}/plays/team?season=${season}&team=${encodeURIComponent(teamName)}&shootingPlaysOnly=true`;
+                        const url = `${CBBD_BASE}/plays/team?season=${season}&team=${encodeURIComponent(resolvedTeamName)}&shootingPlaysOnly=true`;
                         const res = await fetch(url, {
                             headers: { 'Authorization': `Bearer ${CBBD_API_KEY}` }
                         });
@@ -5129,7 +5130,7 @@
 
             if (!currentShotPlayer) return;
             const season   = parseInt(document.getElementById('shotSeasonSelect').value) || 2026;
-            const cacheKey = `${currentShotPlayer.team}_${season}`;
+            const cacheKey = `${TEAM_NAME_ALIASES[currentShotPlayer.team] || currentShotPlayer.team}_${season}`;
             const teamPlays = teamShotsCache[cacheKey];
             if (!teamPlays) return;
 
@@ -5363,6 +5364,8 @@
             'Ole Miss':      'Mississippi',
             'USC':           'Southern California',
             'UNLV':          'Nevada-Las Vegas',
+            'ULM':           'Louisiana Monroe',
+            'Louisiana Monroe': 'Louisiana Monroe',
         };
 
         // Converts a raw CBBD team stats API record into the shape cbbdTeamStats expects.
