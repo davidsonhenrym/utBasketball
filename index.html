@@ -2463,6 +2463,13 @@
                 <div style="font-size:0.7rem;font-family:'IBM Plex Mono',monospace;color:var(--text-secondary);margin-bottom:16px;padding:10px 14px;background:var(--bg-tertiary);border-radius:6px;border-left:3px solid var(--accent-primary);">
                     Ranked by similarity across all weighted stat percentiles. Lower distance = more similar profile.
                 </div>
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+                    <label style="display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none;">
+                        <input type="checkbox" id="similarMidMajorOnly" onchange="renderSimilarResults()"
+                               style="width:15px;height:15px;accent-color:var(--accent-primary);cursor:pointer;">
+                        <span style="font-family:'IBM Plex Mono',monospace;font-size:0.75rem;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;">Mid / Low Major Only</span>
+                    </label>
+                </div>
                 <div id="similarResults"></div>
             </div>
         </div>
@@ -4233,16 +4240,38 @@
         }
 
         // ── Similar Players ──────────────────────────────────────
+        let _similarModalPlayer = null;
+
         function openSimilarModal(player) {
             if (!player || !player.component_scores) return;
             if (!scoredData || scoredData.length < 2) return;
+            _similarModalPlayer = player;
+            // Reset filter toggle each time modal opens
+            document.getElementById('similarMidMajorOnly').checked = false;
+            document.getElementById('similarModalSubtitle').textContent =
+                `Players most similar to ${player.Player} (${player.position_category} · ${player.Team})`;
+            renderSimilarResults();
+            document.getElementById('similarModal').classList.add('active');
+        }
 
+        function renderSimilarResults() {
+            const player = _similarModalPlayer;
+            if (!player) return;
+
+            const midLowOnly = document.getElementById('similarMidMajorOnly').checked;
             const keys = Object.keys(player.component_scores);
             const targetScores = player.component_scores;
 
             // Compute Euclidean distance for every other player
             const distances = scoredData
-                .filter(p => p.Player !== player.Player)
+                .filter(p => {
+                    if (p.Player === player.Player) return false;
+                    if (midLowOnly) {
+                        const tier = getConferenceTier(p.Conference);
+                        if (tier !== 'mid' && tier !== 'low') return false;
+                    }
+                    return true;
+                })
                 .map(p => {
                     let sumSq = 0;
                     keys.forEach(k => {
@@ -4255,9 +4284,11 @@
             distances.sort((a, b) => a.distance - b.distance);
             const top10 = distances.slice(0, 10);
 
-            // Render
-            document.getElementById('similarModalSubtitle').textContent =
-                `Players most similar to ${player.Player} (${player.position_category} · ${player.Team})`;
+            if (top10.length === 0) {
+                document.getElementById('similarResults').innerHTML =
+                    `<div style="text-align:center;padding:30px;font-family:'IBM Plex Mono',monospace;font-size:0.8rem;color:var(--text-secondary);">No mid/low major players found in dataset.</div>`;
+                return;
+            }
 
             const maxDist = top10[top10.length - 1]?.distance || 1;
 
@@ -4288,7 +4319,6 @@
             }).join('');
 
             document.getElementById('similarResults').innerHTML = rows;
-            document.getElementById('similarModal').classList.add('active');
         }
 
         function closeSimilarModal() {
