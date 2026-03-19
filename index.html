@@ -4282,19 +4282,27 @@
                 });
 
             distances.sort((a, b) => a.distance - b.distance);
-            const top10 = distances.slice(0, 10);
 
-            if (top10.length === 0) {
+            // Pre-compute similarity for all, then filter to 70%+
+            const threshold = 70;
+            const filtered = distances
+                .map(item => ({
+                    ...item,
+                    similarity: Math.max(0, Math.round((1 - item.distance / (Math.sqrt(keys.length) * 100)) * 100))
+                }))
+                .filter(item => item.similarity >= threshold);
+
+            if (filtered.length === 0) {
                 document.getElementById('similarResults').innerHTML =
-                    `<div style="text-align:center;padding:30px;font-family:'IBM Plex Mono',monospace;font-size:0.8rem;color:var(--text-secondary);">No mid/low major players found in dataset.</div>`;
+                    `<div style="text-align:center;padding:30px;font-family:'IBM Plex Mono',monospace;font-size:0.8rem;color:var(--text-secondary);">No players found with ${threshold}%+ match${midLowOnly ? ' in mid/low major conferences' : ''}.</div>`;
                 return;
             }
 
-            const maxDist = top10[top10.length - 1]?.distance || 1;
+            const maxDist = filtered[filtered.length - 1]?.distance || 1;
 
-            const rows = top10.map((item, i) => {
+            const rows = filtered.map((item, i) => {
                 const p = item.player;
-                const similarity = Math.max(0, Math.round((1 - item.distance / (Math.sqrt(keys.length) * 100)) * 100));
+                const similarity = item.similarity;
                 const barWidth = Math.max(5, Math.round((1 - item.distance / (maxDist * 1.2)) * 100));
                 const scoreClass = p.total_score >= 80 ? 'score-high' : p.total_score >= 60 ? 'score-medium' : 'score-low';
                 const posBadgeClass = p.position_category === 'Guard' ? 'position-guard' : p.position_category === 'Wing' ? 'position-wing' : 'position-forward';
