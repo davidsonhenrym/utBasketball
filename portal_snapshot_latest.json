@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-03-20T13:01:54.906867",
-  "total": 112,
+  "generated_at": "2026-03-20T20:23:48.592626",
+  "total": 123,
   "watchlist_in_portal": [],
   "players": [
     {
@@ -24,6 +24,127 @@
       "nil": "",
       "date": "",
       "url": "https://www.on3.com/nil/rankings/player/nil-valuations/"
+    },
+    {
+      "source": "247",
+      "name": "Nate Johnson",
+      "from": "",
+      "to": "",
+      "pos": "SF",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/nate-johnson-46165756/college-356776/"
+    },
+    {
+      "source": "247",
+      "name": "Micah Tucker",
+      "from": "",
+      "to": "",
+      "pos": "PG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/micah-tucker-46148461/college-339151/"
+    },
+    {
+      "source": "247",
+      "name": "Casmir Chavis",
+      "from": "",
+      "to": "",
+      "pos": "CG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/casmir-chavis-46134824/college-356769/"
+    },
+    {
+      "source": "247",
+      "name": "Jordan Stiemke",
+      "from": "",
+      "to": "",
+      "pos": "SG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/jordan-stiemke-46165746/college-356764/"
+    },
+    {
+      "source": "247",
+      "name": "Cord Stansberry",
+      "from": "",
+      "to": "",
+      "pos": "SG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/cord-stansberry-46101915/college-356762/"
+    },
+    {
+      "source": "247",
+      "name": "Christian Alston",
+      "from": "",
+      "to": "",
+      "pos": "SF",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/christian-alston-46128945/college-356761/"
+    },
+    {
+      "source": "247",
+      "name": "Eian Lowe",
+      "from": "",
+      "to": "",
+      "pos": "PG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/eian-lowe-46143113/college-356759/"
+    },
+    {
+      "source": "247",
+      "name": "Rob Lee",
+      "from": "",
+      "to": "",
+      "pos": "CG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/rob-lee-46165744/college-356758/"
+    },
+    {
+      "source": "247",
+      "name": "Adrian Myers",
+      "from": "",
+      "to": "",
+      "pos": "SF",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/adrian-myers-46136692/college-356755/"
+    },
+    {
+      "source": "247",
+      "name": "Jamie Phillips",
+      "from": "",
+      "to": "",
+      "pos": "PF",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/jamie-phillips-46145141/college-356754/"
+    },
+    {
+      "source": "247",
+      "name": "Corneilous Williams",
+      "from": "",
+      "to": "",
+      "pos": "C",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/corneilous-williams-46102822/college-356753/"
     },
     {
       "source": "247",
@@ -140,7 +261,7 @@
       "name": "Colby Garland",
       "from": "",
       "to": "",
-      "pos": "SG",
+      "pos": "PG",
       "stars": "Rating StarRating StarRating StarRating StarRating Star",
       "nil": "",
       "date": "",
