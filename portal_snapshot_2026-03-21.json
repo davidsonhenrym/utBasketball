@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-03-21T12:52:03.407674",
-  "total": 126,
+  "generated_at": "2026-03-21T20:17:58.322516",
+  "total": 128,
   "watchlist_in_portal": [],
   "players": [
     {
@@ -24,6 +24,17 @@
       "nil": "",
       "date": "",
       "url": "https://www.on3.com/nil/rankings/player/nil-valuations/"
+    },
+    {
+      "source": "247",
+      "name": "Dennis Scott III",
+      "from": "",
+      "to": "",
+      "pos": "PF",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/dennis-scott-iii-46132056/college-315832/"
     },
     {
       "source": "247",
@@ -68,6 +79,17 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/nate-johnson-46165756/college-356776/"
+    },
+    {
+      "source": "247",
+      "name": "Ladontae Felton",
+      "from": "",
+      "to": "",
+      "pos": "CG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/ladontae-felton-46143895/college-317318/"
     },
     {
       "source": "247",
