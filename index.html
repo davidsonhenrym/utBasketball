@@ -1930,12 +1930,15 @@
                                     <div id="rosterWinPct" style="font-size:0.78rem;font-family:'IBM Plex Mono',monospace;color:var(--text-secondary);margin-bottom:4px;">Add starters to project wins</div>
                                     <div id="rosterTQS" style="font-size:0.72rem;font-family:'IBM Plex Mono',monospace;color:var(--accent-secondary);"></div>
                                     <div id="rosterEfgNote" style="font-size:0.68rem;font-family:'IBM Plex Mono',monospace;color:var(--accent-primary);margin-top:3px;"></div>
+                                    <div id="rosterBpmNote" style="font-size:0.68rem;font-family:'IBM Plex Mono',monospace;color:var(--accent-secondary);margin-top:3px;"></div>
+                                    <div id="rosterWs40Note" style="font-size:0.68rem;font-family:'IBM Plex Mono',monospace;color:var(--accent-secondary);margin-top:3px;"></div>
+                                    <div id="rosterTopgNote" style="font-size:0.68rem;font-family:'IBM Plex Mono',monospace;color:var(--accent-primary);margin-top:3px;"></div>
                                     <div id="rosterBalanceNote" style="font-size:0.68rem;font-family:'IBM Plex Mono',monospace;color:#ff9944;margin-top:3px;"></div>
                                     <div id="rosterConfBaseline" style="font-size:0.68rem;font-family:'IBM Plex Mono',monospace;color:var(--text-secondary);margin-top:4px;"></div>
                                     <div style="font-size:0.62rem;font-family:'IBM Plex Mono',monospace;color:var(--text-secondary);border-top:1px solid var(--border);padding-top:12px;margin-top:12px;line-height:2;text-align:left;">
                                         <div>32-game season model</div>
                                         <div>Starters 65% &middot; Reserves 35%</div>
-                                        <div>eFG% vs D1 avg &middot; pace steepness &middot; positional balance</div>
+                                        <div>eFG% &middot; BPM &middot; WS/40 &middot; TOPG vs D1 avg &middot; pace &middot; positional balance</div>
                                         <div id="rosterBaselineDesc">MAC baseline &asymp; score 55</div>
                                     </div>
                                 </div>
@@ -4575,6 +4578,102 @@
                 }
             }
 
+            // BPM: average starter Box Plus/Minus vs D1 baseline (0 by definition)
+            let bpmNote = '';
+            if (scoredData.length > 0) {
+                const normName = s => (s || '').toLowerCase()
+                    .replace(/\./g, '').replace(/[^a-z0-9 ]/g, '')
+                    .replace(/\s+(jr|sr|ii|iii|iv)\s*$/i, '').replace(/\s+/g, ' ').trim();
+                const starterNames = rosterSlots
+                    .filter(s => s.tier === 'starter')
+                    .map(s => getRosterSlotValues(s.id).name)
+                    .filter(n => n && n.trim());
+                const bpmVals = [];
+                starterNames.forEach(name => {
+                    const n = normName(name);
+                    const ln = n.split(' ').slice(-1)[0];
+                    const fi = n.split(' ')[0]?.[0] || '';
+                    const match = scoredData.find(p => {
+                        const pn = normName(p.Player);
+                        return pn === n || (pn.split(' ').slice(-1)[0] === ln && pn.split(' ')[0]?.[0] === fi);
+                    });
+                    const bpm = parseFloat(match?.['BPM']);
+                    if (!isNaN(bpm)) bpmVals.push(bpm);
+                });
+                if (bpmVals.length >= 3) {
+                    const avgBPM = bpmVals.reduce((s, v) => s + v, 0) / bpmVals.length;
+                    const bpmAdj = avgBPM * 2.5;
+                    tqs += bpmAdj;
+                    const dir = bpmAdj >= 0 ? '+' : '';
+                    bpmNote = `Avg starter BPM ${avgBPM.toFixed(1)} (${dir}${bpmAdj.toFixed(1)} TQS)`;
+                }
+            }
+
+            // WS/40: per-minute win contribution vs dataset average
+            let ws40Note = '';
+            if (scoredData.length > 0) {
+                const normName = s => (s || '').toLowerCase()
+                    .replace(/\./g, '').replace(/[^a-z0-9 ]/g, '')
+                    .replace(/\s+(jr|sr|ii|iii|iv)\s*$/i, '').replace(/\s+/g, ' ').trim();
+                const allRosterNames = rosterSlots
+                    .filter(s => s.tier !== 'depth')
+                    .map(s => getRosterSlotValues(s.id).name)
+                    .filter(n => n && n.trim());
+                const ws40Vals = [];
+                allRosterNames.forEach(name => {
+                    const n = normName(name);
+                    const ln = n.split(' ').slice(-1)[0];
+                    const fi = n.split(' ')[0]?.[0] || '';
+                    const match = scoredData.find(p => {
+                        const pn = normName(p.Player);
+                        return pn === n || (pn.split(' ').slice(-1)[0] === ln && pn.split(' ')[0]?.[0] === fi);
+                    });
+                    const ws = parseFloat(match?.['WS/40']);
+                    if (!isNaN(ws)) ws40Vals.push(ws);
+                });
+                if (ws40Vals.length >= 3) {
+                    const avgWS40 = ws40Vals.reduce((s, v) => s + v, 0) / ws40Vals.length;
+                    const d1Vals = scoredData.map(p => parseFloat(p['WS/40'])).filter(v => !isNaN(v));
+                    const d1AvgWS40 = d1Vals.length ? d1Vals.reduce((s, v) => s + v, 0) / d1Vals.length : 0.1;
+                    const ws40Adj = (avgWS40 - d1AvgWS40) * 40; // +0.1 WS/40 above avg ≈ +4 TQS
+                    tqs += ws40Adj;
+                    const dir = ws40Adj >= 0 ? '+' : '';
+                    ws40Note = `Avg WS/40 ${avgWS40.toFixed(3)} vs D1 avg ${d1AvgWS40.toFixed(3)} (${dir}${ws40Adj.toFixed(1)} TQS)`;
+                }
+            }
+
+            // TOPG: turnovers directly cost possessions — penalty vs D1 per-player average
+            let topgNote = '';
+            if (scoredData.length > 0) {
+                const normName = s => (s || '').toLowerCase()
+                    .replace(/\./g, '').replace(/[^a-z0-9 ]/g, '')
+                    .replace(/\s+(jr|sr|ii|iii|iv)\s*$/i, '').replace(/\s+/g, ' ').trim();
+                const rosterNames = rosterSlots
+                    .filter(s => s.tier !== 'depth')
+                    .map(s => getRosterSlotValues(s.id).name)
+                    .filter(n => n && n.trim());
+                const topgVals = [];
+                rosterNames.forEach(name => {
+                    const n = normName(name);
+                    const ln = n.split(' ').slice(-1)[0];
+                    const fi = n.split(' ')[0]?.[0] || '';
+                    const match = scoredData.find(p => {
+                        const pn = normName(p.Player);
+                        return pn === n || (pn.split(' ').slice(-1)[0] === ln && pn.split(' ')[0]?.[0] === fi);
+                    });
+                    const topg = parseFloat(match?.['TOPG']);
+                    if (!isNaN(topg) && topg > 0) topgVals.push(topg);
+                });
+                if (topgVals.length >= 3) {
+                    const avgTOPG = topgVals.reduce((s, v) => s + v, 0) / topgVals.length;
+                    const d1AvgTOPG = 2.0; // D1 per-player average TOPG
+                    const topgAdj = (d1AvgTOPG - avgTOPG) * 2.0;
+                    tqs += topgAdj;
+                    const dir = topgAdj >= 0 ? '+' : '';
+                    topgNote = `Avg TOPG ${avgTOPG.toFixed(1)} vs D1 avg ${d1AvgTOPG} (${dir}${topgAdj.toFixed(1)} TQS)`;
+                }
+            }
+
             // Pace: more possessions amplify talent gaps (law of large numbers).
             // Slow pace → flatter sigmoid (more luck/variance); fast pace → steeper (talent-driven).
             const paceSel = document.getElementById('rosterPaceSelect');
@@ -4597,6 +4696,9 @@
                 losses: 32 - wins,
                 balanceNote,
                 efgNote,
+                bpmNote,
+                ws40Note,
+                topgNote,
             };
         }
 
@@ -4620,6 +4722,9 @@
             setEl('rosterWinPct',        el => { el.textContent = proj ? `Win%: ${proj.winPctDisplay}%` : 'Add starters to project wins'; });
             setEl('rosterTQS',           el => { el.textContent = proj ? `Team Quality Score: ${proj.tqs}` : ''; });
             setEl('rosterEfgNote',       el => { el.textContent = proj?.efgNote || ''; });
+            setEl('rosterBpmNote',       el => { el.textContent = proj?.bpmNote || ''; });
+            setEl('rosterWs40Note',      el => { el.textContent = proj?.ws40Note || ''; });
+            setEl('rosterTopgNote',      el => { el.textContent = proj?.topgNote || ''; });
             setEl('rosterBalanceNote',   el => { el.textContent = proj?.balanceNote || ''; });
             setEl('rosterConfBaseline',  el => { el.textContent = proj ? `${proj.confName} baseline: score ${proj.baseline}` : ''; });
             setEl('rosterBaselineDesc',  el => { el.textContent = proj ? `${proj.confName} baseline \u2248 score ${proj.baseline}` : 'MAC baseline \u2248 score 55'; });
