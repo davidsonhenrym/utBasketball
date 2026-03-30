@@ -1266,8 +1266,8 @@
         .dc-header-row,
         .dc-row {
             display: grid;
-            grid-template-columns: 88px 1fr 80px 130px 34px;
-            gap: 8px;
+            grid-template-columns: 88px 1fr 80px 130px 26px 26px 34px;
+            gap: 6px;
             padding: 8px 15px;
             align-items: center;
         }
@@ -1369,6 +1369,31 @@
             background: rgba(255,70,70,0.15);
             border-color: #ff5050;
             color: #ff5050;
+        }
+
+        .dc-move-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            border-radius: 4px;
+            width: 26px;
+            height: 28px;
+            cursor: pointer;
+            font-size: 0.55rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            padding: 0;
+        }
+        .dc-move-btn:hover:not(:disabled) {
+            background: rgba(0,255,136,0.12);
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+        }
+        .dc-move-btn:disabled {
+            opacity: 0.2;
+            cursor: default;
         }
 
         @media (max-width: 960px) {
@@ -1959,7 +1984,7 @@
                                         <span class="dc-tier-badge starter-badge">5 slots &middot; 65% weight</span>
                                     </div>
                                     <div class="dc-header-row">
-                                        <div>Position</div><div>Player</div><div style="text-align:center;">Score</div><div style="text-align:right;">NIL Salary ($)</div><div></div>
+                                        <div>Position</div><div>Player</div><div style="text-align:center;">Score</div><div style="text-align:right;">NIL Salary ($)</div><div></div><div></div><div></div>
                                     </div>
                                     <div id="dc-starters"></div>
                                 </div>
@@ -1970,7 +1995,7 @@
                                         <span class="dc-tier-badge reserve-badge">5 slots &middot; 35% weight</span>
                                     </div>
                                     <div class="dc-header-row">
-                                        <div>Position</div><div>Player</div><div style="text-align:center;">Score</div><div style="text-align:right;">NIL Salary ($)</div><div></div>
+                                        <div>Position</div><div>Player</div><div style="text-align:center;">Score</div><div style="text-align:right;">NIL Salary ($)</div><div></div><div></div><div></div>
                                     </div>
                                     <div id="dc-reserves"></div>
                                 </div>
@@ -1981,7 +2006,7 @@
                                         <span class="dc-tier-badge depth-badge">5 slots &middot; 0% weight</span>
                                     </div>
                                     <div class="dc-header-row">
-                                        <div>Position</div><div>Player</div><div style="text-align:center;">Score</div><div style="text-align:right;">NIL Salary ($)</div><div></div>
+                                        <div>Position</div><div>Player</div><div style="text-align:center;">Score</div><div style="text-align:right;">NIL Salary ($)</div><div></div><div></div><div></div>
                                     </div>
                                     <div id="dc-depth"></div>
                                 </div>
@@ -4399,10 +4424,15 @@
         function buildRosterRows(tier, containerId) {
             const container = document.getElementById(containerId);
             if (!container) return;
+            const allIds = rosterSlots.map(s => s.id);
             container.innerHTML = rosterSlots
                 .filter(s => s.tier === tier)
-                .map(slot => `
-                    <div class="dc-row">
+                .map(slot => {
+                    const idx = allIds.indexOf(slot.id);
+                    const isFirst = idx === 0;
+                    const isLast  = idx === allIds.length - 1;
+                    return `
+                    <div class="dc-row" id="dc-row-${slot.id}">
                         <div class="dc-pos-badge">${slot.label}</div>
                         <input type="text" class="dc-player-input" id="rp_name_${slot.id}"
                                list="rosterPlayerDatalist" autocomplete="off"
@@ -4415,9 +4445,45 @@
                         <input type="number" class="dc-salary-input" id="rp_salary_${slot.id}"
                                placeholder="0" min="0" step="1000"
                                oninput="updateRosterSummary()">
+                        <button class="dc-move-btn" onclick="moveRosterRow('${slot.id}','up')" title="Move up" ${isFirst ? 'disabled' : ''}>&#9650;</button>
+                        <button class="dc-move-btn" onclick="moveRosterRow('${slot.id}','down')" title="Move down" ${isLast ? 'disabled' : ''}>&#9660;</button>
                         <button class="dc-clear-btn" onclick="clearRosterSlot('${slot.id}')" title="Clear">&#10005;</button>
                     </div>
-                `).join('');
+                `}).join('');
+        }
+
+        function moveRosterRow(slotId, direction) {
+            const allIds = rosterSlots.map(s => s.id);
+            const idx = allIds.indexOf(slotId);
+            const targetIdx = direction === 'up' ? idx - 1 : idx + 1;
+            if (targetIdx < 0 || targetIdx >= allIds.length) return;
+            const targetId = allIds[targetIdx];
+
+            const nameA  = document.getElementById(`rp_name_${slotId}`);
+            const nameB  = document.getElementById(`rp_name_${targetId}`);
+            const scoreA = document.getElementById(`rp_score_${slotId}`);
+            const scoreB = document.getElementById(`rp_score_${targetId}`);
+            const salA   = document.getElementById(`rp_salary_${slotId}`);
+            const salB   = document.getElementById(`rp_salary_${targetId}`);
+            if (!nameA || !nameB) return;
+
+            // Swap values
+            [nameA.value,  nameB.value]  = [nameB.value,  nameA.value];
+            [scoreA.value, scoreB.value] = [scoreB.value, scoreA.value];
+            [salA.value,   salB.value]   = [salB.value,   salA.value];
+
+            // Swap autoFilled flags
+            const afA = scoreA.dataset.autoFilled, afB = scoreB.dataset.autoFilled;
+            scoreA.dataset.autoFilled = afB;
+            scoreB.dataset.autoFilled = afA;
+
+            // Swap matched highlight
+            const mA = nameA.classList.contains('matched');
+            const mB = nameB.classList.contains('matched');
+            mA ? nameB.classList.add('matched') : nameB.classList.remove('matched');
+            mB ? nameA.classList.add('matched') : nameA.classList.remove('matched');
+
+            updateRosterSummary();
         }
 
         function renderRosterBuilder() {
