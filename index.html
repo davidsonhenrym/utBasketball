@@ -1044,36 +1044,6 @@
         .shot-stat-row span { color: var(--text-primary); }
 
         /* ── Roster Builder ── */
-        .roster-layout {
-            display: grid;
-            grid-template-columns: 270px 1fr;
-            gap: 25px;
-            padding-top: 5px;
-        }
-
-        .roster-sidebar-panel {
-            position: sticky;
-            top: 20px;
-            height: fit-content;
-        }
-
-        .roster-card {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 20px;
-        }
-
-        .roster-budget-input-group label {
-            font-size: 0.7rem;
-            font-family: 'IBM Plex Mono', monospace;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            display: block;
-            margin-bottom: 8px;
-        }
-
         .roster-budget-track {
             height: 6px;
             background: var(--bg-tertiary);
@@ -1089,222 +1059,138 @@
             transition: width 0.3s, background 0.3s;
         }
 
-        .roster-wins-number {
-            font-size: 3rem;
-            font-weight: 900;
-            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            line-height: 1;
-        }
-
-        .sw-conf-select {
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            color: var(--text-primary);
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 0.75rem;
-            padding: 5px 8px;
-            width: 100%;
-            margin-bottom: 10px;
-            cursor: pointer;
-        }
-
-        .sw-section {
-            margin-top: 28px;
-        }
-
-        .sw-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            margin-top: 14px;
-        }
-
-        @media (max-width: 700px) {
-            .sw-grid { grid-template-columns: 1fr; }
-        }
-
-        .sw-card {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 16px 18px;
-        }
-
-        .sw-card-title {
-            font-size: 0.7rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            margin-bottom: 12px;
-        }
-
-        .sw-card-title.strength { color: var(--accent-primary); }
-        .sw-card-title.weakness { color: #ff5050; }
-
-        .sw-stat-row {
+        /* Budget bar across the top */
+        .hdc-budget-bar {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: 7px 0;
-            border-bottom: 1px solid var(--border);
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 0.75rem;
-            color: var(--text-primary);
-        }
-
-        .sw-stat-row:last-child { border-bottom: none; }
-
-        .sw-stat-meta {
-            font-size: 0.65rem;
-            color: var(--text-secondary);
-            text-align: right;
-        }
-
-        .sw-rec-card {
+            gap: 20px;
             background: var(--bg-secondary);
             border: 1px solid var(--border);
             border-radius: 12px;
-            padding: 16px 18px;
-            margin-top: 16px;
+            padding: 14px 20px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
         }
 
-        .sw-rec-title {
-            font-size: 0.7rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: var(--accent-secondary);
-            margin-bottom: 12px;
-        }
-
-        .sw-rec-row {
-            display: grid;
-            grid-template-columns: 1fr auto auto;
-            align-items: center;
-            gap: 12px;
-            padding: 9px 0;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .sw-rec-row:last-child { border-bottom: none; }
-
-        .sw-rec-name {
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .sw-rec-meta {
-            font-size: 0.65rem;
-            color: var(--text-secondary);
-            font-family: 'IBM Plex Mono', monospace;
-            margin-top: 2px;
-        }
-
-        .sw-rec-score {
-            font-size: 0.85rem;
-            font-weight: 700;
-            font-family: 'IBM Plex Mono', monospace;
-            color: var(--accent-primary);
-            text-align: right;
-        }
-
-        .sw-rec-val {
-            font-size: 0.65rem;
-            color: var(--text-secondary);
-            font-family: 'IBM Plex Mono', monospace;
-            text-align: right;
-        }
-
-        .sw-empty {
-            color: var(--text-secondary);
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 0.75rem;
-            padding: 8px 0;
-            text-align: center;
-        }
-
-        .dc-tier-section {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            overflow: hidden;
-        }
-
-        .dc-tier-header {
+        .hdc-budget-input-wrap {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 18px;
-            background: var(--bg-tertiary);
-            border-bottom: 1px solid var(--border);
+            flex-direction: column;
+            gap: 4px;
+            min-width: 170px;
         }
 
-        .dc-tier-label {
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: var(--text-primary);
-        }
-
-        .dc-tier-badge {
-            font-size: 0.65rem;
-            font-family: 'IBM Plex Mono', monospace;
-            padding: 3px 9px;
-            border-radius: 10px;
-        }
-
-        .starter-badge { background: rgba(0,255,136,0.15); color: var(--accent-primary); }
-        .reserve-badge { background: rgba(0,212,255,0.15); color: var(--accent-secondary); }
-        .depth-badge   { background: rgba(139,146,168,0.15); color: var(--text-secondary); }
-
-        .dc-header-row,
-        .dc-row {
-            display: grid;
-            grid-template-columns: 88px 1fr 80px 130px 26px 26px 34px;
-            gap: 6px;
-            padding: 8px 15px;
-            align-items: center;
-        }
-
-        .dc-header-row {
+        .hdc-budget-input-wrap label {
             font-size: 0.62rem;
             font-family: 'IBM Plex Mono', monospace;
             color: var(--text-secondary);
             text-transform: uppercase;
-            letter-spacing: 0.05em;
-            background: rgba(0,0,0,0.15);
-            border-bottom: 1px solid var(--border);
+            letter-spacing: 0.06em;
         }
 
-        .dc-row {
-            border-bottom: 1px solid rgba(45,55,72,0.4);
-            transition: background 0.15s;
-        }
+        .hdc-budget-track-wrap { flex: 1; min-width: 200px; }
 
-        .dc-row:last-child { border-bottom: none; }
-        .dc-row:hover { background: rgba(0,255,136,0.025); }
-
-        .dc-pos-badge {
+        .hdc-budget-stats {
+            display: flex;
+            justify-content: space-between;
             font-size: 0.7rem;
             font-family: 'IBM Plex Mono', monospace;
-            font-weight: 700;
+            margin-top: 5px;
+            color: var(--text-secondary);
+        }
+
+        .hdc-budget-actions { display: flex; gap: 8px; align-items: center; }
+
+        /* 5-column horizontal depth chart */
+        .hdc-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+        }
+
+        @media (max-width: 900px) {
+            .hdc-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        @media (max-width: 600px) {
+            .hdc-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        .hdc-col { display: flex; flex-direction: column; }
+
+        .hdc-col-header {
+            font-size: 0.78rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
             color: var(--text-primary);
             background: var(--bg-tertiary);
             border: 1px solid var(--border);
-            border-radius: 4px;
-            padding: 5px 6px;
+            border-radius: 8px 8px 0 0;
+            padding: 10px 12px;
             text-align: center;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
         }
 
+        .hdc-cell {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-top: none;
+            padding: 10px 10px 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            transition: background 0.15s;
+        }
+
+        .hdc-cell:last-child { border-radius: 0 0 8px 8px; }
+        .hdc-cell:hover { background: rgba(0,255,136,0.025); }
+
+        .hdc-cell.locked {
+            background: rgba(255,199,44,0.05);
+            box-shadow: inset 3px 0 0 #FFC72C;
+        }
+        .hdc-cell.locked:hover { background: rgba(255,199,44,0.09); }
+
+        .hdc-depth-label {
+            font-size: 0.58rem;
+            font-family: 'IBM Plex Mono', monospace;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-secondary);
+        }
+
+        .hdc-cell-footer {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            margin-top: 1px;
+        }
+
+        .hdc-cell-footer .dc-salary-input {
+            flex: 1;
+            min-width: 0;
+            font-size: 0.7rem;
+            padding: 4px 6px;
+        }
+
+        .hdc-cell-actions {
+            display: flex;
+            gap: 2px;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        /* Compact inputs inside cells */
+        .hdc-cell .dc-player-input {
+            font-size: 0.8rem;
+            padding: 6px 8px;
+        }
+
+        .hdc-cell .dc-score-input {
+            font-size: 0.7rem;
+            padding: 4px 6px;
+        }
+
+        /* Shared input/button styles */
         .dc-player-input {
             background: var(--bg-tertiary);
             border: 1px solid var(--border);
@@ -1354,15 +1240,11 @@
             border: 1px solid var(--border);
             color: var(--text-secondary);
             border-radius: 4px;
-            width: 28px;
-            height: 28px;
+            width: 24px; height: 24px;
             cursor: pointer;
-            font-size: 0.75rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-            padding: 0;
+            font-size: 0.65rem;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s; padding: 0; flex-shrink: 0;
         }
 
         .dc-clear-btn:hover {
@@ -1376,30 +1258,35 @@
             border: 1px solid var(--border);
             color: var(--text-secondary);
             border-radius: 4px;
-            width: 26px;
-            height: 28px;
+            width: 24px; height: 24px;
             cursor: pointer;
-            font-size: 0.55rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-            padding: 0;
+            font-size: 0.5rem;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s; padding: 0; flex-shrink: 0;
         }
         .dc-move-btn:hover:not(:disabled) {
             background: rgba(0,255,136,0.12);
             border-color: var(--accent-primary);
             color: var(--accent-primary);
         }
-        .dc-move-btn:disabled {
-            opacity: 0.2;
-            cursor: default;
-        }
+        .dc-move-btn:disabled { opacity: 0.2; cursor: default; }
 
-        @media (max-width: 960px) {
-            .roster-layout { grid-template-columns: 1fr; }
-            .roster-sidebar-panel { position: static; }
+        /* Toledo gold = #FFC72C — locked/signed players */
+        .dc-lock-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            border-radius: 4px;
+            width: 24px; height: 24px;
+            cursor: pointer;
+            font-size: 0.65rem;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s; padding: 0; flex-shrink: 0;
         }
+        .dc-lock-btn:hover:not(.locked) { background: rgba(255,199,44,0.12); border-color: #FFC72C; color: #FFC72C; }
+        .dc-lock-btn.locked { background: rgba(255,199,44,0.18); border-color: #FFC72C; color: #FFC72C; }
+        .dc-player-input.locked { border-color: #FFC72C; color: #FFC72C; font-weight: 600; }
+        .dc-player-input.locked:focus { border-color: #FFC72C; }
 
         /* ── Matchup Simulator ── */
         .matchup-setup {
@@ -1901,142 +1788,32 @@
                     <div id="rosterTab" class="tab-content">
                         <datalist id="rosterPlayerDatalist"></datalist>
 
-                        <div class="roster-layout">
-
-                            <!-- Sidebar: Budget & Win Projection -->
-                            <div class="roster-sidebar-panel">
-
-                                <div class="roster-card">
-                                    <div class="section-header">Team Budget</div>
-                                    <div class="roster-budget-input-group">
-                                        <label>Total NIL Budget</label>
-                                        <input type="number" id="rosterBudgetInput" value="1500000" step="50000" min="0"
-                                               oninput="updateRosterBudgetInput()"
-                                               style="width:100%;padding:10px;background:var(--bg-tertiary);border:1px solid var(--border);border-radius:6px;color:var(--text-primary);font-family:'IBM Plex Mono',monospace;font-size:0.9rem;">
-                                    </div>
-                                    <div style="margin:18px 0 6px;">
-                                        <div style="display:flex;justify-content:space-between;font-size:0.7rem;font-family:'IBM Plex Mono',monospace;margin-bottom:6px;">
-                                            <span style="color:var(--text-secondary);">Committed</span>
-                                            <span id="rosterBudgetCommitted" style="color:var(--text-primary);">$0</span>
-                                        </div>
-                                        <div class="roster-budget-track">
-                                            <div id="rosterBudgetBar" class="roster-budget-fill"></div>
-                                        </div>
-                                        <div style="display:flex;justify-content:space-between;font-size:0.7rem;font-family:'IBM Plex Mono',monospace;margin-top:6px;">
-                                            <span style="color:var(--text-secondary);">Remaining</span>
-                                            <span id="rosterBudgetRemaining" style="color:var(--accent-primary);">$1,500,000</span>
-                                        </div>
-                                        <div id="rosterOverBudget" style="display:none;background:rgba(255,70,70,0.12);border:1px solid #ff5050;border-radius:4px;padding:7px 10px;font-size:0.7rem;font-family:'IBM Plex Mono',monospace;color:#ff5050;margin-top:10px;">
-                                            &#9888; Over budget
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="roster-card" style="margin-top:18px;text-align:center;">
-                                    <div class="section-header" style="text-align:left;">Win Projection</div>
-                                    <div style="margin-top:12px;">
-                                        <label style="font-size:0.65rem;font-family:'IBM Plex Mono',monospace;color:var(--text-secondary);display:block;margin-bottom:5px;text-align:left;">CONFERENCE</label>
-                                        <select id="rosterConfSelect" class="sw-conf-select" onchange="updateRosterSummary()">
-                                            <option value="MAC" data-mult="1.0">MAC (default)</option>
-                                        </select>
-                                    </div>
-                                    <div style="margin-top:10px;">
-                                        <label style="font-size:0.65rem;font-family:'IBM Plex Mono',monospace;color:var(--text-secondary);display:block;margin-bottom:5px;text-align:left;">PACE STYLE</label>
-                                        <select id="rosterPaceSelect" class="sw-conf-select" onchange="updateRosterSummary()" title="Pace affects win variance: up-tempo amplifies talent gaps; slow pace adds variance/luck.">
-                                            <option value="slow">Slow (&lt;65 poss/G) — more variance</option>
-                                            <option value="avg" selected>Average (65–70 poss/G)</option>
-                                            <option value="fast">Up-tempo (&gt;70 poss/G) — talent-driven</option>
-                                        </select>
-                                    </div>
-                                    <div style="padding:8px 0 8px;">
-                                        <div id="rosterWinsDisplay" class="roster-wins-number">&#8212;</div>
-                                        <div style="font-size:0.65rem;font-family:'IBM Plex Mono',monospace;color:var(--text-secondary);margin-top:4px;">PROJECTED RECORD</div>
-                                    </div>
-                                    <div id="rosterWinPct" style="font-size:0.78rem;font-family:'IBM Plex Mono',monospace;color:var(--text-secondary);margin-bottom:4px;">Add starters to project wins</div>
-                                    <div id="rosterTQS" style="font-size:0.72rem;font-family:'IBM Plex Mono',monospace;color:var(--accent-secondary);"></div>
-                                    <div id="rosterEfgNote" style="font-size:0.68rem;font-family:'IBM Plex Mono',monospace;color:var(--accent-primary);margin-top:3px;"></div>
-                                    <div id="rosterBpmNote" style="font-size:0.68rem;font-family:'IBM Plex Mono',monospace;color:var(--accent-secondary);margin-top:3px;"></div>
-                                    <div id="rosterWs40Note" style="font-size:0.68rem;font-family:'IBM Plex Mono',monospace;color:var(--accent-secondary);margin-top:3px;"></div>
-                                    <div id="rosterTopgNote" style="font-size:0.68rem;font-family:'IBM Plex Mono',monospace;color:var(--accent-primary);margin-top:3px;"></div>
-                                    <div id="rosterBalanceNote" style="font-size:0.68rem;font-family:'IBM Plex Mono',monospace;color:#ff9944;margin-top:3px;"></div>
-                                    <div id="rosterConfBaseline" style="font-size:0.68rem;font-family:'IBM Plex Mono',monospace;color:var(--text-secondary);margin-top:4px;"></div>
-                                    <div style="font-size:0.62rem;font-family:'IBM Plex Mono',monospace;color:var(--text-secondary);border-top:1px solid var(--border);padding-top:12px;margin-top:12px;line-height:2;text-align:left;">
-                                        <div>32-game season model</div>
-                                        <div>Starters 65% &middot; Reserves 35%</div>
-                                        <div>eFG% &middot; BPM &middot; WS/40 &middot; TOPG vs D1 avg &middot; pace &middot; positional balance</div>
-                                        <div id="rosterBaselineDesc">MAC baseline &asymp; score 55</div>
-                                    </div>
-                                </div>
-
-                                <div style="margin-top:18px;display:flex;flex-direction:column;gap:8px;">
-                                    <button onclick="exportRosterCSV()" class="secondary">Export Roster CSV</button>
-                                    <button onclick="clearFullRoster()" class="secondary">Clear All Slots</button>
-                                </div>
-
+                        <!-- Budget bar -->
+                        <div class="hdc-budget-bar">
+                            <div class="hdc-budget-input-wrap">
+                                <label>Total NIL Budget</label>
+                                <input type="number" id="rosterBudgetInput" value="1500000" step="50000" min="0"
+                                       oninput="updateRosterBudgetInput()"
+                                       style="padding:8px 10px;background:var(--bg-tertiary);border:1px solid var(--border);border-radius:6px;color:var(--text-primary);font-family:'IBM Plex Mono',monospace;font-size:0.85rem;width:100%;">
                             </div>
-
-                            <!-- Depth Chart -->
-                            <div>
-
-                                <div class="dc-tier-section">
-                                    <div class="dc-tier-header">
-                                        <span class="dc-tier-label">Starting Lineup</span>
-                                        <span class="dc-tier-badge starter-badge">5 slots &middot; 65% weight</span>
-                                    </div>
-                                    <div class="dc-header-row">
-                                        <div>Position</div><div>Player</div><div style="text-align:center;">Score</div><div style="text-align:right;">NIL Salary ($)</div><div></div><div></div><div></div>
-                                    </div>
-                                    <div id="dc-starters"></div>
+                            <div class="hdc-budget-track-wrap">
+                                <div class="roster-budget-track">
+                                    <div id="rosterBudgetBar" class="roster-budget-fill"></div>
                                 </div>
-
-                                <div class="dc-tier-section" style="margin-top:18px;">
-                                    <div class="dc-tier-header">
-                                        <span class="dc-tier-label">Key Reserves</span>
-                                        <span class="dc-tier-badge reserve-badge">5 slots &middot; 35% weight</span>
-                                    </div>
-                                    <div class="dc-header-row">
-                                        <div>Position</div><div>Player</div><div style="text-align:center;">Score</div><div style="text-align:right;">NIL Salary ($)</div><div></div><div></div><div></div>
-                                    </div>
-                                    <div id="dc-reserves"></div>
+                                <div class="hdc-budget-stats">
+                                    <span>Committed: <strong id="rosterBudgetCommitted" style="color:var(--text-primary);">$0</strong></span>
+                                    <span id="rosterOverBudget" style="display:none;color:#ff5050;">&#9888; Over budget</span>
+                                    <span>Remaining: <strong id="rosterBudgetRemaining" style="color:var(--accent-primary);">$1,500,000</strong></span>
                                 </div>
-
-                                <div class="dc-tier-section" style="margin-top:18px;">
-                                    <div class="dc-tier-header">
-                                        <span class="dc-tier-label">Depth</span>
-                                        <span class="dc-tier-badge depth-badge">5 slots &middot; 0% weight</span>
-                                    </div>
-                                    <div class="dc-header-row">
-                                        <div>Position</div><div>Player</div><div style="text-align:center;">Score</div><div style="text-align:right;">NIL Salary ($)</div><div></div><div></div><div></div>
-                                    </div>
-                                    <div id="dc-depth"></div>
-                                </div>
-
+                            </div>
+                            <div class="hdc-budget-actions">
+                                <button onclick="exportRosterCSV()" class="secondary" style="font-size:0.75rem;padding:8px 14px;">Export CSV</button>
+                                <button onclick="clearFullRoster()" class="secondary" style="font-size:0.75rem;padding:8px 14px;">Clear All</button>
                             </div>
                         </div>
 
-                        <!-- Strengths & Weaknesses Analysis -->
-                        <div class="sw-section">
-                            <div class="section-header" style="font-size:0.8rem;letter-spacing:0.12em;">Strengths &amp; Weaknesses Analysis</div>
-                            <div id="swEmptyMsg" class="sw-card" style="margin-top:14px;">
-                                <div class="sw-empty">Add players to the depth chart to see roster analysis and transfer portal recommendations.</div>
-                            </div>
-                            <div id="swAnalysisBody" style="display:none;">
-                                <div class="sw-grid">
-                                    <div class="sw-card">
-                                        <div class="sw-card-title strength">&#9650; Strengths</div>
-                                        <div id="swStrengthsList"></div>
-                                    </div>
-                                    <div class="sw-card">
-                                        <div class="sw-card-title weakness">&#9660; Weaknesses</div>
-                                        <div id="swWeaknessesList"></div>
-                                    </div>
-                                </div>
-                                <div class="sw-rec-card">
-                                    <div class="sw-rec-title">&#128203; Recommended Transfer Portal Targets (within budget)</div>
-                                    <div id="swRecommendationsList"></div>
-                                </div>
-                            </div>
-                        </div>
+                        <!-- Horizontal 5-position depth chart (built by JS) -->
+                        <div id="dc-grid" class="hdc-grid"></div>
 
                     </div>
 
@@ -4388,25 +4165,100 @@
         // ═══════════════════════════════════════════════════════
 
         const rosterSlots = [
-            { id: 's1', label: 'PG',      tier: 'starter' },
-            { id: 's2', label: 'SG',      tier: 'starter' },
-            { id: 's3', label: 'SF',      tier: 'starter' },
-            { id: 's4', label: 'PF',      tier: 'starter' },
-            { id: 's5', label: 'C',       tier: 'starter' },
-            { id: 'r1', label: '6th Man', tier: 'reserve' },
-            { id: 'r2', label: 'Res. 2',  tier: 'reserve' },
-            { id: 'r3', label: 'Res. 3',  tier: 'reserve' },
-            { id: 'r4', label: 'Res. 4',  tier: 'reserve' },
-            { id: 'r5', label: 'Res. 5',  tier: 'reserve' },
-            { id: 'd1', label: 'Depth 1', tier: 'depth'   },
-            { id: 'd2', label: 'Depth 2', tier: 'depth'   },
-            { id: 'd3', label: 'Depth 3', tier: 'depth'   },
-            { id: 'd4', label: 'Depth 4', tier: 'depth'   },
-            { id: 'd5', label: 'Depth 5', tier: 'depth'   },
+            { id: 's1', label: 'PG', pos: 'PG', tier: 'starter' },
+            { id: 's2', label: 'SG', pos: 'SG', tier: 'starter' },
+            { id: 's3', label: 'SF', pos: 'SF', tier: 'starter' },
+            { id: 's4', label: 'PF', pos: 'PF', tier: 'starter' },
+            { id: 's5', label: 'C',  pos: 'C',  tier: 'starter' },
+            { id: 'r1', label: 'PG', pos: 'PG', tier: 'reserve' },
+            { id: 'r2', label: 'SG', pos: 'SG', tier: 'reserve' },
+            { id: 'r3', label: 'SF', pos: 'SF', tier: 'reserve' },
+            { id: 'r4', label: 'PF', pos: 'PF', tier: 'reserve' },
+            { id: 'r5', label: 'C',  pos: 'C',  tier: 'reserve' },
+            { id: 'd1', label: 'PG', pos: 'PG', tier: 'depth'   },
+            { id: 'd2', label: 'SG', pos: 'SG', tier: 'depth'   },
+            { id: 'd3', label: 'SF', pos: 'SF', tier: 'depth'   },
+            { id: 'd4', label: 'PF', pos: 'PF', tier: 'depth'   },
+            { id: 'd5', label: 'C',  pos: 'C',  tier: 'depth'   },
         ];
 
         let rosterBudget = 1500000;
         let rosterBuilt  = false;
+
+        // Lock state: { slotId: true } for confirmed/signed players
+        let rosterLocks = {};
+        try { rosterLocks = JSON.parse(localStorage.getItem('mbb_roster_locks') || '{}'); } catch(e) {}
+
+        function saveRosterToStorage() {
+            try {
+                const data = {};
+                rosterSlots.forEach(slot => {
+                    const n   = document.getElementById(`rp_name_${slot.id}`);
+                    const s   = document.getElementById(`rp_score_${slot.id}`);
+                    const sal = document.getElementById(`rp_salary_${slot.id}`);
+                    if (!n) return;
+                    data[slot.id] = { name: n.value, score: s?.value || '', salary: sal?.value || '', autoFilled: s?.dataset.autoFilled || '' };
+                });
+                localStorage.setItem('mbb_roster_data',  JSON.stringify(data));
+                localStorage.setItem('mbb_roster_locks', JSON.stringify(rosterLocks));
+            } catch(e) {}
+        }
+
+        function loadRosterFromStorage() {
+            try {
+                const data = JSON.parse(localStorage.getItem('mbb_roster_data') || '{}');
+                rosterSlots.forEach(slot => {
+                    const saved = data[slot.id];
+                    if (!saved) return;
+                    const n   = document.getElementById(`rp_name_${slot.id}`);
+                    const s   = document.getElementById(`rp_score_${slot.id}`);
+                    const sal = document.getElementById(`rp_salary_${slot.id}`);
+                    if (n   && saved.name)   n.value = saved.name;
+                    if (s   && saved.score)  { s.value = saved.score; s.dataset.autoFilled = saved.autoFilled || ''; }
+                    if (sal && saved.salary) sal.value = saved.salary;
+                    // Re-apply matched highlight without triggering a save loop
+                    if (n && saved.name) {
+                        const src = scoredData.length > 0 ? scoredData : playerData;
+                        const norm = v => (v||'').toLowerCase().replace(/\./g,'').replace(/\s+(jr|sr|ii|iii|iv)\s*$/i,'').replace(/\s+/g,' ').trim();
+                        if (src.find(p => norm(p.Player) === norm(saved.name))) n.classList.add('matched');
+                    }
+                });
+            } catch(e) {}
+        }
+
+        function updateRowLockVisual(slotId) {
+            const isLocked = !!rosterLocks[slotId];
+            const row      = document.getElementById(`dc-row-${slotId}`);
+            const nameEl   = document.getElementById(`rp_name_${slotId}`);
+            if (!row) return;
+            row.classList.toggle('locked', isLocked);
+            if (nameEl) nameEl.classList.toggle('locked', isLocked);
+            const lockBtn  = row.querySelector('.dc-lock-btn');
+            const clearBtn = row.querySelector('.dc-clear-btn');
+            if (lockBtn)  {
+                lockBtn.classList.toggle('locked', isLocked);
+                lockBtn.innerHTML = isLocked ? '&#128274;' : '&#128275;';
+                lockBtn.title     = isLocked ? 'Signed — click to unlock' : 'Click to lock (confirmed signed)';
+            }
+            if (clearBtn) {
+                clearBtn.disabled     = isLocked;
+                clearBtn.style.opacity = isLocked ? '0.2' : '';
+                clearBtn.title        = isLocked ? 'Unlock player first to clear' : 'Clear';
+            }
+        }
+
+        function toggleRosterLock(slotId) {
+            // Don't lock an empty slot
+            const nameEl = document.getElementById(`rp_name_${slotId}`);
+            if (!nameEl?.value.trim() && !rosterLocks[slotId]) return;
+            if (rosterLocks[slotId]) {
+                delete rosterLocks[slotId];
+            } else {
+                rosterLocks[slotId] = true;
+            }
+            updateRowLockVisual(slotId);
+            saveRosterToStorage();
+        }
 
         function getRosterSlotValues(slotId) {
             const nameEl   = document.getElementById(`rp_name_${slotId}`);
@@ -4421,43 +4273,60 @@
             };
         }
 
-        function buildRosterRows(tier, containerId) {
-            const container = document.getElementById(containerId);
+        function buildRosterGrid() {
+            const container = document.getElementById('dc-grid');
             if (!container) return;
-            const allIds = rosterSlots.map(s => s.id);
-            container.innerHTML = rosterSlots
-                .filter(s => s.tier === tier)
-                .map(slot => {
-                    const idx = allIds.indexOf(slot.id);
-                    const isFirst = idx === 0;
-                    const isLast  = idx === allIds.length - 1;
+            const positions  = ['PG','SG','SF','PF','C'];
+            const tierOrder  = ['starter','reserve','depth'];
+            const tierPrefix = { starter:'s', reserve:'r', depth:'d' };
+            const tierLabel  = { starter:'1st String', reserve:'2nd String', depth:'3rd String' };
+
+            container.innerHTML = positions.map((pos, posIdx) => {
+                const posNum = posIdx + 1;
+                const cells = tierOrder.map((tier, tierIdx) => {
+                    const slotId   = tierPrefix[tier] + posNum;
+                    const isFirst  = tierIdx === 0;
+                    const isLast   = tierIdx === tierOrder.length - 1;
+                    const isLocked = !!rosterLocks[slotId];
                     return `
-                    <div class="dc-row" id="dc-row-${slot.id}">
-                        <div class="dc-pos-badge">${slot.label}</div>
-                        <input type="text" class="dc-player-input" id="rp_name_${slot.id}"
-                               list="rosterPlayerDatalist" autocomplete="off"
-                               placeholder="Search or enter name…"
-                               oninput="onRosterNameInput('${slot.id}')">
-                        <input type="number" class="dc-score-input" id="rp_score_${slot.id}"
+                    <div class="hdc-cell${isLocked ? ' locked' : ''}" id="dc-row-${slotId}">
+                        <div class="hdc-depth-label">${tierLabel[tier]}</div>
+                        <input type="text" class="dc-player-input${isLocked ? ' locked' : ''}" id="rp_name_${slotId}"
+                               list="rosterPlayerDatalist" autocomplete="off" placeholder="Add player…"
+                               oninput="onRosterNameInput('${slotId}')">
+                        <input type="number" class="dc-score-input" id="rp_score_${slotId}"
                                placeholder="Score" min="0" max="130" step="0.1"
-                               title="Model score (auto-filled if player is in dataset)"
-                               oninput="updateRosterSummary()">
-                        <input type="number" class="dc-salary-input" id="rp_salary_${slot.id}"
-                               placeholder="0" min="0" step="1000"
-                               oninput="updateRosterSummary()">
-                        <button class="dc-move-btn" onclick="moveRosterRow('${slot.id}','up')" title="Move up" ${isFirst ? 'disabled' : ''}>&#9650;</button>
-                        <button class="dc-move-btn" onclick="moveRosterRow('${slot.id}','down')" title="Move down" ${isLast ? 'disabled' : ''}>&#9660;</button>
-                        <button class="dc-clear-btn" onclick="clearRosterSlot('${slot.id}')" title="Clear">&#10005;</button>
-                    </div>
-                `}).join('');
+                               title="Model score (auto-filled)" oninput="updateRosterSummary()">
+                        <div class="hdc-cell-footer">
+                            <input type="number" class="dc-salary-input" id="rp_salary_${slotId}"
+                                   placeholder="$0" min="0" step="1000" oninput="updateRosterSummary()">
+                            <div class="hdc-cell-actions">
+                                <button class="dc-lock-btn${isLocked ? ' locked' : ''}" onclick="toggleRosterLock('${slotId}')"
+                                        title="${isLocked ? 'Signed — click to unlock' : 'Lock as signed'}">
+                                    ${isLocked ? '&#128274;' : '&#128275;'}
+                                </button>
+                                <button class="dc-move-btn" onclick="moveRosterRow('${slotId}','up')" title="Move up" ${isFirst ? 'disabled' : ''}>&#9650;</button>
+                                <button class="dc-move-btn" onclick="moveRosterRow('${slotId}','down')" title="Move down" ${isLast ? 'disabled' : ''}>&#9660;</button>
+                                <button class="dc-clear-btn" onclick="clearRosterSlot('${slotId}')"
+                                        title="${isLocked ? 'Unlock to clear' : 'Clear'}"
+                                        ${isLocked ? 'disabled style="opacity:0.2;"' : ''}>&#10005;</button>
+                            </div>
+                        </div>
+                    </div>`;
+                }).join('');
+                return `<div class="hdc-col"><div class="hdc-col-header">${pos}</div>${cells}</div>`;
+            }).join('');
         }
 
         function moveRosterRow(slotId, direction) {
-            const allIds = rosterSlots.map(s => s.id);
-            const idx = allIds.indexOf(slotId);
-            const targetIdx = direction === 'up' ? idx - 1 : idx + 1;
-            if (targetIdx < 0 || targetIdx >= allIds.length) return;
-            const targetId = allIds[targetIdx];
+            // Movement is within the position column: s→r→d (or reverse)
+            const tierPrefixes = ['s','r','d'];
+            const prefix   = slotId[0];
+            const posNum   = slotId.slice(1);
+            const tierIdx  = tierPrefixes.indexOf(prefix);
+            const targetTierIdx = direction === 'up' ? tierIdx - 1 : tierIdx + 1;
+            if (targetTierIdx < 0 || targetTierIdx >= tierPrefixes.length) return;
+            const targetId = tierPrefixes[targetTierIdx] + posNum;
 
             const nameA  = document.getElementById(`rp_name_${slotId}`);
             const nameB  = document.getElementById(`rp_name_${targetId}`);
@@ -4483,17 +4352,23 @@
             mA ? nameB.classList.add('matched') : nameB.classList.remove('matched');
             mB ? nameA.classList.add('matched') : nameA.classList.remove('matched');
 
+            // Swap lock states (lock travels with the player, not the slot)
+            const lockA = !!rosterLocks[slotId];
+            const lockB = !!rosterLocks[targetId];
+            if (lockA) rosterLocks[targetId] = true; else delete rosterLocks[targetId];
+            if (lockB) rosterLocks[slotId]   = true; else delete rosterLocks[slotId];
+            updateRowLockVisual(slotId);
+            updateRowLockVisual(targetId);
+
             updateRosterSummary();
         }
 
         function renderRosterBuilder() {
             if (!rosterBuilt) {
-                buildRosterRows('starter', 'dc-starters');
-                buildRosterRows('reserve', 'dc-reserves');
-                buildRosterRows('depth',   'dc-depth');
+                buildRosterGrid();
+                loadRosterFromStorage();
                 rosterBuilt = true;
             }
-            populateRosterConferences();
             populateRosterDatalist();
             updateRosterSummary();
         }
@@ -4537,6 +4412,7 @@
         }
 
         function clearRosterSlot(slotId) {
+            if (rosterLocks[slotId]) return; // locked players cannot be cleared
             const n = document.getElementById(`rp_name_${slotId}`);
             const s = document.getElementById(`rp_score_${slotId}`);
             const sal = document.getElementById(`rp_salary_${slotId}`);
@@ -4547,8 +4423,12 @@
         }
 
         function clearFullRoster() {
-            if (!confirm('Clear all roster slots?')) return;
-            rosterSlots.forEach(s => clearRosterSlot(s.id));
+            const lockedCount = rosterSlots.filter(s => rosterLocks[s.id]).length;
+            const msg = lockedCount > 0
+                ? `Clear all ${rosterSlots.length - lockedCount} unlocked slot(s)? ${lockedCount} locked (signed) player(s) will be kept.`
+                : 'Clear all roster slots?';
+            if (!confirm(msg)) return;
+            rosterSlots.forEach(s => { if (!rosterLocks[s.id]) clearRosterSlot(s.id); });
         }
 
         function updateRosterBudgetInput() {
@@ -4781,21 +4661,9 @@
             setEl('rosterBudgetBar',       el => { el.style.width = barPct.toFixed(1) + '%'; el.style.background = over ? '#ff5050' : 'var(--accent-primary)'; });
             setEl('rosterBudgetCommitted', el => { el.textContent = '$' + Math.round(totalSalary).toLocaleString(); });
             setEl('rosterBudgetRemaining', el => { el.textContent = (over ? '-' : '') + '$' + Math.abs(Math.round(remaining)).toLocaleString(); el.style.color = over ? '#ff5050' : 'var(--accent-primary)'; });
-            setEl('rosterOverBudget',      el => { el.style.display = over ? 'block' : 'none'; });
+            setEl('rosterOverBudget',      el => { el.style.display = over ? 'inline' : 'none'; });
 
-            const proj = computeRosterWins();
-            setEl('rosterWinsDisplay',   el => { el.textContent = proj ? `${proj.wins}-${proj.losses}` : '—'; });
-            setEl('rosterWinPct',        el => { el.textContent = proj ? `Win%: ${proj.winPctDisplay}%` : 'Add starters to project wins'; });
-            setEl('rosterTQS',           el => { el.textContent = proj ? `Team Quality Score: ${proj.tqs}` : ''; });
-            setEl('rosterEfgNote',       el => { el.textContent = proj?.efgNote || ''; });
-            setEl('rosterBpmNote',       el => { el.textContent = proj?.bpmNote || ''; });
-            setEl('rosterWs40Note',      el => { el.textContent = proj?.ws40Note || ''; });
-            setEl('rosterTopgNote',      el => { el.textContent = proj?.topgNote || ''; });
-            setEl('rosterBalanceNote',   el => { el.textContent = proj?.balanceNote || ''; });
-            setEl('rosterConfBaseline',  el => { el.textContent = proj ? `${proj.confName} baseline: score ${proj.baseline}` : ''; });
-            setEl('rosterBaselineDesc',  el => { el.textContent = proj ? `${proj.confName} baseline \u2248 score ${proj.baseline}` : 'MAC baseline \u2248 score 55'; });
-
-            analyzeRosterStrengths();
+            saveRosterToStorage();
         }
 
         function analyzeRosterStrengths() {
@@ -4959,21 +4827,20 @@
         }
 
         function exportRosterCSV() {
-            const rows = [['Tier', 'Position', 'Player', 'Score', 'NIL Salary ($)']];
+            const depthLabel = { starter:'1st String', reserve:'2nd String', depth:'3rd String' };
+            const rows = [['Depth', 'Position', 'Player', 'Score', 'NIL Salary ($)']];
             rosterSlots.forEach(slot => {
                 const d = getRosterSlotValues(slot.id);
                 rows.push([
-                    slot.tier.charAt(0).toUpperCase() + slot.tier.slice(1),
-                    slot.label,
+                    depthLabel[slot.tier],
+                    slot.pos,
                     d.name  || '',
                     d.score != null ? d.score : '',
                     d.salary > 0    ? d.salary : '',
                 ]);
             });
-            const proj = computeRosterWins();
             rows.push(['']);
             rows.push(['Budget ($)', rosterBudget]);
-            if (proj) rows.push(['Projected Record', `${proj.wins}-${proj.losses}`, `Win% ${proj.winPctDisplay}%`, `TQS ${proj.tqs}`]);
             const csv  = rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
             const blob = new Blob([csv], { type: 'text/csv' });
             const url  = URL.createObjectURL(blob);
