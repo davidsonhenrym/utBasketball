@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-04-04T12:58:16.520085",
-  "total": 515,
+  "generated_at": "2026-04-04T20:21:49.145435",
+  "total": 521,
   "watchlist_in_portal": [
     "Francis Folefac",
     "Blake Barkley",
@@ -35,6 +35,83 @@
       "nil": "",
       "date": "",
       "url": "https://www.on3.com/nil/rankings/player/nil-valuations/"
+    },
+    {
+      "source": "247",
+      "name": "Colin White",
+      "from": "",
+      "to": "",
+      "pos": "SF",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/colin-white-46136401/college-323176/"
+    },
+    {
+      "source": "247",
+      "name": "Jack Reddick",
+      "from": "",
+      "to": "",
+      "pos": "PG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/jack-reddick-46148048/college-330963/"
+    },
+    {
+      "source": "247",
+      "name": "Onyx Nnani",
+      "from": "",
+      "to": "",
+      "pos": "PF",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/onyx-nnani-46144108/college-357850/"
+    },
+    {
+      "source": "247",
+      "name": "Boden Kapke",
+      "from": "",
+      "to": "",
+      "pos": "C",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/boden-kapke-46125709/college-344393/"
+    },
+    {
+      "source": "247",
+      "name": "Markus Burton",
+      "from": "",
+      "to": "",
+      "pos": "PG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/markus-burton-46135227/college-302740/"
+    },
+    {
+      "source": "247",
+      "name": "Jackson Keith",
+      "from": "",
+      "to": "",
+      "pos": "SF",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/jackson-keith-46135716/college-345824/"
+    },
+    {
+      "source": "247",
+      "name": "Naithan George",
+      "from": "",
+      "to": "",
+      "pos": "PG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/naithan-george-46143021/college-345939/"
     },
     {
       "source": "247",
@@ -5667,17 +5744,6 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/miles-white-46165602/college-355783/"
-    },
-    {
-      "source": "247",
-      "name": "Matt Filipowski",
-      "from": "",
-      "to": "",
-      "pos": "C",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/matt-filipowski-46104105/college-311812/"
     }
   ]
 }
