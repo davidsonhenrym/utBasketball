@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-05T12:59:50.285221",
+  "generated_at": "2026-04-05T20:24:14.656848",
   "total": 521,
   "watchlist_in_portal": [
     "Francis Folefac",
@@ -35,6 +35,94 @@
       "nil": "",
       "date": "",
       "url": "https://www.on3.com/nil/rankings/player/nil-valuations/"
+    },
+    {
+      "source": "247",
+      "name": "Tomislav Buljan",
+      "from": "",
+      "to": "",
+      "pos": "PF",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/tomislav-buljan-46165711/college-356548/"
+    },
+    {
+      "source": "247",
+      "name": "Kieran Mullen",
+      "from": "",
+      "to": "",
+      "pos": "C",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/kieran-mullen-46151782/college-345772/"
+    },
+    {
+      "source": "247",
+      "name": "JJ Frakes",
+      "from": "",
+      "to": "",
+      "pos": "SG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/jj-frakes-46153646/college-345866/"
+    },
+    {
+      "source": "247",
+      "name": "Acaden Lewis",
+      "from": "",
+      "to": "",
+      "pos": "CG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/acaden-lewis-46141946/college-345616/"
+    },
+    {
+      "source": "247",
+      "name": "Gabe Cupps",
+      "from": "",
+      "to": "",
+      "pos": "PG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/gabe-cupps-46099540/college-345872/"
+    },
+    {
+      "source": "247",
+      "name": "Josh Holloway",
+      "from": "",
+      "to": "",
+      "pos": "SG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/josh-holloway-46157521/college-345521/"
+    },
+    {
+      "source": "247",
+      "name": "Omaha Biliew",
+      "from": "",
+      "to": "",
+      "pos": "PF",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/omaha-biliew-46085177/college-321591/"
+    },
+    {
+      "source": "247",
+      "name": "Devon Pryor",
+      "from": "",
+      "to": "",
+      "pos": "SF",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/devon-pryor-46136256/college-345867/"
     },
     {
       "source": "247",
@@ -123,6 +211,17 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/naithan-george-46143021/college-345939/"
+    },
+    {
+      "source": "247",
+      "name": "Brandon Garrison",
+      "from": "",
+      "to": "",
+      "pos": "C",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/brandon-garrison-46109436/college-316071/"
     },
     {
       "source": "247",
@@ -5645,105 +5744,6 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/dylan-williams-46118409/college-355764/"
-    },
-    {
-      "source": "247",
-      "name": "Brady Muller",
-      "from": "",
-      "to": "",
-      "pos": "SF",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/brady-muller-46165599/college-355742/"
-    },
-    {
-      "source": "247",
-      "name": "Tyler Rice",
-      "from": "",
-      "to": "",
-      "pos": "PG",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/tyler-rice-46058441/college-355739/"
-    },
-    {
-      "source": "247",
-      "name": "Hansel Enmanuel",
-      "from": "",
-      "to": "",
-      "pos": "CG",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/hansel-enmanuel-46115310/college-324635/"
-    },
-    {
-      "source": "247",
-      "name": "Landen Joseph",
-      "from": "",
-      "to": "",
-      "pos": "PG",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/landen-joseph-46160888/college-342976/"
-    },
-    {
-      "source": "247",
-      "name": "Andrew Fuquay",
-      "from": "",
-      "to": "",
-      "pos": "SF",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/andrew-fuquay-46161076/college-343860/"
-    },
-    {
-      "source": "247",
-      "name": "Chase McKey",
-      "from": "",
-      "to": "",
-      "pos": "PF",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/chase-mckey-46165600/college-355767/"
-    },
-    {
-      "source": "247",
-      "name": "Liam Carney",
-      "from": "",
-      "to": "",
-      "pos": "SG",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/liam-carney-46165601/college-355769/"
-    },
-    {
-      "source": "247",
-      "name": "Zarique Nutter",
-      "from": "",
-      "to": "",
-      "pos": "SF",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/zarique-nutter-46098111/college-355704/"
-    },
-    {
-      "source": "247",
-      "name": "Demitri Gardner",
-      "from": "",
-      "to": "",
-      "pos": "SG",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/demitri-gardner-46163414/college-355706/"
     }
   ]
 }
