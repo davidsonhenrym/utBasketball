@@ -2183,6 +2183,7 @@
         <div class="modal-content animated">
             <div class="modal-header">
                 <div style="position:absolute;top:20px;right:20px;display:flex;gap:8px;align-items:center;">
+                    <button onclick="generateRecruitingReport(currentModalPlayer)" style="padding:5px 14px;background:transparent;border:1px solid #c9a227;border-radius:5px;color:#c9a227;font-family:'IBM Plex Mono',monospace;font-size:0.72rem;cursor:pointer;letter-spacing:0.05em;text-transform:uppercase;white-space:nowrap;">★ Report</button>
                     <button onclick="openSimilarModal(currentModalPlayer)" style="padding:5px 14px;background:transparent;border:1px solid var(--accent-primary);border-radius:5px;color:var(--accent-primary);font-family:'IBM Plex Mono',monospace;font-size:0.72rem;cursor:pointer;letter-spacing:0.05em;text-transform:uppercase;white-space:nowrap;">⊕ Similar</button>
                     <button onclick="openCompareModal(currentModalPlayer)" style="padding:5px 14px;background:transparent;border:1px solid var(--accent-secondary);border-radius:5px;color:var(--accent-secondary);font-family:'IBM Plex Mono',monospace;font-size:0.72rem;cursor:pointer;letter-spacing:0.05em;text-transform:uppercase;white-space:nowrap;">⇄ Compare</button>
                     <button style="background:var(--bg-primary);border:1px solid var(--border);color:var(--text-primary);width:35px;height:35px;border-radius:50%;font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;" onclick="closePlayerModal()">×</button>
@@ -4057,6 +4058,453 @@
 
         function closePlayerModal() {
             document.getElementById('playerModal').classList.remove('active');
+        }
+
+        // ── Recruiting Report ─────────────────────────────────────
+        function generateRecruitingReport(player) {
+            if (!player) return;
+
+            // Helper: rank player among all scored data for a given stat (higher = better unless inverted)
+            function statPercentile(val, key, invert) {
+                if (!scoredData || scoredData.length < 2) return null;
+                const vals = scoredData.map(p => parseFloat(p[key]) || 0).filter(v => !isNaN(v));
+                vals.sort((a, b) => a - b);
+                const rank = vals.filter(v => v < parseFloat(val)).length;
+                const pct = Math.round((rank / vals.length) * 100);
+                return invert ? 100 - pct : pct;
+            }
+
+            function pctLabel(pct) {
+                if (pct === null) return '';
+                if (pct >= 90) return `<span class="pct-pill pct-elite">Top ${100-pct}%</span>`;
+                if (pct >= 75) return `<span class="pct-pill pct-great">Top ${100-pct}%</span>`;
+                if (pct >= 55) return `<span class="pct-pill pct-good">Top ${100-pct}%</span>`;
+                return `<span class="pct-pill pct-avg">${pct}th Pct</span>`;
+            }
+
+            const ws   = parseFloat(player.WS)    || 0;
+            const wsP40 = parseFloat(player['WS/40']) || 0;
+            const ows  = parseFloat(player.OWS)   || 0;
+            const dws  = parseFloat(player.DWS)   || 0;
+            const efg  = parseFloat(player['eFG%']) || 0;
+            const ato  = parseFloat(player['A/TO']) || 0;
+            const bpm  = parseFloat(player.BPM)   || 0;
+            const obpm = parseFloat(player.OBPM)  || 0;
+            const dbpm = parseFloat(player.DBPM)  || 0;
+            const per  = parseFloat(player.PER)   || 0;
+            const ortg = parseFloat(player.ORtg)  || 0;
+            const drtg = parseFloat(player.DRtg)  || 0;
+            const ppg  = parseFloat(player.PPG)   || 0;
+            const apg  = parseFloat(player.APG)   || 0;
+            const rpg  = parseFloat(player['TRB/G'] || player['RPG']) || 0;
+            const spg  = parseFloat(player.SPG)   || 0;
+            const bpg  = parseFloat(player.BPG)   || 0;
+            const fgPct = parseFloat(player['FG%']) || 0;
+            const ftPct = parseFloat(player['FT%']) || 0;
+            const threePct = parseFloat(player['3P%']) || 0;
+            const plusMinus = parseFloat(player['+/-']) || 0;
+
+            // Percentiles
+            const wsP   = statPercentile(ws,   'WS',    false);
+            const efgP  = statPercentile(efg,  'eFG%',  false);
+            const atoP  = statPercentile(ato,  'A/TO',  false);
+            const bpmP  = statPercentile(bpm,  'BPM',   false);
+            const perP  = statPercentile(per,  'PER',   false);
+            const ortgP = statPercentile(ortg, 'ORtg',  false);
+            const drtgP = statPercentile(drtg, 'DRtg',  true);
+
+            // Narrative bullet generator
+            function wsNarrative() {
+                if (ws >= 5)  return `Accumulated <strong>${ws.toFixed(1)} Win Shares</strong> — an elite total that places him among the most productive players in the country. Win Shares directly measure a player's contribution to his team's victories; this output translates immediately to a winning program.`;
+                if (ws >= 3)  return `Posted <strong>${ws.toFixed(1)} Win Shares</strong>, a high-impact total demonstrating he is a clear net positive on the win column. These are minutes that WIN games.`;
+                if (ws >= 1.5) return `Produced <strong>${ws.toFixed(1)} Win Shares</strong>, a solid contribution showing consistent positive impact across the season.`;
+                return `Generated <strong>${ws.toFixed(1)} Win Shares</strong> with room to grow as he steps into a larger role.`;
+            }
+
+            function efgNarrative() {
+                const pct = (efg * 100).toFixed(1);
+                if (efg >= 0.57) return `Shot <strong>${pct}% eFG%</strong> — an elite mark that accounts for the bonus value of three-point shooting. At this efficiency, every possession he touches is a weapon. High eFG% is one of the strongest predictors of offensive success at any level.`;
+                if (efg >= 0.52) return `Clocked in at <strong>${pct}% eFG%</strong>, an above-average efficiency that signals he is making good decisions with the ball and converting at a high rate from all zones.`;
+                if (efg >= 0.48) return `Shot <strong>${pct}% eFG%</strong>, near the national average — with improved shot selection in our system, this number has significant upside.`;
+                return `Recorded a <strong>${pct}% eFG%</strong>. We believe our offensive system will unlock a higher efficiency profile for this player.`;
+            }
+
+            function atoNarrative() {
+                if (ato >= 3.0)  return `Delivered an <strong>${ato.toFixed(2)} Assist/Turnover ratio</strong> — elite ball security. Players who protect possessions at this level are invaluable: they amplify teammates without giving the opponent free buckets. This ratio separates great players from very good ones.`;
+                if (ato >= 2.0)  return `Maintained a <strong>${ato.toFixed(2)} A/TO ratio</strong>, demonstrating disciplined decision-making. He creates for others without being a liability — a core trait we look for in our offensive system.`;
+                if (ato >= 1.2)  return `Posted a <strong>${ato.toFixed(2)} A/TO ratio</strong>, showing he understands how to manage his playmaking without unnecessary risk.`;
+                return `Had a <strong>${ato.toFixed(2)} A/TO ratio</strong>. In our system, we develop ball handlers into smarter decision makers — we see this as a development opportunity.`;
+            }
+
+            function bpmNarrative() {
+                if (bpm >= 5)    return `His <strong>+${bpm.toFixed(1)} BPM</strong> (Box Plus/Minus) puts him in rarefied air — this metric estimates a player's contribution per 100 possessions above an average player. A +${bpm.toFixed(1)} is an ALL-CONFERENCE or better profile.`;
+                if (bpm >= 2.5)  return `A <strong>+${bpm.toFixed(1)} BPM</strong> signals an above-average impact player — his all-around game consistently tilts the box score in his team's favor on both ends.`;
+                if (bpm >= 0)    return `A <strong>${bpm >= 0 ? '+' : ''}${bpm.toFixed(1)} BPM</strong> reflects a neutral-to-positive impact on both ends — with our development staff, we project this growing significantly.`;
+                return `We are projecting a strong BPM improvement as he transitions into a role that better fits his strengths in our system.`;
+            }
+
+            function ortgNarrative() {
+                if (ortg >= 118) return `His <strong>${ortg.toFixed(0)} Offensive Rating</strong> is elite — his team scores over ${ortg.toFixed(0)} points per 100 possessions with him on the floor. He is a true offensive engine.`;
+                if (ortg >= 110) return `With a <strong>${ortg.toFixed(0)} Offensive Rating</strong>, he is a genuine offensive contributor who moves the needle when he is out there.`;
+                return ortg > 0 ? `Offensive Rating of <strong>${ortg.toFixed(0)}</strong> — we see clear system fit that will elevate this number.` : '';
+            }
+
+            function drtgNarrative() {
+                if (drtg > 0 && drtg <= 96)  return `Opposing teams score only <strong>${drtg.toFixed(0)} points per 100</strong> with him defending — elite-level resistance that translates directly into fewer opponent baskets and more wins.`;
+                if (drtg > 0 && drtg <= 103) return `His <strong>${drtg.toFixed(0)} Defensive Rating</strong> shows he is a capable defender who holds opponents below average efficiency on his end.`;
+                return '';
+            }
+
+            function perNarrative() {
+                if (per >= 25) return `A <strong>${per.toFixed(1)} PER</strong> (Player Efficiency Rating) is All-American territory — this composite metric captures his production per minute at a historically elite level.`;
+                if (per >= 20) return `His <strong>${per.toFixed(1)} PER</strong> exceeds the college average by a significant margin, confirming he produces at a high rate every minute he is on the court.`;
+                if (per >= 15) return `A <strong>${per.toFixed(1)} PER</strong> shows a productive player whose efficiency will grow in a role-specific system.`;
+                return '';
+            }
+
+            // Collect all reasons as HTML blocks
+            const reasons = [
+                { headline: 'Win Shares: Direct Contribution to Winning', icon: '🏆', narrative: wsNarrative(),
+                  stats: [
+                    { label: 'Win Shares', val: ws.toFixed(2), pct: wsP },
+                    { label: 'Off Win Shares', val: ows.toFixed(2), pct: null },
+                    { label: 'Def Win Shares', val: dws.toFixed(2), pct: null },
+                    { label: 'WS / 40 Min', val: wsP40.toFixed(3), pct: null },
+                  ]
+                },
+                { headline: 'Shooting Efficiency: Elite Floor Spacing', icon: '🎯', narrative: efgNarrative(),
+                  stats: [
+                    { label: 'eFG%', val: (efg*100).toFixed(1)+'%', pct: efgP },
+                    { label: 'FG%', val: (fgPct*100).toFixed(1)+'%', pct: null },
+                    { label: '3P%', val: threePct > 0 ? (threePct*100).toFixed(1)+'%' : '—', pct: null },
+                    { label: 'FT%', val: (ftPct*100).toFixed(1)+'%', pct: null },
+                  ]
+                },
+                { headline: 'Decision Making: Ball Security & Playmaking', icon: '🧠', narrative: atoNarrative(),
+                  stats: [
+                    { label: 'Ast/TO Ratio', val: ato.toFixed(2), pct: atoP },
+                    { label: 'APG', val: apg.toFixed(1), pct: null },
+                    { label: '+/−', val: (plusMinus >= 0 ? '+' : '') + plusMinus.toFixed(1), pct: null },
+                    { label: 'SPG', val: spg.toFixed(1), pct: null },
+                  ]
+                },
+                { headline: 'Advanced Impact: Box Plus/Minus', icon: '📊', narrative: bpmNarrative(),
+                  stats: [
+                    { label: 'BPM', val: (bpm >= 0?'+':'')+bpm.toFixed(1), pct: bpmP },
+                    { label: 'OBPM', val: (obpm>=0?'+':'')+obpm.toFixed(1), pct: null },
+                    { label: 'DBPM', val: (dbpm>=0?'+':'')+dbpm.toFixed(1), pct: null },
+                    { label: 'PER', val: per.toFixed(1), pct: perP },
+                  ]
+                },
+                { headline: 'Efficiency Ratings: Impact Per Possession', icon: '⚡', narrative: [ortgNarrative(), drtgNarrative()].filter(Boolean).join(' ') || 'Possession-level metrics confirm consistent two-way value.',
+                  stats: [
+                    { label: 'Off Rating', val: ortg > 0 ? ortg.toFixed(0) : '—', pct: ortgP },
+                    { label: 'Def Rating', val: drtg > 0 ? drtg.toFixed(0) : '—', pct: drtgP },
+                    { label: 'PPG', val: ppg.toFixed(1), pct: null },
+                    { label: 'RPG', val: rpg > 0 ? rpg.toFixed(1) : '—', pct: null },
+                  ]
+                }
+            ].filter(r => r.narrative);
+
+            const overallScore = (player.total_score || 0).toFixed(1);
+            const posRank = (() => {
+                if (!scoredData) return '';
+                const pos = scoredData.filter(p => p.position_category === player.position_category);
+                const rank = pos.findIndex(p => p.Player === player.Player) + 1;
+                return rank > 0 ? `#${rank} of ${pos.length} ${player.position_category}s` : '';
+            })();
+
+            const reasonBlocks = reasons.map(r => `
+                <div class="reason-block">
+                    <div class="reason-header">
+                        <span class="reason-icon">${r.icon}</span>
+                        <span class="reason-headline">${r.headline}</span>
+                    </div>
+                    <p class="reason-narrative">${r.narrative}</p>
+                    <div class="reason-stats">
+                        ${r.stats.map(s => `
+                            <div class="reason-stat">
+                                <div class="rs-val">${s.val}</div>
+                                <div class="rs-label">${s.label}</div>
+                                ${s.pct !== null ? `<div class="rs-pct">${pctLabel(s.pct)}</div>` : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+
+            const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Why We Want ${player.Player} — Toledo MBB</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=Archivo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --navy: #003865;
+    --gold: #c9a227;
+    --gold-light: #f0d060;
+    --dark: #0d1117;
+    --surface: #161b22;
+    --surface2: #21262d;
+    --border: #30363d;
+    --text: #e6edf3;
+    --text-muted: #8b949e;
+  }
+  body { font-family: 'Archivo', sans-serif; background: #f4f4f0; color: #1a1a1a; line-height: 1.6; }
+
+  /* ── Cover ── */
+  .cover {
+    background: linear-gradient(150deg, var(--navy) 0%, #001e40 60%, #0a0014 100%);
+    color: white;
+    padding: 60px 60px 50px;
+    position: relative;
+    overflow: hidden;
+  }
+  .cover::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(90deg, transparent, transparent 60px, rgba(201,162,39,0.04) 60px, rgba(201,162,39,0.04) 120px);
+    pointer-events: none;
+  }
+  .cover-eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 18px;
+  }
+  .cover-title {
+    font-size: 2.8rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+    margin-bottom: 6px;
+    color: #fff;
+  }
+  .cover-title span { color: var(--gold); }
+  .cover-subtitle {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.55);
+    margin-bottom: 36px;
+    letter-spacing: 0.05em;
+  }
+  .cover-meta {
+    display: flex;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+  .cover-meta-item { display: flex; flex-direction: column; gap: 4px; }
+  .cover-meta-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.62rem;
+    color: var(--gold);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .cover-meta-value { font-size: 1.4rem; font-weight: 900; color: #fff; }
+
+  /* ── Score Banner ── */
+  .score-banner {
+    background: var(--gold);
+    color: var(--navy);
+    padding: 22px 60px;
+    display: flex;
+    gap: 40px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .score-banner-label { font-size: 0.7rem; font-family: 'IBM Plex Mono', monospace; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; }
+  .score-banner-val { font-size: 2.2rem; font-weight: 900; }
+  .score-banner-divider { width: 1px; background: rgba(0,56,101,0.3); align-self: stretch; }
+
+  /* ── Body ── */
+  .body-wrap { max-width: 900px; margin: 0 auto; padding: 50px 40px 80px; }
+
+  .section-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+  .section-title {
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: var(--navy);
+    margin-bottom: 30px;
+    padding-bottom: 14px;
+    border-bottom: 3px solid var(--gold);
+  }
+
+  /* ── Reason Blocks ── */
+  .reason-block {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-left: 5px solid var(--gold);
+    border-radius: 10px;
+    padding: 28px 28px 22px;
+    margin-bottom: 22px;
+    box-shadow: 0 2px 8px rgba(0,56,101,0.06);
+    page-break-inside: avoid;
+  }
+  .reason-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .reason-icon { font-size: 1.4rem; }
+  .reason-headline {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--navy);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+  .reason-narrative {
+    font-size: 0.95rem;
+    color: #2c2c2c;
+    line-height: 1.7;
+    margin-bottom: 20px;
+  }
+  .reason-narrative strong { color: var(--navy); }
+  .reason-stats {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .reason-stat {
+    background: #f7f7f5;
+    border: 1px solid #e8e8e8;
+    border-radius: 8px;
+    padding: 12px 18px;
+    min-width: 90px;
+    text-align: center;
+  }
+  .rs-val { font-family: 'IBM Plex Mono', monospace; font-size: 1.35rem; font-weight: 700; color: var(--navy); }
+  .rs-label { font-size: 0.62rem; font-family: 'IBM Plex Mono', monospace; color: #777; text-transform: uppercase; letter-spacing: 0.08em; margin-top: 3px; }
+  .rs-pct { margin-top: 5px; }
+
+  /* ── Percentile Pills ── */
+  .pct-pill { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 0.6rem; font-family: 'IBM Plex Mono', monospace; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+  .pct-elite { background: #003865; color: #fff; }
+  .pct-great { background: #c9a227; color: #fff; }
+  .pct-good  { background: #2a7a4f; color: #fff; }
+  .pct-avg   { background: #6b7280; color: #fff; }
+
+  /* ── Footer ── */
+  .report-footer {
+    margin-top: 50px;
+    padding-top: 20px;
+    border-top: 2px solid var(--gold);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .footer-logo { font-size: 1.1rem; font-weight: 900; color: var(--navy); text-transform: uppercase; letter-spacing: 0.05em; }
+  .footer-meta { font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; color: #999; }
+
+  /* ── Print Button ── */
+  .print-bar {
+    background: var(--navy);
+    padding: 14px 40px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+  .print-btn {
+    background: var(--gold);
+    color: var(--navy);
+    border: none;
+    border-radius: 6px;
+    padding: 10px 28px;
+    font-family: 'Archivo', sans-serif;
+    font-weight: 800;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .print-btn:hover { background: var(--gold-light); }
+  .print-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.75rem; color: rgba(255,255,255,0.5); }
+
+  @media print {
+    .print-bar { display: none; }
+    body { background: #fff; }
+    .reason-block { box-shadow: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="print-bar">
+  <button class="print-btn" onclick="window.print()">Print / Save PDF</button>
+  <span class="print-label">University of Toledo Men's Basketball — Recruiting Report</span>
+</div>
+
+<div class="cover">
+  <div class="cover-eyebrow">University of Toledo Men's Basketball · Recruiting Intelligence</div>
+  <div class="cover-title">Why We Want<br><span>${player.Player}</span></div>
+  <div class="cover-subtitle">${player.Team} · ${player.Conference || ''} · ${player.position_category} · ${player.Height || ''} · ${player.Class || player.Yr || ''}</div>
+  <div class="cover-meta">
+    <div class="cover-meta-item">
+      <span class="cover-meta-label">Overall Score</span>
+      <span class="cover-meta-value">${overallScore}</span>
+    </div>
+    <div class="cover-meta-item">
+      <span class="cover-meta-label">Position Rank</span>
+      <span class="cover-meta-value">${posRank}</span>
+    </div>
+    <div class="cover-meta-item">
+      <span class="cover-meta-label">Win Shares</span>
+      <span class="cover-meta-value">${ws.toFixed(2)}</span>
+    </div>
+    <div class="cover-meta-item">
+      <span class="cover-meta-label">eFG%</span>
+      <span class="cover-meta-value">${(efg*100).toFixed(1)}%</span>
+    </div>
+    <div class="cover-meta-item">
+      <span class="cover-meta-label">A/TO Ratio</span>
+      <span class="cover-meta-value">${ato.toFixed(2)}</span>
+    </div>
+    <div class="cover-meta-item">
+      <span class="cover-meta-label">BPM</span>
+      <span class="cover-meta-value">${bpm >= 0 ? '+' : ''}${bpm.toFixed(1)}</span>
+    </div>
+  </div>
+</div>
+
+<div class="body-wrap">
+  <div class="section-label">The Case</div>
+  <div class="section-title">Why ${player.Player} Makes Toledo Better</div>
+
+  ${reasonBlocks}
+
+  <div class="report-footer">
+    <div class="footer-logo">Toledo MBB · Player Evaluation</div>
+    <div class="footer-meta">Generated ${new Date().toLocaleDateString('en-US', {year:'numeric',month:'long',day:'numeric'})} · Confidential</div>
+  </div>
+</div>
+
+</body>
+</html>`;
+
+            const win = window.open('', '_blank', 'width=1000,height=820,scrollbars=yes');
+            if (win) {
+                win.document.write(html);
+                win.document.close();
+            }
         }
 
         // ── Similar Players ──────────────────────────────────────
