@@ -3969,8 +3969,8 @@
                     <div class="modal-score-label">Overall Score</div>
                     <div class="modal-score-value ${scoreClass}">${(player.total_score || 0).toFixed(1)}</div>
                 </div>
-                <div class="modal-score-card" id="modalWinnerCard" style="border:1px solid ${cachedWinner ? _winnerScoreColor(cachedWinner) : 'rgba(255,199,44,0.3)'};background:${cachedWinner ? 'rgba(255,199,44,0.06)' : 'rgba(0,0,0,0.2)'};">
-                    <div class="modal-score-label" style="color:#FFC72C;">WINNER Score</div>
+                <div class="modal-score-card" id="modalWinnerCard" onclick="openWinnerBreakdown()" title="Click to see score breakdown" style="border:1px solid ${cachedWinner ? _winnerScoreColor(cachedWinner) : 'rgba(255,199,44,0.3)'};background:${cachedWinner ? 'rgba(255,199,44,0.06)' : 'rgba(0,0,0,0.2)'};cursor:pointer;transition:transform 0.15s,box-shadow 0.15s;" onmouseenter="this.style.transform='scale(1.03)';this.style.boxShadow='0 0 18px rgba(255,199,44,0.18)'" onmouseleave="this.style.transform='';this.style.boxShadow=''">
+                    <div class="modal-score-label" style="color:#FFC72C;">WINNER Score <span style="font-size:0.6em;opacity:0.7;">↗</span></div>
                     <div id="modalWinnerValue" class="modal-score-value" style="font-size:2rem;color:${cachedWinner ? _winnerScoreColor(cachedWinner) : 'var(--text-secondary)'};">${cachedWinner ? cachedWinner.toFixed(1) : '…'}</div>
                     <div id="modalWinnerLabel" style="font-size:0.58rem;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;margin-top:4px;color:var(--text-secondary);">${player._winnerLabel || 'fetching...'}</div>
                 </div>
@@ -7585,9 +7585,12 @@
                     const logs   = entry.logs   || [];
                     const hist   = entry.hist?.season || null;
                     const w = calcWinnerScore(season, pctl, logs, hist, null);
-                    player._winner      = parseFloat(w.score);
-                    player._winnerLabel = w.label;
-                    player._winnerColor = w.scoreColor;
+                    player._winner           = parseFloat(w.score);
+                    player._winnerLabel      = w.label;
+                    player._winnerColor      = w.scoreColor;
+                    player._winnerComponents = w.components;
+                    player._winnerRawAdj     = w.rawAdj;
+                    player._winnerRaw100     = w.raw;
                 });
             }));
 
@@ -8036,10 +8039,14 @@
             if (mwCard) { mwCard.style.borderColor = w.scoreColor; mwCard.style.background = 'rgba(0,0,0,0.15)'; }
             // Cache on the player object if opened from the ranked list
             if (currentModalPlayer) {
-                currentModalPlayer._winner      = parseFloat(w.score);
-                currentModalPlayer._winnerLabel = w.label;
-                currentModalPlayer._winnerColor = w.scoreColor;
+                currentModalPlayer._winner           = parseFloat(w.score);
+                currentModalPlayer._winnerLabel      = w.label;
+                currentModalPlayer._winnerColor      = w.scoreColor;
+                currentModalPlayer._winnerComponents = w.components;
+                currentModalPlayer._winnerRawAdj     = w.rawAdj;
+                currentModalPlayer._winnerRaw100     = w.raw;
             }
+            _winnerBreakdownCtx = { player: currentModalPlayer, w, season, pctl, logs, hist, proj, found };
 
             const recentGames = logs.slice(-6).reverse().map(g => {
                 const bpmV = parseFloat(g.bpm);
@@ -8237,6 +8244,190 @@
                 </div>`;
         }
 
+        // ── WINNER Score Breakdown Modal ──────────────────────────────────────────
+        let _winnerBreakdownCtx = null;
+
+        function openWinnerBreakdown() {
+            const player = currentModalPlayer;
+            if (!player) return;
+            if (!player._winnerComponents) {
+                // Components not loaded yet — show a brief waiting state
+                const modal = document.getElementById('winnerBreakdownModal');
+                if (modal) modal.style.display = 'flex';
+                const el = document.getElementById('wbContent');
+                if (el) el.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-secondary);font-size:0.8rem;">Loading WINNER data — open the Analytics tab first, then click again.</div>';
+                return;
+            }
+            renderWinnerBreakdownContent();
+            document.getElementById('winnerBreakdownModal').style.display = 'flex';
+        }
+
+        function closeWinnerBreakdown() {
+            document.getElementById('winnerBreakdownModal').style.display = 'none';
+        }
+
+        function _wbCompPercentile(compKey, value) {
+            const peers = (scoredData || []).filter(p => p._winnerComponents);
+            if (!peers.length) return null;
+            const vals = peers.map(p => p._winnerComponents[compKey] ?? 0).sort((a, b) => a - b);
+            const below = vals.filter(v => v < value).length;
+            return Math.round((below / vals.length) * 100);
+        }
+
+        function _wbOverallPercentile(score) {
+            const peers = (scoredData || []).filter(p => p._winner != null);
+            if (!peers.length) return null;
+            const vals = peers.map(p => p._winner).sort((a, b) => a - b);
+            const below = vals.filter(v => v < score).length;
+            return Math.round((below / vals.length) * 100);
+        }
+
+        function renderWinnerBreakdownContent() {
+            const player = currentModalPlayer;
+            if (!player || !player._winnerComponents) return;
+            const components = player._winnerComponents;
+            const score      = player._winner;
+            const label      = player._winnerLabel || '';
+            const scoreColor = player._winnerColor || '#FFC72C';
+            const overallPct = _wbOverallPercentile(score);
+
+            const compDefs = [
+                { key: 'impact',      label: 'Impact',       weight: 30, desc: 'Schedule-adjusted BPM — direct contribution to winning.' },
+                { key: 'winShares',   label: 'Win Shares',   weight: 20, desc: 'Volume of wins produced (impact × minutes × games).' },
+                { key: 'efficiency',  label: 'Efficiency',   weight: 15, desc: 'Offensive efficiency: True Shooting vs. ball usage.' },
+                { key: 'defense',     label: 'Defense',      weight: 15, desc: 'Defensive rating relative to league average.' },
+                { key: 'consistency', label: 'Consistency',  weight: 10, desc: 'Low variance in game-log BPM — shows up every night.' },
+                { key: 'ballControl', label: 'Ball Control', weight: 10, desc: 'Low turnover rate and high assist-to-turnover ratio.' },
+            ];
+
+            const compCards = compDefs.map(def => {
+                const rawScore = components[def.key] ?? 0;
+                const pct = _wbCompPercentile(def.key, rawScore);
+                const pctStr = pct != null ? `${pct}th pct` : '—';
+                const color = rawScore >= 70 ? '#4ade80' : rawScore >= 40 ? '#FFC72C' : '#f87171';
+                const barW = Math.round(rawScore);
+                return `
+                <div style="background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:14px 16px;">
+                    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;">
+                        <span style="font-weight:700;font-size:0.78rem;color:#fff;">${def.label}</span>
+                        <span style="font-family:'IBM Plex Mono',monospace;font-size:0.6rem;color:var(--text-secondary);">${def.weight}% wt</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:5px;">
+                        <div style="flex:1;height:8px;background:rgba(255,255,255,0.08);border-radius:4px;overflow:hidden;">
+                            <div style="height:100%;width:${barW}%;background:${color};border-radius:4px;"></div>
+                        </div>
+                        <span style="font-family:'IBM Plex Mono',monospace;font-size:0.78rem;font-weight:700;color:${color};min-width:28px;text-align:right;">${Math.round(rawScore)}</span>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+                        <span style="font-size:0.58rem;color:var(--text-secondary);line-height:1.3;">${def.desc}</span>
+                        <span style="font-size:0.6rem;font-weight:700;font-family:'IBM Plex Mono',monospace;color:${color};white-space:nowrap;">${pctStr}</span>
+                    </div>
+                </div>`;
+            }).join('');
+
+            const trackBonus = components.trackBonus || 0;
+            const trackHtml = trackBonus !== 0 ? `
+                <div style="margin-top:12px;background:rgba(255,199,44,0.05);border:1px solid rgba(255,199,44,0.2);border-radius:8px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;">
+                    <span style="font-size:0.72rem;color:var(--text-secondary);">Track Record Bonus</span>
+                    <span style="font-family:'IBM Plex Mono',monospace;font-weight:700;color:${trackBonus > 0 ? '#4ade80' : '#f87171'};">${trackBonus > 0 ? '+' : ''}${trackBonus.toFixed(1)} pts</span>
+                </div>` : '';
+
+            const teamOpts = [...new Set((scoredData || [])
+                .map(p => p.Team || p.team || '').filter(Boolean))].sort()
+                .map(t => `<option value="${escHtml(t)}">${escHtml(t)}</option>`).join('');
+
+            const el = document.getElementById('wbContent');
+            if (!el) return;
+            el.innerHTML = `
+                <div style="text-align:center;padding:20px 0 10px;">
+                    <div style="font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.15em;color:var(--text-secondary);margin-bottom:6px;">WINNER Score</div>
+                    <div style="font-size:4rem;font-weight:900;line-height:1;color:${scoreColor};">${score.toFixed(1)}</div>
+                    <div style="font-size:0.65rem;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;padding:4px 14px;border-radius:6px;margin-top:10px;background:rgba(255,255,255,0.07);color:${scoreColor};display:inline-block;">${escHtml(label)}</div>
+                    ${overallPct != null ? `<div style="font-size:0.6rem;color:var(--text-secondary);margin-top:8px;font-family:'IBM Plex Mono',monospace;">Top ${100 - overallPct}% of loaded players</div>` : ''}
+                    <div style="font-size:0.7rem;color:var(--text-secondary);margin-top:4px;">${escHtml(player.Player || '')}</div>
+                </div>
+
+                <div style="font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-secondary);margin:16px 0 10px;">Score Breakdown</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">${compCards}</div>
+                ${trackHtml}
+
+                <div style="font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-secondary);margin:22px 0 10px;">Team Impact Simulator</div>
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+                    <label style="font-size:0.7rem;color:var(--text-secondary);white-space:nowrap;">Select team:</label>
+                    <select id="wbTeamPicker" onchange="renderWinnerTeamImpact()" style="background:rgba(0,0,0,0.4);color:#fff;border:1px solid rgba(255,255,255,0.15);border-radius:6px;padding:5px 10px;font-size:0.72rem;flex:1;">
+                        <option value="">— pick a team —</option>
+                        ${teamOpts}
+                    </select>
+                </div>
+                <div id="wbTeamImpactArea"></div>
+            `;
+        }
+
+        function renderWinnerTeamImpact() {
+            const player = currentModalPlayer;
+            if (!player) return;
+            const picker = document.getElementById('wbTeamPicker');
+            const teamName = picker ? picker.value : '';
+            const area = document.getElementById('wbTeamImpactArea');
+            if (!area) return;
+            if (!teamName) { area.innerHTML = ''; return; }
+
+            const newScore = player._winner ?? 0;
+
+            const roster = (scoredData || [])
+                .filter(p => (p.Team || p.team || '') === teamName && p.Player !== player.Player && p._winner != null)
+                .sort((a, b) => b._winner - a._winner);
+
+            if (!roster.length) {
+                area.innerHTML = `<div style="font-size:0.7rem;color:var(--text-secondary);text-align:center;padding:12px;">No WINNER data for ${escHtml(teamName)} — WINNER scores load after the main table appears.</div>`;
+                return;
+            }
+
+            const currentAvg = roster.reduce((s, p) => s + p._winner, 0) / roster.length;
+            const newRoster  = [...roster, { Player: player.Player, _winner: newScore, _new: true }]
+                               .sort((a, b) => b._winner - a._winner);
+            const newAvg  = newRoster.reduce((s, p) => s + p._winner, 0) / newRoster.length;
+            const delta   = newAvg - currentAvg;
+            const deltaColor = delta > 0.005 ? '#4ade80' : delta < -0.005 ? '#f87171' : 'var(--text-secondary)';
+            const maxScore = Math.max(...newRoster.map(p => p._winner), 10);
+
+            const rows = newRoster.map((p, i) => {
+                const isNew = p._new;
+                const sc    = p._winner ?? 0;
+                const color = _winnerScoreColor(sc);
+                const barW  = Math.round((sc / maxScore) * 100);
+                return `
+                <div style="display:grid;grid-template-columns:22px 1fr auto;align-items:center;gap:8px;padding:6px 8px;border-bottom:1px solid rgba(255,255,255,0.04);${isNew ? 'background:rgba(255,199,44,0.07);border-radius:6px;border-bottom:none;' : ''}">
+                    <span style="font-size:0.6rem;color:var(--text-secondary);text-align:center;">${i + 1}</span>
+                    <div>
+                        <div style="font-size:0.72rem;font-weight:${isNew ? '800' : '500'};color:${isNew ? '#FFC72C' : '#fff'};">${escHtml(p.Player)}${isNew ? ' ★' : ''}</div>
+                        <div style="height:4px;background:rgba(255,255,255,0.07);border-radius:2px;margin-top:4px;overflow:hidden;">
+                            <div style="height:100%;width:${barW}%;background:${color};border-radius:2px;"></div>
+                        </div>
+                    </div>
+                    <span style="font-family:'IBM Plex Mono',monospace;font-size:0.75rem;font-weight:700;color:${color};">${sc.toFixed(1)}</span>
+                </div>`;
+            }).join('');
+
+            area.innerHTML = `
+                <div style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;margin-bottom:16px;">
+                    <div style="background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:12px;text-align:center;">
+                        <div style="font-size:0.56rem;color:var(--text-secondary);font-weight:700;text-transform:uppercase;letter-spacing:0.1em;">Without Player</div>
+                        <div style="font-size:1.7rem;font-weight:800;color:var(--text-secondary);margin-top:4px;">${currentAvg.toFixed(2)}</div>
+                        <div style="font-size:0.55rem;color:var(--text-secondary);">avg WINNER</div>
+                    </div>
+                    <div style="font-size:1.4rem;color:${deltaColor};font-weight:700;">→</div>
+                    <div style="background:rgba(0,0,0,0.25);border:1px solid ${deltaColor};border-radius:8px;padding:12px;text-align:center;">
+                        <div style="font-size:0.56rem;color:${deltaColor};font-weight:700;text-transform:uppercase;letter-spacing:0.1em;">With Player</div>
+                        <div style="font-size:1.7rem;font-weight:800;color:${deltaColor};margin-top:4px;">${newAvg.toFixed(2)}</div>
+                        <div style="font-size:0.55rem;color:${deltaColor};">${delta >= 0 ? '+' : ''}${delta.toFixed(2)} avg</div>
+                    </div>
+                </div>
+                <div style="font-size:0.62rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-secondary);margin-bottom:8px;">Projected Roster — WINNER ranked</div>
+                <div style="background:rgba(0,0,0,0.2);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:8px 10px;">${rows}</div>
+            `;
+        }
+
         // ── End Prospect Board ────────────────────────────────────────────────────
 
         // Initialize on page load — weights/min/max are editable during the session
@@ -8251,5 +8442,22 @@
         // Silently auto-sync portal snapshot if folder was previously set
         _autoLoadPortalOnStart();
     </script>
+
+    <!-- ── WINNER Score Breakdown Modal ──────────────────────────────────── -->
+    <div id="winnerBreakdownModal" onclick="if(event.target===this)closeWinnerBreakdown()"
+         style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.78);
+                backdrop-filter:blur(5px);justify-content:center;align-items:flex-start;
+                overflow-y:auto;padding:24px 16px;">
+        <div style="background:#12121e;border:1px solid rgba(255,255,255,0.1);border-radius:16px;
+                    max-width:780px;width:100%;margin:auto;padding:28px 26px;position:relative;">
+            <button onclick="closeWinnerBreakdown()"
+                    style="position:absolute;top:14px;right:16px;background:none;border:none;
+                           color:var(--text-secondary);font-size:1.4rem;cursor:pointer;line-height:1;
+                           opacity:0.7;transition:opacity 0.15s;" onmouseenter="this.style.opacity=1" onmouseleave="this.style.opacity=0.7">✕</button>
+            <div style="font-size:0.58rem;font-weight:700;text-transform:uppercase;letter-spacing:0.18em;
+                        color:var(--text-secondary);margin-bottom:2px;font-family:'IBM Plex Mono',monospace;">WINNER Score Breakdown</div>
+            <div id="wbContent"></div>
+        </div>
+    </div>
 </body>
 </html>
