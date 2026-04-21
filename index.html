@@ -7798,16 +7798,28 @@
 
             // ── 3. Efficiency (15%) — efficient scoring wins possessions ──────────
             const effParts = [];
+            const tsRaw   = parseFloat(s.ts   ?? proj?.ts);
+            const ortgRaw = parseFloat(s.ortg ?? proj?.ortg);
+            const efgRaw  = parseFloat(s.efg  ?? proj?.efg);
             if (pct('ts')   !== null) effParts.push(pct('ts'));
+            else if (!isNaN(tsRaw)   && tsRaw > 0) effParts.push(Math.max(0, Math.min(100, (tsRaw - 0.40) / 0.30 * 100)));
             if (pct('ortg') !== null) effParts.push(pct('ortg'));
+            else if (!isNaN(ortgRaw) && ortgRaw > 0) effParts.push(Math.max(0, Math.min(100, (ortgRaw - 90) / 40 * 100)));
             if (pct('efg')  !== null) effParts.push(pct('efg'));
+            else if (!isNaN(efgRaw)  && efgRaw > 0 && effParts.length < 2) effParts.push(Math.max(0, Math.min(100, (efgRaw - 0.40) / 0.30 * 100)));
             const effScore = effParts.length ? effParts.reduce((a,b)=>a+b)/effParts.length : 50;
 
             // ── 4. Defense (15%) — can't win without stopping people ──────────────
             const defParts = [];
+            const drtgRaw = parseFloat(s.drtg ?? proj?.drtg);
+            const stlRaw  = parseFloat(s.stl  ?? proj?.stl);
+            const blkRaw  = parseFloat(s.blk  ?? proj?.blk);
             if (pct('drtg') !== null) defParts.push(100 - pct('drtg')); // invert: lower DRtg = better
+            else if (!isNaN(drtgRaw) && drtgRaw > 0) defParts.push(Math.max(0, Math.min(100, (125 - drtgRaw) / 35 * 100)));
             if (pct('stl')  !== null) defParts.push(pct('stl'));
+            else if (!isNaN(stlRaw)  && stlRaw >= 0) defParts.push(Math.max(0, Math.min(100, stlRaw / 2.5 * 100)));
             if (pct('blk')  !== null) defParts.push(pct('blk'));
+            else if (!isNaN(blkRaw)  && blkRaw >= 0) defParts.push(Math.max(0, Math.min(100, blkRaw / 2.5 * 100)));
             const defScore = defParts.length ? defParts.reduce((a,b)=>a+b)/defParts.length : 50;
 
             // ── 5. Consistency (10%) — reliable winners beat boom-or-bust players ─
@@ -7828,7 +7840,11 @@
             }
 
             // ── 6. Ball Control / Playmaking (10%) ───────────────────────────────
-            const ballScore = pct('ast') ?? 50;
+            const astRaw = parseFloat(s.ast ?? proj?.ast);
+            let ballScore;
+            if (pct('ast') !== null) ballScore = pct('ast');
+            else if (!isNaN(astRaw) && astRaw >= 0) ballScore = Math.max(0, Math.min(100, astRaw / 8.0 * 100));
+            else ballScore = 50;
 
             // ── Track-record bonus ────────────────────────────────────────────────
             let trackBonus = 0;
