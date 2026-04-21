@@ -8267,11 +8267,8 @@
         }
 
         function _wbCompPercentile(compKey, value) {
-            const peers = (scoredData || []).filter(p => p._winnerComponents);
-            if (!peers.length) return null;
-            const vals = peers.map(p => p._winnerComponents[compKey] ?? 0).sort((a, b) => a - b);
-            const below = vals.filter(v => v < value).length;
-            return Math.round((below / vals.length) * 100);
+            // Component scores are already percentile-ranked vs. all CBB players in Colin's database
+            return Math.round(value);
         }
 
         function _wbOverallPercentile(score) {
@@ -8303,7 +8300,7 @@
             const compCards = compDefs.map(def => {
                 const rawScore = components[def.key] ?? 0;
                 const pct = _wbCompPercentile(def.key, rawScore);
-                const pctStr = pct != null ? `${pct}th pct` : '—';
+                const pctStr = pct != null ? `${pct}th pct (CBB)` : '—';
                 const color = rawScore >= 70 ? '#4ade80' : rawScore >= 40 ? '#FFC72C' : '#f87171';
                 const barW = Math.round(rawScore);
                 return `
