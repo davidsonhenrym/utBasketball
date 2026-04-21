@@ -7784,7 +7784,7 @@
             let winShareScore = 50;
             const mpg   = parseFloat(s.mpg   ?? proj?.mpg   ?? NaN);
             const games = parseFloat(s.games ?? NaN);
-            if (!isNaN(rawAdj) && !isNaN(mpg) && !isNaN(games)) {
+            if (!isNaN(rawAdj) && rawAdj !== 0 && !isNaN(mpg) && !isNaN(games)) {
                 const proxyWS = rawAdj * (mpg / 40) * (games / 34);
                 if (proxyWS >= 0) {
                     winShareScore = Math.min(100, 50 + (proxyWS / 0.08) * 50);
@@ -7794,6 +7794,8 @@
             } else if (pct('adjbpm') !== null) {
                 // Fallback: use adjBPM percentile as volume proxy
                 winShareScore = pct('adjbpm');
+            } else {
+                winShareScore = impactScore;
             }
 
             // ── 3. Efficiency (15%) — efficient scoring wins possessions ──────────
@@ -8387,26 +8389,29 @@
 
             const newScore = player._winner ?? 0;
 
+            const effectiveScore = p => p._winner ?? Math.max(1.0, Math.min(10.0, 1.0 + ((p.total_score || 0) / 100) * 9.0));
+
             const roster = (scoredData || [])
-                .filter(p => (p.Team || p.team || '') === teamName && p.Player !== player.Player && p._winner != null)
-                .sort((a, b) => b._winner - a._winner);
+                .filter(p => (p.Team || p.team || '') === teamName && p.Player !== player.Player)
+                .sort((a, b) => effectiveScore(b) - effectiveScore(a));
 
             if (!roster.length) {
-                area.innerHTML = `<div style="font-size:0.7rem;color:var(--text-secondary);text-align:center;padding:12px;">No WINNER data for ${escHtml(teamName)} — WINNER scores load after the main table appears.</div>`;
+                area.innerHTML = `<div style="font-size:0.7rem;color:var(--text-secondary);text-align:center;padding:12px;">No roster data found for ${escHtml(teamName)}.</div>`;
                 return;
             }
 
-            const currentAvg = roster.reduce((s, p) => s + p._winner, 0) / roster.length;
+            const usingFallback = roster.some(p => p._winner == null);
+            const currentAvg = roster.reduce((s, p) => s + effectiveScore(p), 0) / roster.length;
             const newRoster  = [...roster, { Player: player.Player, _winner: newScore, _new: true }]
-                               .sort((a, b) => b._winner - a._winner);
-            const newAvg  = newRoster.reduce((s, p) => s + p._winner, 0) / newRoster.length;
+                               .sort((a, b) => effectiveScore(b) - effectiveScore(a));
+            const newAvg  = newRoster.reduce((s, p) => s + effectiveScore(p), 0) / newRoster.length;
             const delta   = newAvg - currentAvg;
             const deltaColor = delta > 0.005 ? '#4ade80' : delta < -0.005 ? '#f87171' : 'var(--text-secondary)';
-            const maxScore = Math.max(...newRoster.map(p => p._winner), 10);
+            const maxScore = Math.max(...newRoster.map(p => effectiveScore(p)), 10);
 
             const rows = newRoster.map((p, i) => {
                 const isNew = p._new;
-                const sc    = p._winner ?? 0;
+                const sc    = effectiveScore(p);
                 const color = _winnerScoreColor(sc);
                 const barW  = Math.round((sc / maxScore) * 100);
                 return `
@@ -8438,6 +8443,7 @@
                 </div>
                 <div style="font-size:0.62rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-secondary);margin-bottom:8px;">Projected Roster — WINNER ranked</div>
                 <div style="background:rgba(0,0,0,0.2);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:8px 10px;">${rows}</div>
+                ${usingFallback ? `<div style="font-size:0.58rem;color:var(--text-secondary);margin-top:8px;text-align:center;opacity:0.7;">★ Some scores estimated from model rating (WINNER not yet loaded)</div>` : ''}
             `;
         }
 
