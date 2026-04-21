@@ -7778,21 +7778,30 @@
                 impactScore = isNaN(rawAdj) ? 50 : Math.max(0, Math.min(100, (rawAdj + 10) / 30 * 100));
             }
 
-            // ── 2. Win Shares proxy (20%) — volume × efficiency ───────────────────
-            // proxy_WS = adjBPM × (mpg/40) × (games/34)
-            // Normalization: proxy_WS of 0.08 → 100, 0 → 50, negative → penalty
+            // ── 2. Win Shares (20%) — use actual WS / WS40 from season stats ─────
             let winShareScore = 50;
             const mpg   = parseFloat(s.mpg   ?? proj?.mpg   ?? NaN);
             const games = parseFloat(s.games ?? NaN);
-            if (!isNaN(rawAdj) && rawAdj !== 0 && !isNaN(mpg) && !isNaN(games)) {
-                const proxyWS = rawAdj * (mpg / 40) * (games / 34);
-                if (proxyWS >= 0) {
-                    winShareScore = Math.min(100, 50 + (proxyWS / 0.08) * 50);
-                } else {
-                    winShareScore = Math.max(0, 50 + proxyWS * 20);
+            const wsRaw   = parseFloat(s.ws    ?? proj?.ws    ?? NaN);
+            const ws40Raw = parseFloat(s.ws_40 ?? s.ws40 ?? proj?.ws_40 ?? proj?.ws40 ?? NaN);
+
+            if (!isNaN(wsRaw) || !isNaN(ws40Raw)) {
+                const parts = [];
+                if (!isNaN(wsRaw)) {
+                    const wsPct = pct('ws');
+                    parts.push(wsPct !== null ? wsPct : Math.max(0, Math.min(100, (wsRaw / 6.0) * 100)));
                 }
+                if (!isNaN(ws40Raw)) {
+                    const ws40Pct = pct('ws_40') ?? pct('ws40');
+                    parts.push(ws40Pct !== null ? ws40Pct : Math.max(0, Math.min(100, (ws40Raw / 0.15) * 100)));
+                }
+                winShareScore = parts.reduce((a, b) => a + b, 0) / parts.length;
+            } else if (!isNaN(rawAdj) && rawAdj !== 0 && !isNaN(mpg) && !isNaN(games)) {
+                const proxyWS = rawAdj * (mpg / 40) * (games / 34);
+                winShareScore = proxyWS >= 0
+                    ? Math.min(100, 50 + (proxyWS / 0.08) * 50)
+                    : Math.max(0, 50 + proxyWS * 20);
             } else if (pct('adjbpm') !== null) {
-                // Fallback: use adjBPM percentile as volume proxy
                 winShareScore = pct('adjbpm');
             } else {
                 winShareScore = impactScore;
