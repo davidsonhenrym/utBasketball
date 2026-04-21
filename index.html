@@ -7584,7 +7584,8 @@
                     const pctl   = entry.pctl   || {};
                     const logs   = entry.logs   || [];
                     const hist   = entry.hist?.season || null;
-                    const w = calcWinnerScore(season, pctl, logs, hist, null);
+                    const dbProj = { ws: player.WS, ws_40: player['WS/40'] };
+                    const w = calcWinnerScore(season, pctl, logs, hist, dbProj);
                     player._winner           = parseFloat(w.score);
                     player._winnerLabel      = w.label;
                     player._winnerColor      = w.scoreColor;
@@ -7754,7 +7755,7 @@
         //
         // Components:
         //   Impact      30% — adjBPM percentile (rate of winning contribution)
-        //   Win Shares  20% — proxy Win Shares: adjBPM × games × mpg (volume)
+        //   Win Shares  20% — actual WS + WS/40 from DB; proxy as fallback
         //   Efficiency  15% — TS% + ORtg (efficient scoring wins possessions)
         //   Defense     15% — inverted DRtg + stl + blk (stopping people)
         //   Consistency 10% — game-log BPM σ (reliable beats spectacular)
@@ -8062,13 +8063,14 @@
             const pctl   = found?.data?.pctl   || {};
             const hist   = found?.data?.hist?.season || null;
             const logs   = found?.data?.logs   || [];
-            const w      = calcWinnerScore(season, pctl, logs, hist, proj);
-            const adjbpm = season.adjbpm ?? proj?.adjbpm;
-            const ortg   = season.ortg   ?? proj?.ortg;
-            const drtg   = season.drtg   ?? proj?.drtg;
-            const ts     = season.ts     ?? proj?.ts;
-            const pts    = season.pts    ?? proj?.pts;
-            const reb    = season.reb    ?? proj?.reb;
+            const projAug = { ws: currentModalPlayer?.WS, ws_40: currentModalPlayer?.['WS/40'], ...proj };
+            const w      = calcWinnerScore(season, pctl, logs, hist, projAug);
+            const adjbpm = season.adjbpm ?? projAug?.adjbpm;
+            const ortg   = season.ortg   ?? projAug?.ortg;
+            const drtg   = season.drtg   ?? projAug?.drtg;
+            const ts     = season.ts     ?? projAug?.ts;
+            const pts    = season.pts    ?? projAug?.pts;
+            const reb    = season.reb    ?? projAug?.reb;
             const ast    = season.ast    ?? proj?.ast;
             const blk    = season.blk   ?? proj?.blk;
             const stl    = season.stl   ?? proj?.stl;
@@ -8147,11 +8149,12 @@
             const pctl   = found?.data?.pctl   || {};
             const hist   = found?.data?.hist?.season || null;
             const logs   = found?.data?.logs   || [];
-            const w      = calcWinnerScore(season, pctl, logs, hist, proj);
-            const adjbpm = season.adjbpm ?? proj?.adjbpm;
-            const ortg   = season.ortg   ?? proj?.ortg;
-            const drtg   = season.drtg   ?? proj?.drtg;
-            const ts     = season.ts     ?? proj?.ts;
+            const projAug = { ws: currentModalPlayer?.WS, ws_40: currentModalPlayer?.['WS/40'], ...proj };
+            const w      = calcWinnerScore(season, pctl, logs, hist, projAug);
+            const adjbpm = season.adjbpm ?? projAug?.adjbpm;
+            const ortg   = season.ortg   ?? projAug?.ortg;
+            const drtg   = season.drtg   ?? projAug?.drtg;
+            const ts     = season.ts     ?? projAug?.ts;
             const school = (found?.key || '').split('|')[1] || season.team || '';
 
             // Push WINNER score into the modal header card (works for ranked + prospect modals)
@@ -8418,7 +8421,7 @@
 
             const compDefs = [
                 { key: 'impact',      label: 'Impact',       weight: 30, desc: 'Schedule-adjusted BPM — direct contribution to winning.' },
-                { key: 'winShares',   label: 'Win Shares',   weight: 20, desc: 'Volume of wins produced (impact × minutes × games).' },
+                { key: 'winShares',   label: 'Win Shares',   weight: 20, desc: 'Win Shares accumulated this season — direct credit for victories.' },
                 { key: 'efficiency',  label: 'Efficiency',   weight: 15, desc: 'Offensive efficiency: True Shooting vs. ball usage.' },
                 { key: 'defense',     label: 'Defense',      weight: 15, desc: 'Defensive rating relative to league average.' },
                 { key: 'consistency', label: 'Consistency',  weight: 10, desc: 'Low variance in game-log BPM — shows up every night.' },
