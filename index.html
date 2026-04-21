@@ -3361,8 +3361,8 @@
                 // Sort by score
                 scoredData.sort((a, b) => b.total_score - a.total_score);
 
-                // Auto-load WINNER scores immediately after rankings are built
-                fetchAllWinnerScores();
+                // Reset winner fetch flag so a fresh load triggers after displayResults
+                _winnerFetchDone = false;
 
                 // Calculate team aggregations
                 calculateTeamData();
@@ -3483,6 +3483,9 @@
             // Apply any active filters (team/conference/etc.) rather than showing all data,
             // so filters are preserved when calculateScores reruns (e.g. slider changes)
             applyFilters();
+
+            // Kick off WINNER score fetch once after initial render (guard prevents repeat)
+            fetchAllWinnerScores();
 
             // Render teams immediately
             console.log('Team data:', teamData);
@@ -3744,10 +3747,6 @@
                         break;
                     case 'winner':
                         aVal = a._winner ?? -1; bVal = b._winner ?? -1;
-                        if (a._winner === undefined && b._winner === undefined) {
-                            fetchAllWinnerScores();
-                            return 0;
-                        }
                         break;
                     case 'valuation':
                         aVal = a.valuation; bVal = b.valuation;
@@ -7544,8 +7543,9 @@
 
         // ── Batch-fetch WINNER scores for all players in the ranked list ──────────
         let _winnerFetchInProgress = false;
+        let _winnerFetchDone = false;
         async function fetchAllWinnerScores() {
-            if (_winnerFetchInProgress) return;
+            if (_winnerFetchInProgress || _winnerFetchDone) return;
             const players = scoredData;
             if (!players || !players.length) return;
 
@@ -7592,15 +7592,20 @@
             }));
 
             _winnerFetchInProgress = false;
+            _winnerFetchDone = true;
             if (hdr) hdr.textContent = 'WINNER ★';
 
-            // Sort by WINNER desc and re-render
-            currentDisplayedData = [...currentDisplayedData].sort((a, b) => (b._winner ?? -1) - (a._winner ?? -1));
-            renderTable(currentDisplayedData);
-            // Mark the header as sorted
-            document.querySelectorAll('th.sortable').forEach(th => th.classList.remove('sorted-asc','sorted-desc'));
-            if (hdr) hdr.classList.add('sorted-desc');
-            currentSort = { column: 'winner', direction: 'desc' };
+            // Re-render the table so the WINNER column is populated.
+            // Only re-sort if the user hasn't picked a different sort yet.
+            if (currentDisplayedData && currentDisplayedData.length) {
+                if (!currentSort || currentSort.column === 'winner') {
+                    currentDisplayedData = [...currentDisplayedData].sort((a, b) => (b._winner ?? -1) - (a._winner ?? -1));
+                    document.querySelectorAll('th.sortable').forEach(th => th.classList.remove('sorted-asc','sorted-desc'));
+                    if (hdr) hdr.classList.add('sorted-desc');
+                    currentSort = { column: 'winner', direction: 'desc' };
+                }
+                renderTable(currentDisplayedData);
+            }
         }
 
         // ══════════════════════════════════════════════════════════════════════════
@@ -7771,17 +7776,17 @@
             }
 
             // ── 2. Win Shares proxy (20%) — volume × efficiency ───────────────────
-            // proxy_WS = max(0, adjBPM) × (mpg/40) × (games/34)
-            // Normalization: proxy_WS of 0.15 → 100, 0 → 50, negative → penalty
+            // proxy_WS = adjBPM × (mpg/40) × (games/34)
+            // Normalization: proxy_WS of 0.08 → 100, 0 → 50, negative → penalty
             let winShareScore = 50;
             const mpg   = parseFloat(s.mpg   ?? proj?.mpg   ?? NaN);
             const games = parseFloat(s.games ?? NaN);
             if (!isNaN(rawAdj) && !isNaN(mpg) && !isNaN(games)) {
                 const proxyWS = rawAdj * (mpg / 40) * (games / 34);
                 if (proxyWS >= 0) {
-                    winShareScore = Math.min(100, 50 + (proxyWS / 0.15) * 50);
+                    winShareScore = Math.min(100, 50 + (proxyWS / 0.08) * 50);
                 } else {
-                    winShareScore = Math.max(0, 50 + proxyWS * 15);
+                    winShareScore = Math.max(0, 50 + proxyWS * 20);
                 }
             } else if (pct('adjbpm') !== null) {
                 // Fallback: use adjBPM percentile as volume proxy
@@ -7837,7 +7842,10 @@
             const weighted = impactScore*0.30 + winShareScore*0.20 + effScore*0.15
                            + defScore*0.15 + ballScore*0.10 + consistencyScore*0.10;
             const raw100   = Math.max(0, Math.min(100, weighted + trackBonus));
-            const score    = Math.max(1.0, Math.min(10.0, 1.0 + (raw100/100)*9.0));
+            // Power-curve stretch: push mid-range scores upward so elite players
+            // realistically reach 8.5–10 instead of topping out around 7.
+            const stretched = Math.pow(raw100 / 100, 0.80) * 100;
+            const score    = Math.max(1.0, Math.min(10.0, 1.0 + (stretched/100)*9.0));
 
             let label, labelColor, labelBg;
             if (score >= 9.0)      { label='ELITE WINNER';      labelColor='#0d1117'; labelBg='#FFC72C'; }
