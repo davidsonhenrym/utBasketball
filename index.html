@@ -1750,6 +1750,7 @@
                                             <th class="sortable" data-sort="position">Position</th>
                                             <th>Portal</th>
                                             <th class="sortable" data-sort="score">Score</th>
+                                            <th class="sortable" data-sort="winner" id="winnerColHdr" title="Click to compute WINNER scores from Colin Hanley analytics" style="color:#FFC72C;white-space:nowrap;">WINNER ★</th>
                                             <th class="sortable" data-sort="valuation">Valuation</th>
                                             <th class="sortable" data-sort="ppg">PPG</th>
                                             <th class="sortable" data-sort="apg">APG</th>
@@ -3360,6 +3361,9 @@
                 // Sort by score
                 scoredData.sort((a, b) => b.total_score - a.total_score);
 
+                // Auto-load WINNER scores immediately after rankings are built
+                fetchAllWinnerScores();
+
                 // Calculate team aggregations
                 calculateTeamData();
 
@@ -3686,6 +3690,7 @@
                         </div>
                     </td>
                     <td class="score-cell ${scoreClass}">${(player.total_score || 0).toFixed(1)}</td>
+                    <td style="text-align:center;font-weight:800;font-family:'IBM Plex Mono',monospace;font-size:0.85rem;color:${_winnerScoreColor(player._winner)};cursor:pointer;" onclick="event.stopPropagation();sortTable('winner')" title="${player._winner ? player._winnerLabel : 'Click column header to load WINNER scores'}">${player._winner ? player._winner.toFixed(1) : '—'}</td>
                     <td class="valuation-cell">$${player.valuation >= 1000000 ? (player.valuation / 1000000).toFixed(2) + 'M' : (player.valuation / 1000).toFixed(1) + 'K'}</td>
                     <td>${(parseFloat(player.PPG) || 0).toFixed(1)}</td>
                     <td>${(parseFloat(player.APG) || 0).toFixed(1)}</td>
@@ -3736,6 +3741,13 @@
                         break;
                     case 'score':
                         aVal = a.total_score; bVal = b.total_score;
+                        break;
+                    case 'winner':
+                        aVal = a._winner ?? -1; bVal = b._winner ?? -1;
+                        if (a._winner === undefined && b._winner === undefined) {
+                            fetchAllWinnerScores();
+                            return 0;
+                        }
                         break;
                     case 'valuation':
                         aVal = a.valuation; bVal = b.valuation;
@@ -3952,14 +3964,16 @@
             const archetypesBadgesModal = (player.archetypes || ['—']).map(a =>
                 `<span style="display:inline-block;margin:2px 3px;padding:3px 9px;border-radius:5px;border:1px solid ${archetypeModalColors[a]||'#888'};color:${archetypeModalColors[a]||'#888'};font-size:0.7rem;font-weight:700;">${a}</span>`
             ).join('');
+            const cachedWinner = player._winner;
             document.getElementById('modalScoreSummary').innerHTML = `
                 <div class="modal-score-card">
                     <div class="modal-score-label">Overall Score</div>
                     <div class="modal-score-value ${scoreClass}">${(player.total_score || 0).toFixed(1)}</div>
                 </div>
-                <div class="modal-score-card">
-                    <div class="modal-score-label">Valuation</div>
-                    <div class="modal-score-value" style="font-size: 2rem;">$${player.valuation >= 1000000 ? (player.valuation / 1000000).toFixed(2) + 'M' : (player.valuation / 1000).toFixed(1) + 'K'}</div>
+                <div class="modal-score-card" id="modalWinnerCard" style="border:1px solid ${cachedWinner ? _winnerScoreColor(cachedWinner) : 'rgba(255,199,44,0.3)'};background:${cachedWinner ? 'rgba(255,199,44,0.06)' : 'rgba(0,0,0,0.2)'};">
+                    <div class="modal-score-label" style="color:#FFC72C;">WINNER Score</div>
+                    <div id="modalWinnerValue" class="modal-score-value" style="font-size:2rem;color:${cachedWinner ? _winnerScoreColor(cachedWinner) : 'var(--text-secondary)'};">${cachedWinner ? cachedWinner.toFixed(1) : '…'}</div>
+                    <div id="modalWinnerLabel" style="font-size:0.58rem;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;margin-top:4px;color:var(--text-secondary);">${player._winnerLabel || 'fetching...'}</div>
                 </div>
                 <div class="modal-score-card">
                     <div class="modal-score-label">Position Rank</div>
@@ -3970,6 +3984,9 @@
                     <div style="margin-top:8px; line-height:1.8;">${archetypesBadgesModal}</div>
                 </div>
             `;
+            // Populate the modal stat breakdown section with WINNER analytics
+            document.getElementById('modalStatBreakdown').innerHTML += '<div id="colinModalStats" style="margin-top:18px;"></div>';
+            pbPopulateColinModal(player.Player);
             
             // Build stat breakdown
             const tpaVal = get3PA(player);
@@ -7515,6 +7532,77 @@
             }
         });
 
+        // ── WINNER score color helper (used before COLIN module loads) ────────────
+        function _winnerScoreColor(score) {
+            if (!score) return 'var(--text-secondary)';
+            if (score >= 9.0) return '#FFC72C';
+            if (score >= 8.0) return 'var(--accent-primary)';
+            if (score >= 7.0) return 'var(--accent-secondary)';
+            if (score >= 5.5) return 'var(--text-primary)';
+            return 'var(--accent-tertiary)';
+        }
+
+        // ── Batch-fetch WINNER scores for all players in the ranked list ──────────
+        let _winnerFetchInProgress = false;
+        async function fetchAllWinnerScores() {
+            if (_winnerFetchInProgress) return;
+            const players = scoredData;
+            if (!players || !players.length) return;
+
+            _winnerFetchInProgress = true;
+            const hdr = document.getElementById('winnerColHdr');
+            if (hdr) hdr.textContent = 'WINNER ⟳';
+
+            // Load the index once to find which letter file each player is in
+            const idx = await COLIN.loadIndex();
+            const archetypes = await COLIN.loadArchetypes();
+            const normIdx = {};
+            for (const key of Object.keys(idx)) {
+                const [pName] = key.split('|');
+                normIdx[normalizePlayerName(pName)] = { key, letter: idx[key] };
+            }
+
+            // Group players by letter file to minimize fetches
+            const letterBuckets = {};
+            players.forEach(p => {
+                const norm = normalizePlayerName(p.Player || '');
+                const hit = normIdx[norm];
+                if (hit) {
+                    if (!letterBuckets[hit.letter]) letterBuckets[hit.letter] = [];
+                    letterBuckets[hit.letter].push({ player: p, key: hit.key });
+                }
+            });
+
+            // Fetch each letter file in parallel
+            const letterFiles = Object.keys(letterBuckets);
+            await Promise.all(letterFiles.map(async letter => {
+                const data = await COLIN.loadLetter(letter);
+                letterBuckets[letter].forEach(({ player, key }) => {
+                    const entry = data[key];
+                    if (!entry) return;
+                    const season = entry.season || {};
+                    const pctl   = entry.pctl   || {};
+                    const logs   = entry.logs   || [];
+                    const hist   = entry.hist?.season || null;
+                    const w = calcWinnerScore(season, pctl, logs, hist, null);
+                    player._winner      = parseFloat(w.score);
+                    player._winnerLabel = w.label;
+                    player._winnerColor = w.scoreColor;
+                });
+            }));
+
+            _winnerFetchInProgress = false;
+            if (hdr) hdr.textContent = 'WINNER ★';
+
+            // Sort by WINNER desc and re-render
+            currentDisplayedData = [...currentDisplayedData].sort((a, b) => (b._winner ?? -1) - (a._winner ?? -1));
+            renderTable(currentDisplayedData);
+            // Mark the header as sorted
+            document.querySelectorAll('th.sortable').forEach(th => th.classList.remove('sorted-asc','sorted-desc'));
+            if (hdr) hdr.classList.add('sorted-desc');
+            currentSort = { column: 'winner', direction: 'desc' };
+        }
+
         // ══════════════════════════════════════════════════════════════════════════
         //  COLIN HANLEY ANALYTICS — https://github.com/Colin-Hanley1/cbb-analytics
         // ══════════════════════════════════════════════════════════════════════════
@@ -7604,8 +7692,9 @@
             }
         };
 
-        // Preload the index + archetypes silently on page load (small files)
-        setTimeout(() => { COLIN.loadIndex(); COLIN.loadArchetypes(); }, 2000);
+        // Preload index + archetypes immediately — both are small and needed for WINNER scores
+        COLIN.loadIndex();
+        COLIN.loadArchetypes();
 
         function _colinBpmColor(v) {
             if (v === undefined || v === null || isNaN(v)) return 'var(--text-secondary)';
@@ -7624,39 +7713,94 @@
 
         function _f1(v) { return (v !== undefined && v !== null && !isNaN(parseFloat(v))) ? parseFloat(v).toFixed(1) : '—'; }
 
+        // ── Conference Strength Table (KenPom/BartTorvik-calibrated) ─────────────
+        const CONF_STRENGTH = {
+            // Power 4
+            'SEC':7.8,'Big 12':7.5,'Big Ten':7.2,'ACC':6.8,
+            // High Major
+            'Big East':5.8,'Pac-12':4.5,'WCC':3.2,
+            // Upper Mid Major
+            'American':2.8,'MWC':2.5,'A-10':2.2,'MVC':1.8,'CAA':1.2,'SBC':0.8,
+            // MAC tier
+            'MAC':0.0,'CUSA':-0.3,'Sun Belt':-0.5,'Horizon':-0.8,
+            'Big West':-1.0,'OVC':-1.5,'SoCon':-1.2,'WAC':-1.0,
+            // Low Major
+            'MEAC':-3.0,'NEC':-2.8,'Patriot':-2.5,'SWAC':-4.0,
+            'AEC':-2.2,'MAAC':0.5,'BSouth':-1.8,'Ivy':0.2,'ASUN':0.3,
+        };
+
+        function getConfStrength(conf) {
+            if (!conf) return 0;
+            // Try exact match first
+            if (CONF_STRENGTH[conf] !== undefined) return CONF_STRENGTH[conf];
+            // Fuzzy: check if any key is contained in the conf string
+            const lower = conf.toLowerCase();
+            for (const [k, v] of Object.entries(CONF_STRENGTH)) {
+                if (lower.includes(k.toLowerCase()) || k.toLowerCase().includes(lower)) return v;
+            }
+            return 0; // Unknown = average
+        }
+
         // ── WINNER Score ──────────────────────────────────────────────────────────
-        // A 1.0–10.0 metric that measures a player's winning impact, not counting stats.
-        // Weights: adjBPM impact (40%), efficiency (20%), defense (20%),
-        //          game-to-game consistency (10%), ball control / playmaking (10%).
-        function calcWinnerScore(season, pctl, logs, hist, proj) {
+        // 1.0–10.0 composite measuring winning impact, not counting stats.
+        //
+        // Components:
+        //   Impact      30% — adjBPM percentile (rate of winning contribution)
+        //   Win Shares  20% — proxy Win Shares: adjBPM × games × mpg (volume)
+        //   Efficiency  15% — TS% + ORtg (efficient scoring wins possessions)
+        //   Defense     15% — inverted DRtg + stl + blk (stopping people)
+        //   Consistency 10% — game-log BPM σ (reliable beats spectacular)
+        //   Ball Control 10% — assist rate percentile (protecting possessions)
+        //   Track Record ±6 — prev-season adjBPM bonus/penalty
+        //
+        // Optional adjBpmOverride: used by conference transfer simulator
+        function calcWinnerScore(season, pctl, logs, hist, proj, adjBpmOverride) {
             const p = pctl || {};
             const s = season || {};
             const pct = key => (p[key] !== undefined && p[key] !== null) ? parseFloat(p[key]) * 100 : null;
 
-            // ── 1. Impact (40%) — adjBPM is the gold-standard winning predictor ──
-            let impactScore = pct('adjbpm') ?? pct('bpm');
+            // Raw adjBPM (may be overridden by transfer simulator)
+            const rawAdj = adjBpmOverride !== undefined
+                ? adjBpmOverride
+                : parseFloat(s.adjbpm ?? proj?.adjbpm ?? NaN);
+
+            // ── 1. Impact (30%) — adjBPM percentile, the gold-standard rate stat ──
+            let impactScore = (adjBpmOverride === undefined) ? (pct('adjbpm') ?? pct('bpm')) : null;
             if (impactScore === null) {
-                const raw = parseFloat(s.adjbpm ?? proj?.adjbpm);
-                impactScore = isNaN(raw) ? 50 : Math.max(0, Math.min(100, (raw + 10) / 30 * 100));
+                impactScore = isNaN(rawAdj) ? 50 : Math.max(0, Math.min(100, (rawAdj + 10) / 30 * 100));
             }
 
-            // ── 2. Efficiency (20%) — efficient scoring wins possessions ──────────
+            // ── 2. Win Shares proxy (20%) — volume × efficiency ───────────────────
+            // proxy_WS = max(0, adjBPM) × (mpg/40) × (games/34)
+            // Normalization: proxy_WS of 0.15 → 100, 0 → 50, negative → penalty
+            let winShareScore = 50;
+            const mpg   = parseFloat(s.mpg   ?? proj?.mpg   ?? NaN);
+            const games = parseFloat(s.games ?? NaN);
+            if (!isNaN(rawAdj) && !isNaN(mpg) && !isNaN(games)) {
+                const proxyWS = rawAdj * (mpg / 40) * (games / 34);
+                if (proxyWS >= 0) {
+                    winShareScore = Math.min(100, 50 + (proxyWS / 0.15) * 50);
+                } else {
+                    winShareScore = Math.max(0, 50 + proxyWS * 15);
+                }
+            } else if (pct('adjbpm') !== null) {
+                // Fallback: use adjBPM percentile as volume proxy
+                winShareScore = pct('adjbpm');
+            }
+
+            // ── 3. Efficiency (15%) — efficient scoring wins possessions ──────────
             const effParts = [];
             if (pct('ts')   !== null) effParts.push(pct('ts'));
             if (pct('ortg') !== null) effParts.push(pct('ortg'));
             if (pct('efg')  !== null) effParts.push(pct('efg'));
             const effScore = effParts.length ? effParts.reduce((a,b)=>a+b)/effParts.length : 50;
 
-            // ── 3. Defense (20%) — can't win without stopping people ──────────────
-            // DRtg percentile is INVERTED (lower DRtg = better defender)
+            // ── 4. Defense (15%) — can't win without stopping people ──────────────
             const defParts = [];
-            if (pct('drtg') !== null) defParts.push(100 - pct('drtg'));
+            if (pct('drtg') !== null) defParts.push(100 - pct('drtg')); // invert: lower DRtg = better
             if (pct('stl')  !== null) defParts.push(pct('stl'));
             if (pct('blk')  !== null) defParts.push(pct('blk'));
             const defScore = defParts.length ? defParts.reduce((a,b)=>a+b)/defParts.length : 50;
-
-            // ── 4. Ball Control / Playmaking (10%) ───────────────────────────────
-            const ballScore = pct('ast') ?? 50;
 
             // ── 5. Consistency (10%) — reliable winners beat boom-or-bust players ─
             let consistencyScore = 50;
@@ -7668,39 +7812,40 @@
                     const sorted = [...bpms].sort((a,b)=>a-b);
                     const mid = Math.floor(sorted.length/2);
                     const median = sorted.length%2===0 ? (sorted[mid-1]+sorted[mid])/2 : sorted[mid];
-                    // Low stdDev = consistent. Map 0→100pts, 8→30pts, 12+→0pts
-                    const stdScore    = Math.max(0, Math.min(100, 100 - (stdDev / 12) * 100));
-                    // Positive median means usually helping you win
-                    const medianScore = Math.max(0, Math.min(100, (median + 8) / 23 * 100));
-                    // Durability: playing full season matters
-                    const durability  = Math.min(100, (bpms.length / 32) * 100);
-                    consistencyScore  = stdScore * 0.45 + medianScore * 0.40 + durability * 0.15;
+                    const stdScore    = Math.max(0, Math.min(100, 100 - (stdDev/12)*100));
+                    const medianScore = Math.max(0, Math.min(100, (median+8)/23*100));
+                    const durability  = Math.min(100, (bpms.length/32)*100);
+                    consistencyScore  = stdScore*0.45 + medianScore*0.40 + durability*0.15;
                 }
             }
 
-            // ── Track-record bonus: proven winners get credit ─────────────────────
+            // ── 6. Ball Control / Playmaking (10%) ───────────────────────────────
+            const ballScore = pct('ast') ?? 50;
+
+            // ── Track-record bonus ────────────────────────────────────────────────
             let trackBonus = 0;
             if (hist) {
                 const hAdj = parseFloat(hist.adjbpm);
                 if (!isNaN(hAdj)) {
-                    if (hAdj >= 8)  trackBonus =  6;
+                    if (hAdj >= 8)       trackBonus =  6;
                     else if (hAdj >= 4)  trackBonus =  3;
                     else if (hAdj >= 0)  trackBonus =  1;
                     else if (hAdj < -3)  trackBonus = -3;
                 }
             }
 
-            const weighted = impactScore*0.40 + effScore*0.20 + defScore*0.20 + ballScore*0.10 + consistencyScore*0.10;
+            const weighted = impactScore*0.30 + winShareScore*0.20 + effScore*0.15
+                           + defScore*0.15 + ballScore*0.10 + consistencyScore*0.10;
             const raw100   = Math.max(0, Math.min(100, weighted + trackBonus));
             const score    = Math.max(1.0, Math.min(10.0, 1.0 + (raw100/100)*9.0));
 
             let label, labelColor, labelBg;
-            if (score >= 9.0)      { label='ELITE WINNER';       labelColor='#0d1117'; labelBg='#FFC72C'; }
-            else if (score >= 8.0) { label='PROVEN WINNER';      labelColor='#0d1117'; labelBg='var(--accent-primary)'; }
-            else if (score >= 7.0) { label='WINNING PLAYER';     labelColor='#0d1117'; labelBg='var(--accent-secondary)'; }
-            else if (score >= 6.0) { label='SOLID CONTRIBUTOR';  labelColor='var(--text-primary)'; labelBg='rgba(139,148,158,0.2)'; }
-            else if (score >= 4.5) { label='DEVELOPING';         labelColor='var(--text-primary)'; labelBg='rgba(227,179,65,0.25)'; }
-            else                   { label='NOT YET';             labelColor='var(--text-primary)'; labelBg='rgba(218,54,51,0.2)'; }
+            if (score >= 9.0)      { label='ELITE WINNER';      labelColor='#0d1117'; labelBg='#FFC72C'; }
+            else if (score >= 8.0) { label='PROVEN WINNER';     labelColor='#0d1117'; labelBg='var(--accent-primary)'; }
+            else if (score >= 7.0) { label='WINNING PLAYER';    labelColor='#0d1117'; labelBg='var(--accent-secondary)'; }
+            else if (score >= 6.0) { label='SOLID CONTRIBUTOR'; labelColor='var(--text-primary)'; labelBg='rgba(139,148,158,0.2)'; }
+            else if (score >= 4.5) { label='DEVELOPING';        labelColor='var(--text-primary)'; labelBg='rgba(227,179,65,0.25)'; }
+            else                   { label='NOT YET';            labelColor='var(--text-primary)'; labelBg='rgba(218,54,51,0.2)'; }
 
             const scoreColor = score >= 9.0 ? '#FFC72C'
                              : score >= 8.0 ? 'var(--accent-primary)'
@@ -7710,8 +7855,10 @@
 
             return {
                 score: score.toFixed(1), raw: raw100, label, labelColor, labelBg, scoreColor,
+                rawAdj, mpg, games,
                 components: {
                     impact:      Math.round(impactScore),
+                    winShares:   Math.round(winShareScore),
                     efficiency:  Math.round(effScore),
                     defense:     Math.round(defScore),
                     ballControl: Math.round(ballScore),
@@ -7721,13 +7868,31 @@
             };
         }
 
+        // ── Conference Transfer Simulator ─────────────────────────────────────────
+        // Projects how a player's WINNER score would change at a different conference.
+        // Each 1pt of conference strength difference ≈ 0.35 adjBPM change.
+        function projectWinnerToConference(baseW, season, pctl, logs, hist, proj, fromConf, toConf) {
+            const fromStr = getConfStrength(fromConf);
+            const toStr   = getConfStrength(toConf);
+            const delta   = (toStr - fromStr) * 0.35; // BPM change from moving up/down
+            const adjustedAdj = (isNaN(baseW.rawAdj) ? 0 : baseW.rawAdj) - delta;
+            const projected = calcWinnerScore(season, pctl, logs, hist, proj, adjustedAdj);
+            return {
+                projected,
+                adjDelta:    -delta,   // positive = improvement (moved down), negative = harder
+                confDelta:   toStr - fromStr,
+                fromStr, toStr
+            };
+        }
+
         function _winnerComponentBars(comp) {
             const bars = [
-                { label: 'IMPACT',       val: comp.impact,      note: 'adjBPM — direct winning effect', color: 'var(--accent-primary)' },
-                { label: 'EFFICIENCY',   val: comp.efficiency,  note: 'TS% + ORtg — points per possession', color: 'var(--accent-secondary)' },
-                { label: 'DEFENSE',      val: comp.defense,     note: 'DRtg + steals + blocks', color: '#c9d1d9' },
-                { label: 'CONSISTENCY',  val: comp.consistency, note: 'game-to-game BPM stability', color: '#79c0ff' },
-                { label: 'BALL CONTROL', val: comp.ballControl, note: 'playmaking & assist rate', color: '#ffa657' },
+                { label: 'IMPACT',       val: comp.impact,      color: 'var(--accent-primary)' },
+                { label: 'WIN SHARES',   val: comp.winShares,   color: '#FFC72C' },
+                { label: 'EFFICIENCY',   val: comp.efficiency,  color: 'var(--accent-secondary)' },
+                { label: 'DEFENSE',      val: comp.defense,     color: '#c9d1d9' },
+                { label: 'CONSISTENCY',  val: comp.consistency, color: '#79c0ff' },
+                { label: 'BALL CONTROL', val: comp.ballControl, color: '#ffa657' },
             ];
             return bars.map(b => `
                 <div style="margin-bottom:6px;">
@@ -7854,6 +8019,20 @@
             const ts     = season.ts     ?? proj?.ts;
             const school = (found?.key || '').split('|')[1] || season.team || '';
 
+            // Push WINNER score into the modal header card (works for ranked + prospect modals)
+            const mwVal = document.getElementById('modalWinnerValue');
+            const mwLbl = document.getElementById('modalWinnerLabel');
+            const mwCard = document.getElementById('modalWinnerCard');
+            if (mwVal) { mwVal.textContent = w.score; mwVal.style.color = w.scoreColor; }
+            if (mwLbl) { mwLbl.textContent = w.label; mwLbl.style.color = w.scoreColor; }
+            if (mwCard) { mwCard.style.borderColor = w.scoreColor; mwCard.style.background = 'rgba(0,0,0,0.15)'; }
+            // Cache on the player object if opened from the ranked list
+            if (currentModalPlayer) {
+                currentModalPlayer._winner      = parseFloat(w.score);
+                currentModalPlayer._winnerLabel = w.label;
+                currentModalPlayer._winnerColor = w.scoreColor;
+            }
+
             const recentGames = logs.slice(-6).reverse().map(g => {
                 const bpmV = parseFloat(g.bpm);
                 const bpmColor = isNaN(bpmV) ? 'var(--text-secondary)' : _colinBpmColor(bpmV);
@@ -7923,8 +8102,64 @@
                     at ${escHtml(hist.team || '')}
                 </div>` : ''}
 
+                <!-- ── Conference Transfer Simulator ── -->
+                <div style="margin-top:14px;padding:14px;background:rgba(255,199,44,0.04);border:1px solid rgba(255,199,44,0.18);border-radius:10px;">
+                    <div style="font-size:0.62rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#FFC72C;margin-bottom:10px;">Transfer Simulator</div>
+                    <div style="font-size:0.75rem;color:var(--text-secondary);margin-bottom:10px;">Project this player's WINNER score if they transfer to a different conference level.</div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:end;margin-bottom:10px;">
+                        <div>
+                            <div style="font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-secondary);margin-bottom:4px;">Current Conference</div>
+                            <div style="padding:7px 10px;background:var(--bg-secondary);border:1px solid var(--border);border-radius:6px;font-family:'IBM Plex Mono',monospace;font-size:0.78rem;color:var(--text-primary);">${escHtml(season.conf || 'Unknown')}</div>
+                        </div>
+                        <div>
+                            <div style="font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-secondary);margin-bottom:4px;">Transfer To</div>
+                            <select id="simTargetConf" onchange="runTransferSim()" style="width:100%;padding:7px 10px;background:var(--bg-secondary);border:1px solid var(--border);border-radius:6px;color:var(--text-primary);font-family:'IBM Plex Mono',monospace;font-size:0.78rem;outline:none;">
+                                <option value="">— pick a conference —</option>
+                                <optgroup label="Power 4">
+                                    <option value="SEC">SEC</option>
+                                    <option value="Big 12">Big 12</option>
+                                    <option value="Big Ten">Big Ten</option>
+                                    <option value="ACC">ACC</option>
+                                </optgroup>
+                                <optgroup label="High Major">
+                                    <option value="Big East">Big East</option>
+                                    <option value="WCC">WCC</option>
+                                    <option value="MAAC">MAAC</option>
+                                    <option value="ASUN">ASUN</option>
+                                </optgroup>
+                                <optgroup label="Mid Major">
+                                    <option value="American">American</option>
+                                    <option value="MWC">MWC</option>
+                                    <option value="A-10">A-10</option>
+                                    <option value="MVC">MVC</option>
+                                    <option value="CAA">CAA</option>
+                                    <option value="SBC">SBC</option>
+                                    <option value="SoCon">SoCon</option>
+                                    <option value="WAC">WAC</option>
+                                    <option value="Big West">Big West</option>
+                                    <option value="Ivy">Ivy</option>
+                                </optgroup>
+                                <optgroup label="MAC Tier">
+                                    <option value="MAC">MAC</option>
+                                    <option value="CUSA">CUSA</option>
+                                    <option value="Sun Belt">Sun Belt</option>
+                                    <option value="Horizon">Horizon</option>
+                                    <option value="OVC">OVC</option>
+                                </optgroup>
+                                <optgroup label="Low Major">
+                                    <option value="Patriot">Patriot</option>
+                                    <option value="NEC">NEC</option>
+                                    <option value="MEAC">MEAC</option>
+                                    <option value="SWAC">SWAC</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="simResult" style="display:none;margin-top:8px;"></div>
+                </div>
+
                 ${recentGames ? `
-                <div>
+                <div style="margin-top:14px;">
                     <div style="font-size:0.62rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-secondary);margin-bottom:8px;">Recent Games — BPM per game</div>
                     <div style="overflow-x:auto;border:1px solid var(--border);border-radius:8px;">
                         <table style="width:100%;border-collapse:collapse;font-size:0.78rem;">
@@ -7940,6 +8175,58 @@
                         </table>
                     </div>
                 </div>` : ''}`;
+
+            // Store data needed by the transfer simulator
+            _colinModalCtx = { w, season, pctl, logs, hist, proj };
+        }
+
+        // ── Conference Transfer Simulator (state + handler) ───────────────────────
+        let _colinModalCtx = null;
+
+        function runTransferSim() {
+            if (!_colinModalCtx) return;
+            const toConf = document.getElementById('simTargetConf')?.value;
+            const resultEl = document.getElementById('simResult');
+            if (!resultEl) return;
+            if (!toConf) { resultEl.style.display = 'none'; return; }
+
+            const { w, season, pctl, logs, hist, proj } = _colinModalCtx;
+            const fromConf = season.conf || '';
+            const sim = projectWinnerToConference(w, season, pctl, logs, hist, proj, fromConf, toConf);
+            const p = sim.projected;
+            const delta = parseFloat(p.score) - parseFloat(w.score);
+            const deltaStr = (delta >= 0 ? '+' : '') + delta.toFixed(1);
+            const deltaColor = delta >= 0.5 ? 'var(--accent-primary)' : delta <= -0.5 ? 'var(--accent-tertiary)' : 'var(--text-secondary)';
+            const arrow = delta >= 0.5 ? '▲' : delta <= -0.5 ? '▼' : '●';
+            const adjDeltaStr = (sim.adjDelta >= 0 ? '+' : '') + sim.adjDelta.toFixed(2);
+            const movingUp = sim.confDelta > 0;
+
+            resultEl.style.display = '';
+            resultEl.innerHTML = `
+                <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:center;">
+                    <div style="text-align:center;padding:10px;background:rgba(0,0,0,0.2);border-radius:8px;border:1px solid rgba(255,255,255,0.06);">
+                        <div style="font-size:0.55rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-secondary);font-family:'IBM Plex Mono',monospace;">Current (${escHtml(fromConf||'?')})</div>
+                        <div style="font-size:2rem;font-weight:900;color:${w.scoreColor};margin-top:2px;">${w.score}</div>
+                        <div style="font-size:0.55rem;color:var(--text-secondary);">${w.label}</div>
+                    </div>
+                    <div style="text-align:center;">
+                        <div style="font-size:1.4rem;color:${deltaColor};font-weight:900;">${arrow}</div>
+                        <div style="font-size:0.7rem;font-weight:800;color:${deltaColor};font-family:'IBM Plex Mono',monospace;">${deltaStr}</div>
+                        <div style="font-size:0.55rem;color:var(--text-secondary);margin-top:2px;">adjBPM ${adjDeltaStr}</div>
+                    </div>
+                    <div style="text-align:center;padding:10px;background:rgba(0,0,0,0.2);border-radius:8px;border:1px solid ${p.scoreColor};">
+                        <div style="font-size:0.55rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-secondary);font-family:'IBM Plex Mono',monospace;">Projected (${escHtml(toConf)})</div>
+                        <div style="font-size:2rem;font-weight:900;color:${p.scoreColor};margin-top:2px;">${p.score}</div>
+                        <div style="font-size:0.55rem;color:${p.scoreColor};">${p.label}</div>
+                    </div>
+                </div>
+                <div style="margin-top:8px;font-size:0.62rem;color:var(--text-secondary);font-family:'IBM Plex Mono',monospace;line-height:1.6;padding:8px;background:rgba(0,0,0,0.15);border-radius:6px;">
+                    ${movingUp
+                        ? `Moving <strong style="color:var(--accent-tertiary);">up</strong> from ${escHtml(fromConf||'?')} (str: ${sim.fromStr.toFixed(1)}) to ${escHtml(toConf)} (str: ${sim.toStr.toFixed(1)}) — competition increases by ${Math.abs(sim.confDelta).toFixed(1)} pts. Expected adjBPM drop of ${Math.abs(sim.adjDelta).toFixed(2)}.`
+                        : `Moving <strong style="color:var(--accent-primary);">down</strong> from ${escHtml(fromConf||'?')} (str: ${sim.fromStr.toFixed(1)}) to ${escHtml(toConf)} (str: ${sim.toStr.toFixed(1)}) — competition decreases by ${Math.abs(sim.confDelta).toFixed(1)} pts. Expected adjBPM gain of ${Math.abs(sim.adjDelta).toFixed(2)}.`
+                    }
+                    <br>Conference adjustment rate: 0.35 adjBPM per strength point.
+                </div>`;
         }
 
         // ── End Prospect Board ────────────────────────────────────────────────────
