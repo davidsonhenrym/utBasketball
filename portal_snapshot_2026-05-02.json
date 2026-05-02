@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-02T13:14:12.631573",
+  "generated_at": "2026-05-02T20:34:24.436634",
   "total": 509,
   "watchlist_in_portal": [
     "Francis Folefac",
@@ -29,6 +29,105 @@
       "nil": "",
       "date": "",
       "url": "https://www.on3.com/nil/rankings/player/nil-valuations/"
+    },
+    {
+      "source": "247",
+      "name": "Luke Bamgboye",
+      "from": "",
+      "to": "",
+      "pos": "C",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/luke-bamgboye-46127980/college-345767/"
+    },
+    {
+      "source": "247",
+      "name": "Connor Amundsen",
+      "from": "",
+      "to": "",
+      "pos": "PG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/connor-amundsen-46144286/college-324268/"
+    },
+    {
+      "source": "247",
+      "name": "Jacob Theodosiou",
+      "from": "",
+      "to": "",
+      "pos": "PG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/jacob-theodosiou-46135603/college-359509/"
+    },
+    {
+      "source": "247",
+      "name": "Brent Bland",
+      "from": "",
+      "to": "",
+      "pos": "SG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/brent-bland-46166763/college-359512/"
+    },
+    {
+      "source": "247",
+      "name": "Ross Candelino",
+      "from": "",
+      "to": "",
+      "pos": "SG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/ross-candelino-46137401/college-324602/"
+    },
+    {
+      "source": "247",
+      "name": "KC Ugwuakazi",
+      "from": "",
+      "to": "",
+      "pos": "PF",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/kc-ugwuakazi-46165788/college-356873/"
+    },
+    {
+      "source": "247",
+      "name": "Mouhamed Camara",
+      "from": "",
+      "to": "",
+      "pos": "PF",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/mouhamed-camara-46158819/college-345637/"
+    },
+    {
+      "source": "247",
+      "name": "Ponce James",
+      "from": "",
+      "to": "",
+      "pos": "PG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/ponce-james-46135326/college-359514/"
+    },
+    {
+      "source": "247",
+      "name": "Seydou Traore",
+      "from": "",
+      "to": "",
+      "pos": "PF",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/seydou-traore-46149053/college-345798/"
     },
     {
       "source": "247",
@@ -5507,105 +5606,6 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/josh-dixon-46137824/college-357420/"
-    },
-    {
-      "source": "247",
-      "name": "DJ Wagner",
-      "from": "",
-      "to": "",
-      "pos": "CG",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/dj-wagner-46086467/college-323046/"
-    },
-    {
-      "source": "247",
-      "name": "Javon Jackson",
-      "from": "",
-      "to": "",
-      "pos": "SG",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/javon-jackson-46156949/college-355861/"
-    },
-    {
-      "source": "247",
-      "name": "Merritt Alderink",
-      "from": "",
-      "to": "",
-      "pos": "PF",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/merritt-alderink-46135936/college-358286/"
-    },
-    {
-      "source": "247",
-      "name": "Victory Onuetu",
-      "from": "",
-      "to": "",
-      "pos": "PF",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/victory-onuetu-46166394/college-358878/"
-    },
-    {
-      "source": "247",
-      "name": "Brigham Rogers",
-      "from": "",
-      "to": "",
-      "pos": "PF",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/brigham-rogers-46135031/college-326641/"
-    },
-    {
-      "source": "247",
-      "name": "Lazar Milosevic",
-      "from": "",
-      "to": "",
-      "pos": "C",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/lazar-milosevic-46166133/college-358159/"
-    },
-    {
-      "source": "247",
-      "name": "Ryan Lafferty",
-      "from": "",
-      "to": "",
-      "pos": "CG",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/ryan-lafferty-46166441/college-358956/"
-    },
-    {
-      "source": "247",
-      "name": "Justin Ray",
-      "from": "",
-      "to": "",
-      "pos": "SG",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/justin-ray-46134829/college-356966/"
-    },
-    {
-      "source": "247",
-      "name": "Boden Kapke",
-      "from": "",
-      "to": "",
-      "pos": "C",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/boden-kapke-46125709/college-344393/"
     }
   ]
 }
