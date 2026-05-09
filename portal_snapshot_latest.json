@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-09T13:19:50.683751",
+  "generated_at": "2026-05-09T20:37:30.144543",
   "total": 515,
   "watchlist_in_portal": [
     "Dennis Parker Jr.",
@@ -28,6 +28,39 @@
       "nil": "",
       "date": "",
       "url": "https://www.on3.com/nil/rankings/player/nil-valuations/"
+    },
+    {
+      "source": "247",
+      "name": "Franck Kepnang",
+      "from": "",
+      "to": "",
+      "pos": "C",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/franck-kepnang-46055226/college-288565/"
+    },
+    {
+      "source": "247",
+      "name": "Ari Fulton",
+      "from": "",
+      "to": "",
+      "pos": "PF",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/ari-fulton-46136981/college-356951/"
+    },
+    {
+      "source": "247",
+      "name": "TJ Robinson",
+      "from": "",
+      "to": "",
+      "pos": "PG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/tj-robinson-46130427/college-359845/"
     },
     {
       "source": "247",
@@ -5638,39 +5671,6 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/justin-menard-46142687/college-357032/"
-    },
-    {
-      "source": "247",
-      "name": "Malcolm Bell",
-      "from": "",
-      "to": "",
-      "pos": "SG",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/malcolm-bell-46166492/college-359075/"
-    },
-    {
-      "source": "247",
-      "name": "Landen Joseph",
-      "from": "",
-      "to": "",
-      "pos": "PG",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/landen-joseph-46160888/college-342976/"
-    },
-    {
-      "source": "247",
-      "name": "Vincent Chaudhri",
-      "from": "",
-      "to": "",
-      "pos": "SF",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/vincent-chaudhri-46142522/college-358997/"
     }
   ]
 }
