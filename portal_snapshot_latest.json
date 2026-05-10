@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-10T13:20:25.552947",
+  "generated_at": "2026-05-10T20:40:10.113751",
   "total": 513,
   "watchlist_in_portal": [
     "Dennis Parker Jr.",
@@ -28,6 +28,39 @@
       "nil": "",
       "date": "",
       "url": "https://www.on3.com/nil/rankings/player/nil-valuations/"
+    },
+    {
+      "source": "247",
+      "name": "Chris Nwuli",
+      "from": "",
+      "to": "",
+      "pos": "PF",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/chris-nwuli-46134967/college-343543/"
+    },
+    {
+      "source": "247",
+      "name": "Austin Maurer",
+      "from": "",
+      "to": "",
+      "pos": "C",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/austin-maurer-46125736/college-357880/"
+    },
+    {
+      "source": "247",
+      "name": "Wilguens Exacte Jr.",
+      "from": "",
+      "to": "",
+      "pos": "SG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/wilguens-exacte-jr-46129562/college-358609/"
     },
     {
       "source": "247",
@@ -116,6 +149,17 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/ari-fulton-46136981/college-356951/"
+    },
+    {
+      "source": "247",
+      "name": "Tybo Bailey",
+      "from": "",
+      "to": "",
+      "pos": "SG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/tybo-bailey-46118017/college-317316/"
     },
     {
       "source": "247",
@@ -5605,50 +5649,6 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/dylan-ducommun-46166187/college-358345/"
-    },
-    {
-      "source": "247",
-      "name": "Bobby Crawford Jr.",
-      "from": "",
-      "to": "",
-      "pos": "PF",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/bobby-crawford-jr-46166470/college-359029/"
-    },
-    {
-      "source": "247",
-      "name": "Luke Wilson",
-      "from": "",
-      "to": "",
-      "pos": "C",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/luke-wilson-46117896/college-357635/"
-    },
-    {
-      "source": "247",
-      "name": "Malik Mack",
-      "from": "",
-      "to": "",
-      "pos": "PG",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/malik-mack-46130582/college-323240/"
-    },
-    {
-      "source": "247",
-      "name": "All Wright",
-      "from": "",
-      "to": "",
-      "pos": "SG",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/all-wright-46156969/college-346153/"
     }
   ]
 }
