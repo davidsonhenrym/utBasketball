@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-11T14:54:25.405780",
+  "generated_at": "2026-05-11T21:12:22.935148",
   "total": 511,
   "watchlist_in_portal": [
     "Dennis Parker Jr.",
@@ -28,6 +28,28 @@
       "nil": "",
       "date": "",
       "url": "https://www.on3.com/nil/rankings/player/nil-valuations/"
+    },
+    {
+      "source": "247",
+      "name": "Sir Mohammed",
+      "from": "",
+      "to": "",
+      "pos": "SF",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/sir-mohammed-46128912/college-321547/"
+    },
+    {
+      "source": "247",
+      "name": "Ugnius Jarusevicius",
+      "from": "",
+      "to": "",
+      "pos": "PF",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/ugnius-jarusevicius-46157490/college-346046/"
     },
     {
       "source": "247",
@@ -386,7 +408,7 @@
       "name": "Kraig Gilbert",
       "from": "",
       "to": "",
-      "pos": "SF",
+      "pos": "PF",
       "stars": "Rating StarRating StarRating StarRating StarRating Star",
       "nil": "",
       "date": "",
@@ -1233,7 +1255,7 @@
       "name": "Malachi Palmer",
       "from": "",
       "to": "",
-      "pos": "CG",
+      "pos": "SF",
       "stars": "Rating StarRating StarRating StarRating StarRating Star",
       "nil": "",
       "date": "",
@@ -1750,7 +1772,7 @@
       "name": "Ring Nyeri",
       "from": "",
       "to": "",
-      "pos": "PF",
+      "pos": "SF",
       "stars": "Rating StarRating StarRating StarRating StarRating Star",
       "nil": "",
       "date": "",
@@ -5605,28 +5627,6 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/jakai-newton-46117360/college-339154/"
-    },
-    {
-      "source": "247",
-      "name": "Sebastian Williams-Adams",
-      "from": "",
-      "to": "",
-      "pos": "PF",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/sebastian-williams-adams-46134553/college-345366/"
-    },
-    {
-      "source": "247",
-      "name": "Maxim Logue",
-      "from": "",
-      "to": "",
-      "pos": "PF",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/maxim-logue-46152240/college-358563/"
     }
   ]
 }
