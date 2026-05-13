@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-05-13T14:40:10.562392",
-  "total": 513,
+  "generated_at": "2026-05-13T21:19:46.133565",
+  "total": 515,
   "watchlist_in_portal": [
     "Dennis Parker Jr.",
     "Francis Folefac",
@@ -28,6 +28,28 @@
       "nil": "",
       "date": "",
       "url": "https://www.on3.com/nil/rankings/player/nil-valuations/"
+    },
+    {
+      "source": "247",
+      "name": "Dame Salane",
+      "from": "",
+      "to": "",
+      "pos": "C",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/dame-salane-46166125/college-358126/"
+    },
+    {
+      "source": "247",
+      "name": "Kalu Anya",
+      "from": "",
+      "to": "",
+      "pos": "PF",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/kalu-anya-46116198/college-324223/"
     },
     {
       "source": "247",
@@ -105,6 +127,17 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/justin-monden-46167097/college-359960/"
+    },
+    {
+      "source": "247",
+      "name": "Spencer Mahoney",
+      "from": "",
+      "to": "",
+      "pos": "SF",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/spencer-mahoney-46125425/college-348305/"
     },
     {
       "source": "247",
@@ -5638,17 +5671,6 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/jack-mccaffery-46117754/college-345677/"
-    },
-    {
-      "source": "247",
-      "name": "Isaiah Medina",
-      "from": "",
-      "to": "",
-      "pos": "C",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/isaiah-medina-46147581/college-345682/"
     }
   ]
 }
