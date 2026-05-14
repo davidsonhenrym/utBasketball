@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-14T14:13:58.576540",
+  "generated_at": "2026-05-14T21:04:07.810582",
   "total": 515,
   "watchlist_in_portal": [
     "Dennis Parker Jr.",
@@ -28,6 +28,50 @@
       "nil": "",
       "date": "",
       "url": "https://www.on3.com/nil/rankings/player/nil-valuations/"
+    },
+    {
+      "source": "247",
+      "name": "Kjay Bradley",
+      "from": "",
+      "to": "",
+      "pos": "PG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/kjay-bradley-46165932/college-357436/"
+    },
+    {
+      "source": "247",
+      "name": "Carmelo Adkins",
+      "from": "",
+      "to": "",
+      "pos": "SG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/carmelo-adkins-46138460/college-356727/"
+    },
+    {
+      "source": "247",
+      "name": "Christian Fermin",
+      "from": "",
+      "to": "",
+      "pos": "C",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/christian-fermin-46116527/college-288664/"
+    },
+    {
+      "source": "247",
+      "name": "Declan Duru Jr.",
+      "from": "",
+      "to": "",
+      "pos": "PF",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/declan-duru-jr-46153358/college-345506/"
     },
     {
       "source": "247",
@@ -5627,50 +5671,6 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/adam-olsen-46157817/college-357036/"
-    },
-    {
-      "source": "247",
-      "name": "Kris Parker",
-      "from": "",
-      "to": "",
-      "pos": "SF",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/kris-parker-46110211/college-345785/"
-    },
-    {
-      "source": "247",
-      "name": "Derek Vorst",
-      "from": "",
-      "to": "",
-      "pos": "C",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/derek-vorst-46130636/college-305151/"
-    },
-    {
-      "source": "247",
-      "name": "Paulius Murauskas",
-      "from": "",
-      "to": "",
-      "pos": "PF",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/paulius-murauskas-46142509/college-355375/"
-    },
-    {
-      "source": "247",
-      "name": "Brian Amuneke",
-      "from": "",
-      "to": "",
-      "pos": "SG",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/brian-amuneke-46152805/college-358112/"
     }
   ]
 }
