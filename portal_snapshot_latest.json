@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-15T14:09:00.215948",
+  "generated_at": "2026-05-15T20:54:09.432118",
   "total": 515,
   "watchlist_in_portal": [
     "Dennis Parker Jr.",
@@ -28,6 +28,72 @@
       "nil": "",
       "date": "",
       "url": "https://www.on3.com/nil/rankings/player/nil-valuations/"
+    },
+    {
+      "source": "247",
+      "name": "Ryan Soulis",
+      "from": "",
+      "to": "",
+      "pos": "PF",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/ryan-soulis-46143176/college-360117/"
+    },
+    {
+      "source": "247",
+      "name": "Timofei Rudovskii",
+      "from": "",
+      "to": "",
+      "pos": "SF",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/timofei-rudovskii-46166227/college-358470/"
+    },
+    {
+      "source": "247",
+      "name": "Peyton Marshall",
+      "from": "",
+      "to": "",
+      "pos": "PF",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/peyton-marshall-46132678/college-340990/"
+    },
+    {
+      "source": "247",
+      "name": "Jakai Newton",
+      "from": "",
+      "to": "",
+      "pos": "SG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/jakai-newton-46117360/college-339154/"
+    },
+    {
+      "source": "247",
+      "name": "Edwin Suarez",
+      "from": "",
+      "to": "",
+      "pos": "SF",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/edwin-suarez-46165716/college-356568/"
+    },
+    {
+      "source": "247",
+      "name": "KiJan Robinson",
+      "from": "",
+      "to": "",
+      "pos": "PG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/kijan-robinson-46145295/college-358195/"
     },
     {
       "source": "247",
@@ -5605,72 +5671,6 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/jayden-harris-46147536/college-358039/"
-    },
-    {
-      "source": "247",
-      "name": "Malique Ewin",
-      "from": "",
-      "to": "",
-      "pos": "C",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/malique-ewin-46083137/college-345352/"
-    },
-    {
-      "source": "247",
-      "name": "Jarne Eyenga",
-      "from": "",
-      "to": "",
-      "pos": "C",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/jarne-eyenga-46149086/college-358029/"
-    },
-    {
-      "source": "247",
-      "name": "Kareem Thomas",
-      "from": "",
-      "to": "",
-      "pos": "SG",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/kareem-thomas-46165990/college-357613/"
-    },
-    {
-      "source": "247",
-      "name": "Rob Lee Jr.",
-      "from": "",
-      "to": "",
-      "pos": "CG",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/rob-lee-jr-46165744/college-356758/"
-    },
-    {
-      "source": "247",
-      "name": "Semetri Carr",
-      "from": "",
-      "to": "",
-      "pos": "PG",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/semetri-carr-46142573/college-344400/"
-    },
-    {
-      "source": "247",
-      "name": "Kyle Evans",
-      "from": "",
-      "to": "",
-      "pos": "PF",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/kyle-evans-46151385/college-317574/"
     }
   ]
 }
