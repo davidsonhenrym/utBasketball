@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-16T13:23:56.365508",
+  "generated_at": "2026-05-16T20:40:02.641864",
   "total": 515,
   "watchlist_in_portal": [
     "Dennis Parker Jr.",
@@ -28,6 +28,28 @@
       "nil": "",
       "date": "",
       "url": "https://www.on3.com/nil/rankings/player/nil-valuations/"
+    },
+    {
+      "source": "247",
+      "name": "Anquan Boldin Jr.",
+      "from": "",
+      "to": "",
+      "pos": "SG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/anquan-boldin-jr-46157250/college-358121/"
+    },
+    {
+      "source": "247",
+      "name": "Evan Otten",
+      "from": "",
+      "to": "",
+      "pos": "C",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/evan-otten-46167078/college-360136/"
     },
     {
       "source": "247",
@@ -5649,28 +5671,6 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/yaya-keita-46080586/college-359057/"
-    },
-    {
-      "source": "247",
-      "name": "Jarred Hall",
-      "from": "",
-      "to": "",
-      "pos": "PF",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/jarred-hall-46114597/college-333630/"
-    },
-    {
-      "source": "247",
-      "name": "Jayden Harris",
-      "from": "",
-      "to": "",
-      "pos": "SG",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/jayden-harris-46147536/college-358039/"
     }
   ]
 }
