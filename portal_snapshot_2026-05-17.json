@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-17T13:22:19.077620",
+  "generated_at": "2026-05-17T20:41:05.330539",
   "total": 515,
   "watchlist_in_portal": [
     "Dennis Parker Jr.",
@@ -28,6 +28,28 @@
       "nil": "",
       "date": "",
       "url": "https://www.on3.com/nil/rankings/player/nil-valuations/"
+    },
+    {
+      "source": "247",
+      "name": "Daniel Tobiloba",
+      "from": "",
+      "to": "",
+      "pos": "C",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/daniel-tobiloba-46103645/college-357838/"
+    },
+    {
+      "source": "247",
+      "name": "Jayden Johnson",
+      "from": "",
+      "to": "",
+      "pos": "PG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/jayden-johnson-46165784/college-356811/"
     },
     {
       "source": "247",
@@ -5649,28 +5671,6 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/alvaro-folgueiras-46157201/college-346014/"
-    },
-    {
-      "source": "247",
-      "name": "Andreas Holst",
-      "from": "",
-      "to": "",
-      "pos": "C",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/andreas-holst-46152399/college-345483/"
-    },
-    {
-      "source": "247",
-      "name": "Yaya Keita",
-      "from": "",
-      "to": "",
-      "pos": "C",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/yaya-keita-46080586/college-359057/"
     }
   ]
 }
