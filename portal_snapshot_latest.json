@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-18T15:34:23.871861",
+  "generated_at": "2026-05-18T21:04:14.661388",
   "total": 515,
   "watchlist_in_portal": [
     "Dennis Parker Jr.",
@@ -28,6 +28,28 @@
       "nil": "",
       "date": "",
       "url": "https://www.on3.com/nil/rankings/player/nil-valuations/"
+    },
+    {
+      "source": "247",
+      "name": "Marley Curtis",
+      "from": "",
+      "to": "",
+      "pos": "PF",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/marley-curtis-46166498/college-359084/"
+    },
+    {
+      "source": "247",
+      "name": "Jeremiah Johnson",
+      "from": "",
+      "to": "",
+      "pos": "PG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/jeremiah-johnson-46103338/college-356815/"
     },
     {
       "source": "247",
@@ -72,6 +94,17 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/emmanuel-manyoun-46153669/college-358391/"
+    },
+    {
+      "source": "247",
+      "name": "Dylan Diaz",
+      "from": "",
+      "to": "",
+      "pos": "CG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/dylan-diaz-46165820/college-356958/"
     },
     {
       "source": "247",
@@ -5638,39 +5671,6 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/mykel-jenkins-46151602/college-318054/"
-    },
-    {
-      "source": "247",
-      "name": "Dez White",
-      "from": "",
-      "to": "",
-      "pos": "PG",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/dez-white-46133046/college-346090/"
-    },
-    {
-      "source": "247",
-      "name": "Tounde Yessoufou",
-      "from": "",
-      "to": "",
-      "pos": "SF",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/tounde-yessoufou-46134501/college-344648/"
-    },
-    {
-      "source": "247",
-      "name": "Dillan Shaw",
-      "from": "",
-      "to": "",
-      "pos": "SF",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/dillan-shaw-46142566/college-345645/"
     }
   ]
 }
