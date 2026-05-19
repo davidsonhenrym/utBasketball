@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-19T15:23:22.112788",
+  "generated_at": "2026-05-19T21:13:25.275700",
   "total": 515,
   "watchlist_in_portal": [
     "Dennis Parker Jr.",
@@ -28,6 +28,28 @@
       "nil": "",
       "date": "",
       "url": "https://www.on3.com/nil/rankings/player/nil-valuations/"
+    },
+    {
+      "source": "247",
+      "name": "Ethan Copeland",
+      "from": "",
+      "to": "",
+      "pos": "PG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/ethan-copeland-46165694/college-356478/"
+    },
+    {
+      "source": "247",
+      "name": "Nils Cooper",
+      "from": "",
+      "to": "",
+      "pos": "SG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/nils-cooper-46135331/college-324153/"
     },
     {
       "source": "247",
@@ -831,17 +853,6 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/brandon-lee-46144101/college-345399/"
-    },
-    {
-      "source": "247",
-      "name": "Nils Cooper",
-      "from": "",
-      "to": "",
-      "pos": "SG",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/nils-cooper-46135331/college-324153/"
     },
     {
       "source": "247",
@@ -5660,17 +5671,6 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/jacob-meyer-46139593/college-356559/"
-    },
-    {
-      "source": "247",
-      "name": "Amaree Brown",
-      "from": "",
-      "to": "",
-      "pos": "SF",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/amaree-brown-46166385/college-358786/"
     }
   ]
 }
