@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-05-20T15:23:38.291003",
-  "total": 516,
+  "generated_at": "2026-05-20T21:45:10.608393",
+  "total": 517,
   "watchlist_in_portal": [
     "Dennis Parker Jr.",
     "Francis Folefac",
@@ -28,6 +28,28 @@
       "nil": "",
       "date": "",
       "url": "https://www.on3.com/nil/rankings/player/nil-valuations/"
+    },
+    {
+      "source": "247",
+      "name": "Comeh Emuobor",
+      "from": "",
+      "to": "",
+      "pos": "SF",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/comeh-emuobor-46117563/college-357099/"
+    },
+    {
+      "source": "247",
+      "name": "RaSheed Jones",
+      "from": "",
+      "to": "",
+      "pos": "SF",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/rasheed-jones-46157138/college-334483/"
     },
     {
       "source": "247",
@@ -5671,17 +5693,6 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/cedric-lath-46134965/college-296189/"
-    },
-    {
-      "source": "247",
-      "name": "Krystian Lewis",
-      "from": "",
-      "to": "",
-      "pos": "SG",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/krystian-lewis-46166190/college-358360/"
     }
   ]
 }
