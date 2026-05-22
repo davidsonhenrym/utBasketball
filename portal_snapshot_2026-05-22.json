@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-22T14:40:58.758492",
+  "generated_at": "2026-05-22T21:04:30.294294",
   "total": 518,
   "watchlist_in_portal": [
     "Dennis Parker Jr.",
@@ -28,6 +28,39 @@
       "nil": "",
       "date": "",
       "url": "https://www.on3.com/nil/rankings/player/nil-valuations/"
+    },
+    {
+      "source": "247",
+      "name": "Christian Beam",
+      "from": "",
+      "to": "",
+      "pos": "C",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/christian-beam-46158290/college-339153/"
+    },
+    {
+      "source": "247",
+      "name": "Jonathan Griman",
+      "from": "",
+      "to": "",
+      "pos": "C",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/jonathan-griman-46167326/college-360276/"
+    },
+    {
+      "source": "247",
+      "name": "Jace Posey",
+      "from": "",
+      "to": "",
+      "pos": "SF",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/jace-posey-46125402/college-302724/"
     },
     {
       "source": "247",
@@ -5671,39 +5704,6 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/okku-federiko-46141170/college-356597/"
-    },
-    {
-      "source": "247",
-      "name": "LeJuan Watts",
-      "from": "",
-      "to": "",
-      "pos": "SF",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/lejuan-watts-46148869/college-337988/"
-    },
-    {
-      "source": "247",
-      "name": "Ty Pence",
-      "from": "",
-      "to": "",
-      "pos": "SF",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/ty-pence-46115305/college-306614/"
-    },
-    {
-      "source": "247",
-      "name": "Taylor Bol Bowen",
-      "from": "",
-      "to": "",
-      "pos": "PF",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/taylor-bol-bowen-46102044/college-338279/"
     }
   ]
 }
