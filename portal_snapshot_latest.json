@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-05-23T13:26:44.724272",
-  "total": 519,
+  "generated_at": "2026-05-23T20:40:13.763262",
+  "total": 518,
   "watchlist_in_portal": [
     "Dennis Parker Jr.",
     "Francis Folefac",
@@ -28,6 +28,28 @@
       "nil": "",
       "date": "",
       "url": "https://www.on3.com/nil/rankings/player/nil-valuations/"
+    },
+    {
+      "source": "247",
+      "name": "Melian Martinez",
+      "from": "",
+      "to": "",
+      "pos": "C",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/melian-martinez-46098244/college-356540/"
+    },
+    {
+      "source": "247",
+      "name": "Jordan Burks",
+      "from": "",
+      "to": "",
+      "pos": "SF",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/jordan-burks-46133210/college-345790/"
     },
     {
       "source": "247",
@@ -5124,17 +5146,6 @@
     },
     {
       "source": "247",
-      "name": "Jordan Burks",
-      "from": "",
-      "to": "",
-      "pos": "SF",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/jordan-burks-46133210/college-345790/"
-    },
-    {
-      "source": "247",
       "name": "DJ Dudley",
       "from": "",
       "to": "",
@@ -5693,28 +5704,6 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/tyler-mckinley-46125404/college-322977/"
-    },
-    {
-      "source": "247",
-      "name": "Alier Maluk",
-      "from": "",
-      "to": "",
-      "pos": "C",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/alier-maluk-46125576/college-321533/"
-    },
-    {
-      "source": "247",
-      "name": "T.O. Barrett",
-      "from": "",
-      "to": "",
-      "pos": "SG",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/to-barrett-46134820/college-322494/"
     }
   ]
 }
