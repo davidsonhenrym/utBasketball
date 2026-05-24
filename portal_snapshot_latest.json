@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-24T13:27:54.219350",
+  "generated_at": "2026-05-24T20:44:56.319895",
   "total": 518,
   "watchlist_in_portal": [
     "Dennis Parker Jr.",
@@ -28,6 +28,17 @@
       "nil": "",
       "date": "",
       "url": "https://www.on3.com/nil/rankings/player/nil-valuations/"
+    },
+    {
+      "source": "247",
+      "name": "Ofri Naveh",
+      "from": "",
+      "to": "",
+      "pos": "SF",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/ofri-naveh-46148372/college-357884/"
     },
     {
       "source": "247",
@@ -5693,17 +5704,6 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/nehemiah-turner-46157738/college-342861/"
-    },
-    {
-      "source": "247",
-      "name": "Tyler McKinley",
-      "from": "",
-      "to": "",
-      "pos": "PF",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/tyler-mckinley-46125404/college-322977/"
     }
   ]
 }
