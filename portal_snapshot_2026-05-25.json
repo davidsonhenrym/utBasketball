@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-25T14:55:24.746533",
+  "generated_at": "2026-05-25T20:58:27.747048",
   "total": 518,
   "watchlist_in_portal": [
     "Dennis Parker Jr.",
@@ -28,6 +28,17 @@
       "nil": "",
       "date": "",
       "url": "https://www.on3.com/nil/rankings/player/nil-valuations/"
+    },
+    {
+      "source": "247",
+      "name": "Arterio Morris",
+      "from": "",
+      "to": "",
+      "pos": "CG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/arterio-morris-46094923/college-357834/"
     },
     {
       "source": "247",
@@ -5693,17 +5704,6 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/isaac-harrell-46165900/college-357293/"
-    },
-    {
-      "source": "247",
-      "name": "Malick Diallo",
-      "from": "",
-      "to": "",
-      "pos": "C",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/malick-diallo-46125782/college-323011/"
     }
   ]
 }
