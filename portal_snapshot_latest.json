@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-26T15:30:36.789822",
+  "generated_at": "2026-05-26T21:30:06.079010",
   "total": 518,
   "watchlist_in_portal": [
     "Dennis Parker Jr.",
@@ -28,6 +28,17 @@
       "nil": "",
       "date": "",
       "url": "https://www.on3.com/nil/rankings/player/nil-valuations/"
+    },
+    {
+      "source": "247",
+      "name": "Allen Graves",
+      "from": "",
+      "to": "",
+      "pos": "PF",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/allen-graves-46166229/college-358478/"
     },
     {
       "source": "247",
@@ -5693,17 +5704,6 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/jazz-henderson-46148665/college-358189/"
-    },
-    {
-      "source": "247",
-      "name": "KJ Thomas",
-      "from": "",
-      "to": "",
-      "pos": "PG",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/kj-thomas-46142860/college-323374/"
     }
   ]
 }
