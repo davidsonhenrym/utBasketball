@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-27T15:43:22.638874",
+  "generated_at": "2026-05-27T21:47:43.910470",
   "total": 518,
   "watchlist_in_portal": [
     "Dennis Parker Jr.",
@@ -28,6 +28,17 @@
       "nil": "",
       "date": "",
       "url": "https://www.on3.com/nil/rankings/player/nil-valuations/"
+    },
+    {
+      "source": "247",
+      "name": "Vyctorius Miller",
+      "from": "",
+      "to": "",
+      "pos": "SG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/vyctorius-miller-46103602/college-345744/"
     },
     {
       "source": "247",
@@ -5693,17 +5704,6 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/demarco-johnson-46125781/college-357430/"
-    },
-    {
-      "source": "247",
-      "name": "Jazz Henderson",
-      "from": "",
-      "to": "",
-      "pos": "PG",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/jazz-henderson-46148665/college-358189/"
     }
   ]
 }
