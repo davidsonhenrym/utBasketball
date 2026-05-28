@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-28T15:57:12.625100",
+  "generated_at": "2026-05-28T21:51:42.528503",
   "total": 518,
   "watchlist_in_portal": [
     "Dennis Parker Jr.",
@@ -28,6 +28,17 @@
       "nil": "",
       "date": "",
       "url": "https://www.on3.com/nil/rankings/player/nil-valuations/"
+    },
+    {
+      "source": "247",
+      "name": "Jonas Sirtautas",
+      "from": "",
+      "to": "",
+      "pos": "PF",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/jonas-sirtautas-46166211/college-358414/"
     },
     {
       "source": "247",
@@ -5693,17 +5704,6 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/jayden-cooper-46165866/college-357158/"
-    },
-    {
-      "source": "247",
-      "name": "Anton Bonke",
-      "from": "",
-      "to": "",
-      "pos": "C",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/anton-bonke-46153132/college-356577/"
     }
   ]
 }
