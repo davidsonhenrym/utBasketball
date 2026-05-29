@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-29T15:33:41.158631",
+  "generated_at": "2026-05-29T21:47:05.517239",
   "total": 518,
   "watchlist_in_portal": [
     "Dennis Parker Jr.",
@@ -28,6 +28,17 @@
       "nil": "",
       "date": "",
       "url": "https://www.on3.com/nil/rankings/player/nil-valuations/"
+    },
+    {
+      "source": "247",
+      "name": "Kean Webb",
+      "from": "",
+      "to": "",
+      "pos": "C",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/kean-webb-46157136/college-358649/"
     },
     {
       "source": "247",
@@ -5693,17 +5704,6 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/mookie-cook-46109284/college-357701/"
-    },
-    {
-      "source": "247",
-      "name": "Justin Neely",
-      "from": "",
-      "to": "",
-      "pos": "SF",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/justin-neely-46103469/college-355681/"
     }
   ]
 }
