@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-01T17:41:12.842068",
+  "generated_at": "2026-06-01T22:31:08.890971",
   "total": 518,
   "watchlist_in_portal": [
     "Dennis Parker Jr.",
@@ -28,6 +28,17 @@
       "nil": "",
       "date": "",
       "url": "https://www.on3.com/nil/rankings/player/nil-valuations/"
+    },
+    {
+      "source": "247",
+      "name": "Elmir Dzafic",
+      "from": "",
+      "to": "",
+      "pos": "C",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/elmir-dzafic-46167456/college-360487/"
     },
     {
       "source": "247",
@@ -5693,17 +5704,6 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/ej-ryans-46142664/college-323401/"
-    },
-    {
-      "source": "247",
-      "name": "John Laboy",
-      "from": "",
-      "to": "",
-      "pos": "PG",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/john-laboy-46137619/college-339291/"
     }
   ]
 }
