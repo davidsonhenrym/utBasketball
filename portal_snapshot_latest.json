@@ -1,7 +1,8 @@
 {
-  "generated_at": "2026-06-02T16:26:44.968054",
+  "generated_at": "2026-06-02T22:18:24.094329",
   "total": 518,
   "watchlist_in_portal": [
+    "Christian Bliss",
     "Dennis Parker Jr.",
     "Francis Folefac",
     "Dior Johnson"
@@ -28,6 +29,17 @@
       "nil": "",
       "date": "",
       "url": "https://www.on3.com/nil/rankings/player/nil-valuations/"
+    },
+    {
+      "source": "247",
+      "name": "Christian Bliss",
+      "from": "",
+      "to": "",
+      "pos": "CG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/christian-bliss-46132700/college-356977/"
     },
     {
       "source": "247",
@@ -5693,17 +5705,6 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/jordan-lowery-46128268/college-358091/"
-    },
-    {
-      "source": "247",
-      "name": "Ryder Frost",
-      "from": "",
-      "to": "",
-      "pos": "SF",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/ryder-frost-46144037/college-345649/"
     }
   ]
 }
