@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-03T16:50:09.045833",
+  "generated_at": "2026-06-03T22:25:26.813494",
   "total": 518,
   "watchlist_in_portal": [
     "Christian Bliss",
@@ -29,6 +29,17 @@
       "nil": "",
       "date": "",
       "url": "https://www.on3.com/nil/rankings/player/nil-valuations/"
+    },
+    {
+      "source": "247",
+      "name": "Chris Johnson",
+      "from": "",
+      "to": "",
+      "pos": "CG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/chris-johnson-46104194/college-345783/"
     },
     {
       "source": "247",
@@ -5694,17 +5705,6 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/gavin-ripp-46150113/college-323607/"
-    },
-    {
-      "source": "247",
-      "name": "Jordan Lowery",
-      "from": "",
-      "to": "",
-      "pos": "PG",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/jordan-lowery-46128268/college-358091/"
     }
   ]
 }
