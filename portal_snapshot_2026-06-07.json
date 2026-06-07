@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-07T13:54:07.430750",
+  "generated_at": "2026-06-07T21:02:50.387910",
   "total": 519,
   "watchlist_in_portal": [
     "Christian Bliss",
@@ -40,6 +40,17 @@
       "nil": "",
       "date": "",
       "url": "https://www.on3.com/rivals/rankings/player/football/2027/"
+    },
+    {
+      "source": "247",
+      "name": "Kerem Konan",
+      "from": "",
+      "to": "",
+      "pos": "PF",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/kerem-konan-46159783/college-345809/"
     },
     {
       "source": "247",
@@ -5705,17 +5716,6 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/tylen-riley-46135609/college-358167/"
-    },
-    {
-      "source": "247",
-      "name": "Carl Parrish",
-      "from": "",
-      "to": "",
-      "pos": "PG",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/carl-parrish-46132968/college-358662/"
     }
   ]
 }
