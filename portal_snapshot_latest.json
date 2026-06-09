@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-09T14:52:44.491431",
+  "generated_at": "2026-06-09T21:43:21.554138",
   "total": 520,
   "watchlist_in_portal": [
     "Christian Bliss",
@@ -51,6 +51,17 @@
       "nil": "",
       "date": "",
       "url": "https://www.on3.com/college/rankings/player/football/2026/"
+    },
+    {
+      "source": "247",
+      "name": "Kellen Robinson",
+      "from": "",
+      "to": "",
+      "pos": "CG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/kellen-robinson-46143156/college-360908/"
     },
     {
       "source": "247",
@@ -5716,17 +5727,6 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/jalen-reece-46136543/college-345453/"
-    },
-    {
-      "source": "247",
-      "name": "Tylen Riley",
-      "from": "",
-      "to": "",
-      "pos": "PG",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/tylen-riley-46135609/college-358167/"
     }
   ]
 }
