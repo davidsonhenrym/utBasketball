@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-06-12T15:16:14.751506",
-  "total": 520,
+  "generated_at": "2026-06-12T21:26:26.200955",
+  "total": 519,
   "watchlist_in_portal": [
     "Christian Bliss",
     "Dennis Parker Jr.",
@@ -51,6 +51,28 @@
       "nil": "",
       "date": "",
       "url": "https://www.on3.com/college/rankings/player/football/2026/"
+    },
+    {
+      "source": "247",
+      "name": "Aaron Clark",
+      "from": "",
+      "to": "",
+      "pos": "SG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/aaron-clark-46110312/college-323598/"
+    },
+    {
+      "source": "247",
+      "name": "Vasilije Kuridza",
+      "from": "",
+      "to": "",
+      "pos": "PF",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/vasilije-kuridza-46167907/college-361080/"
     },
     {
       "source": "247",
@@ -5694,39 +5716,6 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/gavin-sykes-46150744/college-356546/"
-    },
-    {
-      "source": "247",
-      "name": "David Castillo",
-      "from": "",
-      "to": "",
-      "pos": "CG",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/david-castillo-46115207/college-323000/"
-    },
-    {
-      "source": "247",
-      "name": "Abdul Bashir",
-      "from": "",
-      "to": "",
-      "pos": "SF",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/abdul-bashir-46152212/college-345361/"
-    },
-    {
-      "source": "247",
-      "name": "Jalen Reece",
-      "from": "",
-      "to": "",
-      "pos": "PG",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/jalen-reece-46136543/college-345453/"
     }
   ]
 }
