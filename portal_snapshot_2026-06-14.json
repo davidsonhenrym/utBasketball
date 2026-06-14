@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-14T14:04:00.127219",
+  "generated_at": "2026-06-14T21:02:18.435155",
   "total": 519,
   "watchlist_in_portal": [
     "Christian Bliss",
@@ -51,6 +51,28 @@
       "nil": "",
       "date": "",
       "url": "https://www.on3.com/college/rankings/player/football/2026/"
+    },
+    {
+      "source": "247",
+      "name": "Curtis Williams Jr.",
+      "from": "",
+      "to": "",
+      "pos": "SF",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/curtis-williams-jr-46102883/college-358150/"
+    },
+    {
+      "source": "247",
+      "name": "Gai Chol",
+      "from": "",
+      "to": "",
+      "pos": "C",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/gai-chol-46117585/college-302995/"
     },
     {
       "source": "247",
@@ -5694,28 +5716,6 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/jeremy-elyzee-46165783/college-356808/"
-    },
-    {
-      "source": "247",
-      "name": "Jalen Cox",
-      "from": "",
-      "to": "",
-      "pos": "CG",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/jalen-cox-46165714/college-356556/"
-    },
-    {
-      "source": "247",
-      "name": "Gavin Sykes",
-      "from": "",
-      "to": "",
-      "pos": "CG",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/gavin-sykes-46150744/college-356546/"
     }
   ]
 }
