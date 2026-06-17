@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-17T15:31:55.944886",
+  "generated_at": "2026-06-17T21:54:33.237991",
   "total": 519,
   "watchlist_in_portal": [
     "Christian Bliss",
@@ -51,6 +51,17 @@
       "nil": "",
       "date": "",
       "url": "https://www.on3.com/college/rankings/player/football/2026/"
+    },
+    {
+      "source": "247",
+      "name": "Dasonte Bowen",
+      "from": "",
+      "to": "",
+      "pos": "PG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/dasonte-bowen-46084570/college-324035/"
     },
     {
       "source": "247",
@@ -5705,17 +5716,6 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/cj-hyland-46142661/college-359121/"
-    },
-    {
-      "source": "247",
-      "name": "Pop Isaacs",
-      "from": "",
-      "to": "",
-      "pos": "PG",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/pop-isaacs-46058747/college-345517/"
     }
   ]
 }
