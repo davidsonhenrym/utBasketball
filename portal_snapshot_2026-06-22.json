@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-22T16:59:42.814303",
+  "generated_at": "2026-06-22T21:56:52.025388",
   "total": 519,
   "watchlist_in_portal": [
     "Christian Bliss",
@@ -54,6 +54,17 @@
     },
     {
       "source": "247",
+      "name": "Ivan Matlekovic",
+      "from": "",
+      "to": "",
+      "pos": "C",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/ivan-matlekovic-46160538/college-358811/"
+    },
+    {
+      "source": "247",
       "name": "Dasonte Bowen",
       "from": "",
       "to": "",
@@ -62,6 +73,17 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/dasonte-bowen-46084570/college-324035/"
+    },
+    {
+      "source": "247",
+      "name": "Semetri Carr",
+      "from": "",
+      "to": "",
+      "pos": "PG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/semetri-carr-46142573/college-344400/"
     },
     {
       "source": "247",
@@ -205,6 +227,17 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/scotty-middleton-46098160/college-358199/"
+    },
+    {
+      "source": "247",
+      "name": "Jayme Kontuniemi",
+      "from": "",
+      "to": "",
+      "pos": "SG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/jayme-kontuniemi-46158857/college-345756/"
     },
     {
       "source": "247",
@@ -5683,39 +5716,6 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/dominick-stewart-46141945/college-317848/"
-    },
-    {
-      "source": "247",
-      "name": "Adam Harakow",
-      "from": "",
-      "to": "",
-      "pos": "SF",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/adam-harakow-46166026/college-357735/"
-    },
-    {
-      "source": "247",
-      "name": "Andrija Grbovic",
-      "from": "",
-      "to": "",
-      "pos": "PF",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/andrija-grbovic-46158582/college-345544/"
-    },
-    {
-      "source": "247",
-      "name": "CJ Hyland",
-      "from": "",
-      "to": "",
-      "pos": "PG",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/cj-hyland-46142661/college-359121/"
     }
   ]
 }
