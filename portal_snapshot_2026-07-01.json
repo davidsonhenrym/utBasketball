@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-01T14:36:51.180300",
+  "generated_at": "2026-07-01T21:20:41.416746",
   "total": 519,
   "watchlist_in_portal": [
     "Christian Bliss",
@@ -51,6 +51,17 @@
       "nil": "",
       "date": "",
       "url": "https://www.on3.com/college/rankings/player/football/2026/"
+    },
+    {
+      "source": "247",
+      "name": "Skylar Wicks",
+      "from": "",
+      "to": "",
+      "pos": "PG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/skylar-wicks-46079072/college-357401/"
     },
     {
       "source": "247",
@@ -5705,17 +5716,6 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/al-amadou-46118030/college-358279/"
-    },
-    {
-      "source": "247",
-      "name": "Dominick Stewart",
-      "from": "",
-      "to": "",
-      "pos": "CG",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/dominick-stewart-46141945/college-317848/"
     }
   ]
 }
