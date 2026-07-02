@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-02T14:02:03.600137",
+  "generated_at": "2026-07-02T20:56:41.050044",
   "total": 519,
   "watchlist_in_portal": [
     "Christian Bliss",
@@ -51,6 +51,17 @@
       "nil": "",
       "date": "",
       "url": "https://www.on3.com/college/rankings/player/football/2026/"
+    },
+    {
+      "source": "247",
+      "name": "James Nnaji",
+      "from": "",
+      "to": "",
+      "pos": "C",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/james-nnaji-46142671/college-348463/"
     },
     {
       "source": "247",
@@ -5705,17 +5716,6 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/mason-williams-46135692/college-345729/"
-    },
-    {
-      "source": "247",
-      "name": "Al Amadou",
-      "from": "",
-      "to": "",
-      "pos": "PF",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/al-amadou-46118030/college-358279/"
     }
   ]
 }
