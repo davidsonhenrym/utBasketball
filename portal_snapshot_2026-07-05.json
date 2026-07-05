@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-05T13:40:21.253382",
+  "generated_at": "2026-07-05T20:50:02.064661",
   "total": 519,
   "watchlist_in_portal": [
     "Christian Bliss",
@@ -51,6 +51,17 @@
       "nil": "",
       "date": "",
       "url": "https://www.on3.com/college/rankings/player/football/2026/"
+    },
+    {
+      "source": "247",
+      "name": "Mihailo Petrovic",
+      "from": "",
+      "to": "",
+      "pos": "PG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/mihailo-petrovic-46157970/college-345401/"
     },
     {
       "source": "247",
@@ -5705,17 +5716,6 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/rytis-petraitis-46110120/college-321520/"
-    },
-    {
-      "source": "247",
-      "name": "Mason Williams",
-      "from": "",
-      "to": "",
-      "pos": "CG",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/mason-williams-46135692/college-345729/"
     }
   ]
 }
