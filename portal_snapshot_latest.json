@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-08T14:08:00.612287",
+  "generated_at": "2026-07-08T20:58:41.950851",
   "total": 518,
   "watchlist_in_portal": [
     "Christian Bliss",
@@ -51,6 +51,17 @@
       "nil": "",
       "date": "",
       "url": "https://www.on3.com/college/rankings/player/football/2026/"
+    },
+    {
+      "source": "247",
+      "name": "Sam Walters",
+      "from": "",
+      "to": "",
+      "pos": "PF",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/sam-walters-46102520/college-345779/"
     },
     {
       "source": "247",
@@ -5694,17 +5705,6 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/cam-morris-46166529/college-359133/"
-    },
-    {
-      "source": "247",
-      "name": "Dra Gibbs-Lawhorn",
-      "from": "",
-      "to": "",
-      "pos": "CG",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/dra-gibbs-lawhorn-46099439/college-355320/"
     }
   ]
 }
