@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-14T13:43:54.172052",
+  "generated_at": "2026-07-14T20:52:15.810357",
   "total": 518,
   "watchlist_in_portal": [
     "Christian Bliss",
@@ -32,7 +32,7 @@
     },
     {
       "source": "ON3",
-      "name": "NewRivals300",
+      "name": "Rivals300",
       "from": "",
       "to": "",
       "pos": "",
@@ -51,6 +51,17 @@
       "nil": "",
       "date": "",
       "url": "https://www.on3.com/college/rankings/player/football/2026/"
+    },
+    {
+      "source": "247",
+      "name": "Ayuba Bryant Jr.",
+      "from": "",
+      "to": "",
+      "pos": "PF",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/ayuba-bryant-jr-46163346/college-348307/"
     },
     {
       "source": "247",
@@ -5694,17 +5705,6 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/miles-heide-46132604/college-303976/"
-    },
-    {
-      "source": "247",
-      "name": "Michael Walz",
-      "from": "",
-      "to": "",
-      "pos": "C",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/michael-walz-46117799/college-359128/"
     }
   ]
 }
