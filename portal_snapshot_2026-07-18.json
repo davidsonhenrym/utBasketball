@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-18T13:15:53.570110",
+  "generated_at": "2026-07-18T20:39:09.820623",
   "total": 518,
   "watchlist_in_portal": [
     "Christian Bliss",
@@ -51,6 +51,17 @@
       "nil": "",
       "date": "",
       "url": "https://www.on3.com/college/rankings/player/football/2026/"
+    },
+    {
+      "source": "247",
+      "name": "Filip Brankovic",
+      "from": "",
+      "to": "",
+      "pos": "PF",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/filip-brankovic-46166153/college-358237/"
     },
     {
       "source": "247",
@@ -5694,17 +5705,6 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/curtis-givens-iii-46127514/college-357692/"
-    },
-    {
-      "source": "247",
-      "name": "Martin Somerville",
-      "from": "",
-      "to": "",
-      "pos": "PG",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/martin-somerville-46142780/college-338853/"
     }
   ]
 }
