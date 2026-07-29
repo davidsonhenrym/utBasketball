@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-29T14:10:31.317625",
+  "generated_at": "2026-07-29T20:44:06.174182",
   "total": 517,
   "watchlist_in_portal": [
     "Christian Bliss",
@@ -51,6 +51,17 @@
       "nil": "",
       "date": "",
       "url": "https://www.on3.com/college/rankings/player/football/2026/"
+    },
+    {
+      "source": "247",
+      "name": "Canin Jefferson",
+      "from": "",
+      "to": "",
+      "pos": "PG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/canin-jefferson-46165721/college-356587/"
     },
     {
       "source": "247",
@@ -5683,17 +5694,6 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/jalen-reed-46116179/college-288425/"
-    },
-    {
-      "source": "247",
-      "name": "DJ Dudley",
-      "from": "",
-      "to": "",
-      "pos": "PG",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/dj-dudley-46085797/college-357206/"
     }
   ]
 }
