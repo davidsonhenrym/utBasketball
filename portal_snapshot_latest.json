@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-08-02T13:21:17.200838",
-  "total": 517,
+  "generated_at": "2026-08-02T20:44:22.223341",
+  "total": 516,
   "watchlist_in_portal": [
     "Christian Bliss",
     "Dennis Parker Jr.",
@@ -51,6 +51,17 @@
       "nil": "",
       "date": "",
       "url": "https://www.on3.com/college/rankings/player/football/2026/"
+    },
+    {
+      "source": "247",
+      "name": "RJ Godfrey",
+      "from": "",
+      "to": "",
+      "pos": "PF",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/rj-godfrey-46102425/college-344415/"
     },
     {
       "source": "247",
@@ -5672,28 +5683,6 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/nick-richart-46137717/college-303462/"
-    },
-    {
-      "source": "247",
-      "name": "Avery Brown",
-      "from": "",
-      "to": "",
-      "pos": "PG",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/avery-brown-46098106/college-334822/"
-    },
-    {
-      "source": "247",
-      "name": "Collin Mulholland",
-      "from": "",
-      "to": "",
-      "pos": "PF",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/collin-mulholland-46165906/college-357347/"
     }
   ]
 }
