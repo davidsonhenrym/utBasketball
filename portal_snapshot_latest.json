@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-08-03T14:39:37.700499",
-  "total": 516,
+  "generated_at": "2026-08-03T20:56:49.665630",
+  "total": 515,
   "watchlist_in_portal": [
     "Christian Bliss",
     "Dennis Parker Jr.",
@@ -51,6 +51,61 @@
       "nil": "",
       "date": "",
       "url": "https://www.on3.com/college/rankings/player/football/2026/"
+    },
+    {
+      "source": "247",
+      "name": "Jalen Washington",
+      "from": "",
+      "to": "",
+      "pos": "PF",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/jalen-washington-46083366/college-339470/"
+    },
+    {
+      "source": "247",
+      "name": "Malique Ewin",
+      "from": "",
+      "to": "",
+      "pos": "C",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/malique-ewin-46083137/college-345352/"
+    },
+    {
+      "source": "247",
+      "name": "Braxton Stacker",
+      "from": "",
+      "to": "",
+      "pos": "SG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/braxton-stacker-46103632/college-332724/"
+    },
+    {
+      "source": "247",
+      "name": "BJ Edwards",
+      "from": "",
+      "to": "",
+      "pos": "PG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/bj-edwards-46086333/college-297474/"
+    },
+    {
+      "source": "247",
+      "name": "Mason Nicholson",
+      "from": "",
+      "to": "",
+      "pos": "C",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/mason-nicholson-46103627/college-339469/"
     },
     {
       "source": "247",
@@ -326,17 +381,6 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/malik-moore-46148293/college-363616/"
-    },
-    {
-      "source": "247",
-      "name": "Jalen Washington",
-      "from": "",
-      "to": "",
-      "pos": "PF",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/jalen-washington-46083366/college-339470/"
     },
     {
       "source": "247",
@@ -5628,61 +5672,6 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/oliver-faubert-46141095/college-323576/"
-    },
-    {
-      "source": "247",
-      "name": "Cooper Schwieger",
-      "from": "",
-      "to": "",
-      "pos": "PF",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/cooper-schwieger-46156899/college-345959/"
-    },
-    {
-      "source": "247",
-      "name": "Khaafiq Myers",
-      "from": "",
-      "to": "",
-      "pos": "PG",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/khaafiq-myers-46132709/college-358629/"
-    },
-    {
-      "source": "247",
-      "name": "Eemeli Yalaho",
-      "from": "",
-      "to": "",
-      "pos": "SF",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/eemeli-yalaho-46137634/college-337992/"
-    },
-    {
-      "source": "247",
-      "name": "Marcus Overstreet",
-      "from": "",
-      "to": "",
-      "pos": "PF",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/marcus-overstreet-46166547/college-359163/"
-    },
-    {
-      "source": "247",
-      "name": "Nick Richart",
-      "from": "",
-      "to": "",
-      "pos": "C",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/nick-richart-46137717/college-303462/"
     }
   ]
 }
