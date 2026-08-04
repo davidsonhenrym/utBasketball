@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-08-04T14:11:40.651775",
-  "total": 515,
+  "generated_at": "2026-08-04T21:13:29.163446",
+  "total": 518,
   "watchlist_in_portal": [
     "Christian Bliss",
     "Dennis Parker Jr.",
@@ -54,6 +54,17 @@
     },
     {
       "source": "247",
+      "name": "Amarri Monroe",
+      "from": "",
+      "to": "",
+      "pos": "SF",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/amarri-monroe-46116971/college-329460/"
+    },
+    {
+      "source": "247",
       "name": "Tavari Johnson",
       "from": "",
       "to": "",
@@ -84,6 +95,39 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/jalen-washington-46083366/college-339470/"
+    },
+    {
+      "source": "247",
+      "name": "Zach Davis",
+      "from": "",
+      "to": "",
+      "pos": "PG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/zach-davis-46117703/college-363793/"
+    },
+    {
+      "source": "247",
+      "name": "Chendall Weaver",
+      "from": "",
+      "to": "",
+      "pos": "PG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/chendall-weaver-46131629/college-302672/"
+    },
+    {
+      "source": "247",
+      "name": "Josh Reed",
+      "from": "",
+      "to": "",
+      "pos": "SF",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/josh-reed-46109002/college-341089/"
     },
     {
       "source": "247",
@@ -230,28 +274,6 @@
     },
     {
       "source": "247",
-      "name": "Donovan Dent",
-      "from": "",
-      "to": "",
-      "pos": "PG",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/donovan-dent-46117555/college-343946/"
-    },
-    {
-      "source": "247",
-      "name": "Maurice Odum",
-      "from": "",
-      "to": "",
-      "pos": "PG",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/maurice-odum-46118234/college-345554/"
-    },
-    {
-      "source": "247",
       "name": "Jayden Epps",
       "from": "",
       "to": "",
@@ -351,17 +373,6 @@
     },
     {
       "source": "247",
-      "name": "Jaden Henley",
-      "from": "",
-      "to": "",
-      "pos": "SF",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/jaden-henley-46128931/college-361390/"
-    },
-    {
-      "source": "247",
       "name": "Dug McDaniel",
       "from": "",
       "to": "",
@@ -381,6 +392,39 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/aj-storr-46110087/college-345499/"
+    },
+    {
+      "source": "247",
+      "name": "Donovan Dent",
+      "from": "",
+      "to": "",
+      "pos": "PG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/donovan-dent-46117555/college-343946/"
+    },
+    {
+      "source": "247",
+      "name": "Maurice Odum",
+      "from": "",
+      "to": "",
+      "pos": "PG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/maurice-odum-46118234/college-345554/"
+    },
+    {
+      "source": "247",
+      "name": "Jaden Henley",
+      "from": "",
+      "to": "",
+      "pos": "SF",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/jaden-henley-46128931/college-361390/"
     },
     {
       "source": "247",
@@ -5661,17 +5705,6 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/abraham-oyeadier-46135497/college-323033/"
-    },
-    {
-      "source": "247",
-      "name": "Jacob Dar",
-      "from": "",
-      "to": "",
-      "pos": "SF",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/jacob-dar-46157650/college-358562/"
     }
   ]
 }
