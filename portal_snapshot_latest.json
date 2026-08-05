@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-05T14:09:28.182178",
+  "generated_at": "2026-08-05T20:59:15.002803",
   "total": 518,
   "watchlist_in_portal": [
     "Christian Bliss",
@@ -51,6 +51,17 @@
       "nil": "",
       "date": "",
       "url": "https://www.on3.com/college/rankings/player/football/2026/"
+    },
+    {
+      "source": "247",
+      "name": "Chisom Okpara",
+      "from": "",
+      "to": "",
+      "pos": "SF",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/chisom-okpara-46098107/college-321562/"
     },
     {
       "source": "247",
@@ -5694,17 +5705,6 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/jaylen-thompson-46094788/college-288555/"
-    },
-    {
-      "source": "247",
-      "name": "Abraham Oyeadier",
-      "from": "",
-      "to": "",
-      "pos": "C",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/abraham-oyeadier-46135497/college-323033/"
     }
   ]
 }
