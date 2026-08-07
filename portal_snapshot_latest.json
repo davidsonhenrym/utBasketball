@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-07T13:03:39.875366",
+  "generated_at": "2026-08-07T20:31:42.913735",
   "total": 517,
   "watchlist_in_portal": [
     "Christian Bliss",
@@ -51,6 +51,50 @@
       "nil": "",
       "date": "",
       "url": "https://www.on3.com/rivals/rankings/player/football/2027/"
+    },
+    {
+      "source": "247",
+      "name": "Darrion Williams",
+      "from": "",
+      "to": "",
+      "pos": "SF",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/darrion-williams-46129312/college-345758/"
+    },
+    {
+      "source": "247",
+      "name": "Chauncey Wiggins",
+      "from": "",
+      "to": "",
+      "pos": "SF",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/chauncey-wiggins-46093921/college-338856/"
+    },
+    {
+      "source": "247",
+      "name": "Tae Davis",
+      "from": "",
+      "to": "",
+      "pos": "SF",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/tae-davis-46094806/college-345487/"
+    },
+    {
+      "source": "247",
+      "name": "Javon Bennett",
+      "from": "",
+      "to": "",
+      "pos": "PG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/javon-bennett-46169615/college-363826/"
     },
     {
       "source": "247",
@@ -5650,50 +5694,6 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/noah-bendinger-46153489/college-346236/"
-    },
-    {
-      "source": "247",
-      "name": "Nyle Ralph-Beyer",
-      "from": "",
-      "to": "",
-      "pos": "SG",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/nyle-ralph-beyer-46166557/college-359179/"
-    },
-    {
-      "source": "247",
-      "name": "Justin Houser",
-      "from": "",
-      "to": "",
-      "pos": "C",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/justin-houser-46144110/college-341091/"
-    },
-    {
-      "source": "247",
-      "name": "Braedan Lue",
-      "from": "",
-      "to": "",
-      "pos": "SF",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/braedan-lue-46135937/college-323347/"
-    },
-    {
-      "source": "247",
-      "name": "Richard Goods",
-      "from": "",
-      "to": "",
-      "pos": "PF",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/richard-goods-46166120/college-358082/"
     }
   ]
 }
