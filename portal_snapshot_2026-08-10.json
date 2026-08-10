@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-10T13:07:40.100034",
+  "generated_at": "2026-08-10T20:33:12.235058",
   "total": 517,
   "watchlist_in_portal": [
     "Christian Bliss",
@@ -95,6 +95,17 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/chauncey-wiggins-46093921/college-338856/"
+    },
+    {
+      "source": "247",
+      "name": "Cameron Fens",
+      "from": "",
+      "to": "",
+      "pos": "C",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/cameron-fens-46117871/college-330687/"
     },
     {
       "source": "247",
@@ -5683,17 +5694,6 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/moustapha-thiam-46141075/college-345696/"
-    },
-    {
-      "source": "247",
-      "name": "De'Shayne Montgomery",
-      "from": "",
-      "to": "",
-      "pos": "SG",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/deshayne-montgomery-46149037/college-358342/"
     }
   ]
 }
