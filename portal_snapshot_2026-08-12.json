@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-12T13:09:13.869481",
+  "generated_at": "2026-08-12T20:35:11.010747",
   "total": 517,
   "watchlist_in_portal": [
     "Christian Bliss",
@@ -51,6 +51,17 @@
       "nil": "",
       "date": "",
       "url": "https://www.on3.com/rivals/rankings/player/football/2027/"
+    },
+    {
+      "source": "247",
+      "name": "Brody Robinson",
+      "from": "",
+      "to": "",
+      "pos": "SG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/brody-robinson-46157430/college-357708/"
     },
     {
       "source": "247",
@@ -5683,17 +5694,6 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/rj-keene-46100344/college-292821/"
-    },
-    {
-      "source": "247",
-      "name": "Cyr Malonga",
-      "from": "",
-      "to": "",
-      "pos": "C",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/cyr-malonga-46116947/college-358233/"
     }
   ]
 }
