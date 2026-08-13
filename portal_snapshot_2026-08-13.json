@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-08-13T13:10:22.704930",
-  "total": 517,
+  "generated_at": "2026-08-13T20:33:21.945342",
+  "total": 516,
   "watchlist_in_portal": [
     "Christian Bliss",
     "Dennis Parker Jr.",
@@ -51,6 +51,17 @@
       "nil": "",
       "date": "",
       "url": "https://www.on3.com/rivals/rankings/player/football/2027/"
+    },
+    {
+      "source": "247",
+      "name": "NJ Benson",
+      "from": "",
+      "to": "",
+      "pos": "PF",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/nj-benson-46149103/college-323224/"
     },
     {
       "source": "247",
@@ -634,17 +645,6 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/jaden-henley-46128931/college-361390/"
-    },
-    {
-      "source": "247",
-      "name": "NJ Benson",
-      "from": "",
-      "to": "",
-      "pos": "PF",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/nj-benson-46149103/college-323224/"
     },
     {
       "source": "247",
@@ -5683,17 +5683,6 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/aleksej-kostic-46166286/college-358575/"
-    },
-    {
-      "source": "247",
-      "name": "Aaron Womack",
-      "from": "",
-      "to": "",
-      "pos": "SF",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/aaron-womack-46152757/college-345859/"
     }
   ]
 }
