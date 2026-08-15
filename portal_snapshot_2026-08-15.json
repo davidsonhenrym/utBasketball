@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-15T12:37:10.572388",
+  "generated_at": "2026-08-15T20:13:30.935812",
   "total": 515,
   "watchlist_in_portal": [
     "Christian Bliss",
@@ -51,6 +51,17 @@
       "nil": "",
       "date": "",
       "url": "https://www.on3.com/rivals/rankings/player/football/2027/"
+    },
+    {
+      "source": "247",
+      "name": "Ring Malith",
+      "from": "",
+      "to": "",
+      "pos": "SG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/ring-malith-46117135/college-358409/"
     },
     {
       "source": "247",
@@ -5661,17 +5672,6 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/uzziah-buntyn-46144976/college-356475/"
-    },
-    {
-      "source": "247",
-      "name": "Easton Hupp",
-      "from": "",
-      "to": "",
-      "pos": "SG",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/easton-hupp-46140024/college-358665/"
     }
   ]
 }
