@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-08-18T12:45:07.465491",
-  "total": 514,
+  "generated_at": "2026-08-18T20:14:24.390322",
+  "total": 511,
   "watchlist_in_portal": [
     "Christian Bliss",
     "Dennis Parker Jr.",
@@ -51,6 +51,83 @@
       "nil": "",
       "date": "",
       "url": "https://www.on3.com/rivals/rankings/player/football/2027/"
+    },
+    {
+      "source": "247",
+      "name": "JJ Starling",
+      "from": "",
+      "to": "",
+      "pos": "CG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/jj-starling-46086230/college-302621/"
+    },
+    {
+      "source": "247",
+      "name": "Nick Townsend",
+      "from": "",
+      "to": "",
+      "pos": "PF",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/nick-townsend-46165620/college-355860/"
+    },
+    {
+      "source": "247",
+      "name": "AJ Storr",
+      "from": "",
+      "to": "",
+      "pos": "SG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/aj-storr-46110087/college-345499/"
+    },
+    {
+      "source": "247",
+      "name": "Stephon Payne",
+      "from": "",
+      "to": "",
+      "pos": "C",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/stephon-payne-46169635/college-363903/"
+    },
+    {
+      "source": "247",
+      "name": "Mekhi Mason",
+      "from": "",
+      "to": "",
+      "pos": "SG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/mekhi-mason-46129656/college-345957/"
+    },
+    {
+      "source": "247",
+      "name": "Jaxon Kohler",
+      "from": "",
+      "to": "",
+      "pos": "PF",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/jaxon-kohler-46058592/college-282931/"
+    },
+    {
+      "source": "247",
+      "name": "Fredrick King",
+      "from": "",
+      "to": "",
+      "pos": "C",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/fredrick-king-46128285/college-355862/"
     },
     {
       "source": "247",
@@ -293,17 +370,6 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/dan-skillings-jr-46118138/college-345557/"
-    },
-    {
-      "source": "247",
-      "name": "Stephon Payne",
-      "from": "",
-      "to": "",
-      "pos": "C",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/stephon-payne-46169635/college-363903/"
     },
     {
       "source": "247",
@@ -612,17 +678,6 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/dug-mcdaniel-46079207/college-363635/"
-    },
-    {
-      "source": "247",
-      "name": "AJ Storr",
-      "from": "",
-      "to": "",
-      "pos": "SG",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/aj-storr-46110087/college-345499/"
     },
     {
       "source": "247",
@@ -5573,94 +5628,6 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/adante-holiman-46099972/college-345549/"
-    },
-    {
-      "source": "247",
-      "name": "Noah Amenhauser",
-      "from": "",
-      "to": "",
-      "pos": "C",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/noah-amenhauser-46116835/college-346088/"
-    },
-    {
-      "source": "247",
-      "name": "Dallis Dillard",
-      "from": "",
-      "to": "",
-      "pos": "CG",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/dallis-dillard-46166667/college-359392/"
-    },
-    {
-      "source": "247",
-      "name": "Quin Berger",
-      "from": "",
-      "to": "",
-      "pos": "PG",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/quin-berger-46140662/college-331314/"
-    },
-    {
-      "source": "247",
-      "name": "Jaden Daughtry",
-      "from": "",
-      "to": "",
-      "pos": "SF",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/jaden-daughtry-46110189/college-358387/"
-    },
-    {
-      "source": "247",
-      "name": "Eric Acker",
-      "from": "",
-      "to": "",
-      "pos": "PG",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/eric-acker-46148746/college-358110/"
-    },
-    {
-      "source": "247",
-      "name": "Christian Reeves",
-      "from": "",
-      "to": "",
-      "pos": "C",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/christian-reeves-46058546/college-358444/"
-    },
-    {
-      "source": "247",
-      "name": "Joshua Lewis",
-      "from": "",
-      "to": "",
-      "pos": "SF",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/joshua-lewis-46142900/college-345625/"
-    },
-    {
-      "source": "247",
-      "name": "Rich Rolf",
-      "from": "",
-      "to": "",
-      "pos": "SF",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/rich-rolf-46166044/college-357784/"
     }
   ]
 }
