@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-08-21T12:47:09.324368",
-  "total": 507,
+  "generated_at": "2026-08-21T20:16:16.987278",
+  "total": 506,
   "watchlist_in_portal": [
     "Christian Bliss",
     "Dennis Parker Jr."
@@ -49,6 +49,17 @@
       "nil": "",
       "date": "",
       "url": "https://www.on3.com/rivals/rankings/player/football/2027/"
+    },
+    {
+      "source": "247",
+      "name": "Treysen Eaglestaff",
+      "from": "",
+      "to": "",
+      "pos": "SF",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/treysen-eaglestaff-46156314/college-345802/"
     },
     {
       "source": "247",
@@ -456,17 +467,6 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/tre-holloman-46056913/college-345762/"
-    },
-    {
-      "source": "247",
-      "name": "Treysen Eaglestaff",
-      "from": "",
-      "to": "",
-      "pos": "SF",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/treysen-eaglestaff-46156314/college-345802/"
     },
     {
       "source": "247",
@@ -5571,17 +5571,6 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/abou-magassa-46148867/college-358209/"
-    },
-    {
-      "source": "247",
-      "name": "Michael James",
-      "from": "",
-      "to": "",
-      "pos": "PG",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/michael-james-46164853/college-352144/"
     }
   ]
 }
