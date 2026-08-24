@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-08-24T12:50:14.099989",
-  "total": 503,
+  "generated_at": "2026-08-24T20:20:09.988616",
+  "total": 501,
   "watchlist_in_portal": [
     "Christian Bliss",
     "Dennis Parker Jr."
@@ -40,15 +40,15 @@
       "url": "https://www.on3.com/college/rankings/player/football/2026/"
     },
     {
-      "source": "ON3",
-      "name": "Rivals300",
+      "source": "247",
+      "name": "Iaroslav Niagu",
       "from": "",
       "to": "",
-      "pos": "",
-      "stars": "",
+      "pos": "C",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
       "nil": "",
       "date": "",
-      "url": "https://www.on3.com/rivals/rankings/player/football/2027/"
+      "url": "https://247sports.com/player/iaroslav-niagu-46135873/college-333718/"
     },
     {
       "source": "247",
@@ -5516,28 +5516,6 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/marko-radunovic-46161253/college-346850/"
-    },
-    {
-      "source": "247",
-      "name": "Xavier Brown",
-      "from": "",
-      "to": "",
-      "pos": "SG",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/xavier-brown-46148605/college-356911/"
-    },
-    {
-      "source": "247",
-      "name": "Nick Petronio",
-      "from": "",
-      "to": "",
-      "pos": "CG",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/nick-petronio-46139647/college-321508/"
     }
   ]
 }
