@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-08-25T12:46:58.997624",
-  "total": 501,
+  "generated_at": "2026-08-25T20:19:42.713074",
+  "total": 499,
   "watchlist_in_portal": [
     "Christian Bliss",
     "Dennis Parker Jr."
@@ -38,6 +38,28 @@
       "nil": "",
       "date": "",
       "url": "https://www.on3.com/college/rankings/player/football/2026/"
+    },
+    {
+      "source": "247",
+      "name": "Corey Stephenson",
+      "from": "",
+      "to": "",
+      "pos": "SF",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/corey-stephenson-46157121/college-366004/"
+    },
+    {
+      "source": "247",
+      "name": "Nick Townsend",
+      "from": "",
+      "to": "",
+      "pos": "PF",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/nick-townsend-46165620/college-355860/"
     },
     {
       "source": "247",
@@ -247,17 +269,6 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/jj-starling-46086230/college-302621/"
-    },
-    {
-      "source": "247",
-      "name": "Nick Townsend",
-      "from": "",
-      "to": "",
-      "pos": "PF",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/nick-townsend-46165620/college-355860/"
     },
     {
       "source": "247",
@@ -5483,39 +5494,6 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/cam-thrower-46086386/college-358679/"
-    },
-    {
-      "source": "247",
-      "name": "Efe Vatan",
-      "from": "",
-      "to": "",
-      "pos": "PF",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/efe-vatan-46166200/college-358381/"
-    },
-    {
-      "source": "247",
-      "name": "Marko Radunovic",
-      "from": "",
-      "to": "",
-      "pos": "SF",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/marko-radunovic-46161253/college-346850/"
-    },
-    {
-      "source": "247",
-      "name": "Xavier Brown",
-      "from": "",
-      "to": "",
-      "pos": "SG",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/xavier-brown-46148605/college-356911/"
     }
   ]
 }
