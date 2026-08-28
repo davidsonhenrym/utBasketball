@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-08-28T03:56:54.289307",
-  "total": 495,
+  "generated_at": "2026-08-28T21:46:18.131883",
+  "total": 494,
   "watchlist_in_portal": [
     "Christian Bliss",
     "Dennis Parker Jr."
@@ -40,15 +40,15 @@
       "url": "https://www.on3.com/nil/rankings/player/nil-valuations/"
     },
     {
-      "source": "ON3",
-      "name": "CFB Player Rankings",
+      "source": "247",
+      "name": "Micah Handlogten",
       "from": "",
       "to": "",
-      "pos": "",
-      "stars": "",
+      "pos": "C",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
       "nil": "",
       "date": "",
-      "url": "https://www.on3.com/college/rankings/player/football/2026/"
+      "url": "https://247sports.com/player/micah-handlogten-46140714/college-294905/"
     },
     {
       "source": "247",
@@ -82,6 +82,17 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/dan-skillings-jr-46118138/college-345557/"
+    },
+    {
+      "source": "247",
+      "name": "Javontae Campbell",
+      "from": "",
+      "to": "",
+      "pos": "PG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/javontae-campbell-46146631/college-317531/"
     },
     {
       "source": "247",
@@ -5428,28 +5439,6 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/dovydas-butka-46157747/college-357344/"
-    },
-    {
-      "source": "247",
-      "name": "Dorian Finister",
-      "from": "",
-      "to": "",
-      "pos": "PG",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/dorian-finister-46117990/college-358368/"
-    },
-    {
-      "source": "247",
-      "name": "Thomas Allard",
-      "from": "",
-      "to": "",
-      "pos": "SG",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/thomas-allard-46166678/college-359408/"
     }
   ]
 }
