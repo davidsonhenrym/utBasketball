@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-08-29T16:18:29.447578",
-  "total": 494,
+  "generated_at": "2026-08-29T22:09:04.763077",
+  "total": 495,
   "watchlist_in_portal": [
     "Christian Bliss",
     "Dennis Parker Jr."
@@ -38,6 +38,17 @@
       "nil": "",
       "date": "",
       "url": "https://www.on3.com/nil/rankings/player/nil-valuations/"
+    },
+    {
+      "source": "ON3",
+      "name": "CFB Player Rankings",
+      "from": "",
+      "to": "",
+      "pos": "",
+      "stars": "",
+      "nil": "",
+      "date": "",
+      "url": "https://www.on3.com/college/rankings/player/football/2026/"
     },
     {
       "source": "247",
