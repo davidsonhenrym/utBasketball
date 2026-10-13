@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-13T01:45:10.634148",
+  "generated_at": "2026-10-13T18:57:43.408264",
   "total": 493,
   "watchlist_in_portal": [
     "Christian Bliss",
@@ -93,6 +93,17 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/javontae-campbell-46146631/college-317531/"
+    },
+    {
+      "source": "247",
+      "name": "CJ Gunn",
+      "from": "",
+      "to": "",
+      "pos": "SG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/cj-gunn-46097525/college-312707/"
     },
     {
       "source": "247",
@@ -5417,17 +5428,6 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/ej-walker-46135790/college-338780/"
-    },
-    {
-      "source": "247",
-      "name": "Brian Hawthorne",
-      "from": "",
-      "to": "",
-      "pos": "PG",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/brian-hawthorne-46157455/college-358361/"
     }
   ]
 }
