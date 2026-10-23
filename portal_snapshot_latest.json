@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-23T16:34:54.371831",
+  "generated_at": "2026-10-23T22:46:36.421584",
   "total": 487,
   "watchlist_in_portal": [
     "Christian Bliss",
@@ -27,6 +27,17 @@
       "nil": "",
       "date": "",
       "url": "https://www.on3.com/nil/rankings/player/nil-valuations/"
+    },
+    {
+      "source": "247",
+      "name": "Honor Huff",
+      "from": "",
+      "to": "",
+      "pos": "PG",
+      "stars": "Rating StarRating StarRating StarRating StarRating Star",
+      "nil": "",
+      "date": "",
+      "url": "https://247sports.com/player/honor-huff-46157497/college-367867/"
     },
     {
       "source": "247",
@@ -5351,17 +5362,6 @@
       "nil": "",
       "date": "",
       "url": "https://247sports.com/player/buddy-hammer-jr-46158850/college-359402/"
-    },
-    {
-      "source": "247",
-      "name": "Aleksa Vlajic",
-      "from": "",
-      "to": "",
-      "pos": "PF",
-      "stars": "Rating StarRating StarRating StarRating StarRating Star",
-      "nil": "",
-      "date": "",
-      "url": "https://247sports.com/player/aleksa-vlajic-46166675/college-359401/"
     }
   ]
 }
