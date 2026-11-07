@@ -1,0 +1,29 @@
+{
+  "generated_at": "2026-11-07T17:29:55.615732",
+  "total": 2,
+  "watchlist_in_portal": [],
+  "players": [
+    {
+      "source": "ON3",
+      "name": "College Football Player Rankings",
+      "from": "",
+      "to": "",
+      "pos": "",
+      "stars": "",
+      "nil": "",
+      "date": "",
+      "url": "https://www.on3.com/college/rankings/player/football/2026/"
+    },
+    {
+      "source": "ON3",
+      "name": "NIL Valuation",
+      "from": "",
+      "to": "",
+      "pos": "",
+      "stars": "",
+      "nil": "",
+      "date": "",
+      "url": "https://www.on3.com/nil/rankings/player/nil-valuations/"
+    }
+  ]
+}
