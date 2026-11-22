@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-11-22T00:00:31.037834",
-  "total": 3,
+  "generated_at": "2026-11-22T19:07:51.150445",
+  "total": 2,
   "watchlist_in_portal": [],
   "players": [
     {
@@ -24,17 +24,6 @@
       "nil": "",
       "date": "",
       "url": "https://www.on3.com/nil/rankings/player/nil-valuations/"
-    },
-    {
-      "source": "ON3",
-      "name": "Rivals300",
-      "from": "",
-      "to": "",
-      "pos": "",
-      "stars": "",
-      "nil": "",
-      "date": "",
-      "url": "https://www.on3.com/rivals/rankings/player/football/2027/"
     }
   ]
 }
